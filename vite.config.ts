@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     watch: {
-      ignored: ["**/deck.json"],
+      ignored: [path.resolve(__dirname, "deck.json")],
     },
   },
   test: {

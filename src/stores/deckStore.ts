@@ -158,9 +158,27 @@ export const useDeckStore = create<DeckState>()(
           }),
       })),
       {
-        // Only track deck data for undo/redo, not UI state
         partialize: (state) => ({ deck: state.deck }),
         limit: 50,
+        // Skip recording when deck didn't change (e.g. saveToDisk, selectElement)
+        equality: (pastState, currentState) => pastState.deck === currentState.deck,
+        // Debounce: batch rapid changes (drag, typing) into one undo checkpoint.
+        // Captures the state BEFORE the first change in a batch.
+        handleSet: (handleSetImpl) => {
+          let timeout: ReturnType<typeof setTimeout> | null = null;
+          let batchStartState: { deck: Deck | null } | null = null;
+          return (state) => {
+            if (batchStartState === null) {
+              batchStartState = state;
+            }
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              handleSetImpl(batchStartState!);
+              batchStartState = null;
+              timeout = null;
+            }, 500);
+          };
+        },
       },
     ),
   ),
