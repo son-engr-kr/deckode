@@ -4,6 +4,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { temporal } from "zundo";
 import type { Deck, Slide, SlideElement } from "@/types/deck";
 import { saveDeckToDisk } from "@/utils/api";
+import { nextElementId } from "@/utils/id";
 
 interface DeckState {
   deck: Deck | null;
@@ -23,8 +24,10 @@ interface DeckState {
   updateSlide: (slideId: string, patch: Partial<Slide>) => void;
   addSlide: (slide: Slide, afterIndex?: number) => void;
   deleteSlide: (slideId: string) => void;
+  moveSlide: (fromIndex: number, toIndex: number) => void;
   addElement: (slideId: string, element: SlideElement) => void;
   deleteElement: (slideId: string, elementId: string) => void;
+  duplicateElement: (slideId: string, elementId: string) => void;
 }
 
 export const useDeckStore = create<DeckState>()(
@@ -134,6 +137,25 @@ export const useDeckStore = create<DeckState>()(
             state.isDirty = true;
           }),
 
+        moveSlide: (fromIndex, toIndex) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slides = state.deck.slides;
+            assert(fromIndex >= 0 && fromIndex < slides.length, `fromIndex ${fromIndex} out of bounds`);
+            assert(toIndex >= 0 && toIndex < slides.length, `toIndex ${toIndex} out of bounds`);
+            const [moved] = slides.splice(fromIndex, 1);
+            slides.splice(toIndex, 0, moved!);
+            // Keep viewing the same slide that was moved
+            if (state.currentSlideIndex === fromIndex) {
+              state.currentSlideIndex = toIndex;
+            } else if (fromIndex < state.currentSlideIndex && toIndex >= state.currentSlideIndex) {
+              state.currentSlideIndex -= 1;
+            } else if (fromIndex > state.currentSlideIndex && toIndex <= state.currentSlideIndex) {
+              state.currentSlideIndex += 1;
+            }
+            state.isDirty = true;
+          }),
+
         addElement: (slideId, element) =>
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
@@ -154,6 +176,21 @@ export const useDeckStore = create<DeckState>()(
             if (state.selectedElementId === elementId) {
               state.selectedElementId = null;
             }
+            state.isDirty = true;
+          }),
+
+        duplicateElement: (slideId, elementId) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = state.deck.slides.find((s) => s.id === slideId);
+            assert(slide !== undefined, `Slide ${slideId} not found`);
+            const element = slide.elements.find((e) => e.id === elementId);
+            assert(element !== undefined, `Element ${elementId} not found in slide ${slideId}`);
+            const clone = JSON.parse(JSON.stringify(element)) as SlideElement;
+            clone.id = nextElementId();
+            clone.position = { x: element.position.x + 20, y: element.position.y + 20 };
+            slide.elements.push(clone);
+            state.selectedElementId = clone.id;
             state.isDirty = true;
           }),
       })),

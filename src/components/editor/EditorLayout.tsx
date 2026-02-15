@@ -52,6 +52,16 @@ export function EditorLayout() {
         useDeckStore.temporal.getState().redo();
         return;
       }
+      // Duplicate element: Ctrl+D
+      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+        e.preventDefault();
+        const { deck, currentSlideIndex, selectedElementId, duplicateElement } = useDeckStore.getState();
+        if (deck && selectedElementId) {
+          const slide = deck.slides[currentSlideIndex];
+          if (slide) duplicateElement(slide.id, selectedElementId);
+        }
+        return;
+      }
       // Delete selected element
       if (e.key === "Delete" || e.key === "Backspace") {
         const { deck, currentSlideIndex, selectedElementId, deleteElement } = useDeckStore.getState();

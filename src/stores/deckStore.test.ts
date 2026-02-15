@@ -280,6 +280,64 @@ describe("deckStore - isDirty tracking", () => {
   });
 });
 
+// ============================================================
+// duplicateElement
+// ============================================================
+
+describe("deckStore - duplicateElement", () => {
+  it("creates a copy with new id and offset position", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().duplicateElement("s0", "e0-0");
+
+    const elements = useDeckStore.getState().deck!.slides[0]!.elements;
+    expect(elements).toHaveLength(2);
+    const clone = elements[1]!;
+    expect(clone.id).not.toBe("e0-0");
+    expect(clone.position.x).toBe(120); // original 100 + 20 offset
+    expect(clone.position.y).toBe(120);
+  });
+
+  it("selects the duplicated element", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().duplicateElement("s0", "e0-0");
+
+    const elements = useDeckStore.getState().deck!.slides[0]!.elements;
+    expect(useDeckStore.getState().selectedElementId).toBe(elements[1]!.id);
+  });
+});
+
+// ============================================================
+// moveSlide
+// ============================================================
+
+describe("deckStore - moveSlide", () => {
+  it("reorders slides correctly", () => {
+    useDeckStore.getState().loadDeck(makeDeck(4));
+    useDeckStore.getState().moveSlide(0, 2);
+
+    const ids = useDeckStore.getState().deck!.slides.map((s) => s.id);
+    expect(ids).toEqual(["s1", "s2", "s0", "s3"]);
+  });
+
+  it("updates currentSlideIndex when the viewed slide is moved", () => {
+    useDeckStore.getState().loadDeck(makeDeck(4));
+    useDeckStore.getState().setCurrentSlide(0);
+
+    useDeckStore.getState().moveSlide(0, 3);
+    expect(useDeckStore.getState().currentSlideIndex).toBe(3);
+  });
+
+  it("adjusts currentSlideIndex when a slide moves past the current", () => {
+    useDeckStore.getState().loadDeck(makeDeck(4));
+    useDeckStore.getState().setCurrentSlide(2);
+
+    // Move slide 0 to index 3 (past current)
+    useDeckStore.getState().moveSlide(0, 3);
+    // Current was at 2, a slide before it moved away → index decrements
+    expect(useDeckStore.getState().currentSlideIndex).toBe(1);
+  });
+});
+
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }

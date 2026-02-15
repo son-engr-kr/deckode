@@ -1,4 +1,18 @@
 import { useRef, useEffect } from "react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useDeckStore } from "@/stores/deckStore";
 import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { nextSlideId } from "@/utils/id";
@@ -22,7 +36,13 @@ export function SlideList() {
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
   const addSlide = useDeckStore((s) => s.addSlide);
   const deleteSlide = useDeckStore((s) => s.deleteSlide);
+  const moveSlide = useDeckStore((s) => s.moveSlide);
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Require 5px movement before drag starts (so clicks still work)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+  );
 
   // Auto-scroll to current slide
   useEffect(() => {
@@ -47,37 +67,39 @@ export function SlideList() {
     if (index > 0) setCurrentSlide(index - 1);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const fromIndex = deck.slides.findIndex((s) => s.id === active.id);
+    const toIndex = deck.slides.findIndex((s) => s.id === over.id);
+    if (fromIndex !== -1 && toIndex !== -1) {
+      moveSlide(fromIndex, toIndex);
+    }
+  };
+
+  const slideIds = deck.slides.map((s) => s.id);
+
   return (
     <div ref={listRef} className="flex flex-col gap-1.5 p-2 overflow-y-auto">
-      {deck.slides.map((slide, index) => (
-        <div key={slide.id} className="relative group shrink-0">
-          <button
-            onClick={() => setCurrentSlide(index)}
-            className={`rounded border-2 transition-colors p-0.5 ${
-              index === currentSlideIndex
-                ? "border-blue-500"
-                : "border-zinc-700 hover:border-zinc-500"
-            }`}
-          >
-            <div className="rounded-sm overflow-hidden pointer-events-none">
-              <SlideRenderer slide={slide} scale={THUMB_SCALE} />
-            </div>
-            <span className="absolute bottom-0.5 right-1.5 text-[10px] text-zinc-500 font-mono">
-              {index + 1}
-            </span>
-          </button>
-
-          {deck.slides.length > 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); handleDeleteSlide(slide.id, index); }}
-              className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-red-600 text-white text-[9px] leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-              title="Delete slide"
-            >
-              ×
-            </button>
-          )}
-        </div>
-      ))}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={slideIds} strategy={verticalListSortingStrategy}>
+          {deck.slides.map((slide, index) => (
+            <SortableSlideItem
+              key={slide.id}
+              slide={slide}
+              index={index}
+              isCurrent={index === currentSlideIndex}
+              canDelete={deck.slides.length > 1}
+              onSelect={() => setCurrentSlide(index)}
+              onDelete={() => handleDeleteSlide(slide.id, index)}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       <button
         onClick={handleAddSlide}
@@ -87,6 +109,61 @@ export function SlideList() {
       >
         +
       </button>
+    </div>
+  );
+}
+
+function SortableSlideItem({
+  slide,
+  index,
+  isCurrent,
+  canDelete,
+  onSelect,
+  onDelete,
+}: {
+  slide: Slide;
+  index: number;
+  isCurrent: boolean;
+  canDelete: boolean;
+  onSelect: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: slide.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="relative group shrink-0">
+      <button
+        onClick={onSelect}
+        className={`rounded border-2 transition-colors p-0.5 ${
+          isCurrent
+            ? "border-blue-500"
+            : "border-zinc-700 hover:border-zinc-500"
+        }`}
+      >
+        <div className="rounded-sm overflow-hidden pointer-events-none">
+          <SlideRenderer slide={slide} scale={THUMB_SCALE} />
+        </div>
+        <span className="absolute bottom-0.5 right-1.5 text-[10px] text-zinc-500 font-mono">
+          {index + 1}
+        </span>
+      </button>
+
+      {canDelete && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-red-600 text-white text-[9px] leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          title="Delete slide"
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }
