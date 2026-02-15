@@ -203,8 +203,8 @@ export const useDeckStore = create<DeckState>()(
         // Captures the state BEFORE the first change in a batch.
         handleSet: (handleSetImpl) => {
           let timeout: ReturnType<typeof setTimeout> | null = null;
-          let batchStartState: { deck: Deck | null } | null = null;
-          return (state) => {
+          let batchStartState: Parameters<typeof handleSetImpl>[0] | null = null;
+          return (state: Parameters<typeof handleSetImpl>[0]) => {
             if (batchStartState === null) {
               batchStartState = state;
             }
