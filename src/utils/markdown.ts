@@ -1,16 +1,19 @@
 import type { ReactNode } from "react";
 import { createElement, Fragment } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 /**
  * Minimal Markdown-to-React renderer.
- * Supports: headings, bold, italic, inline code, lists, paragraphs.
- * No external dependency — intentionally simple for Phase 0.
+ * Supports: headings, bold, italic, inline code, lists, paragraphs,
+ * inline math ($...$), block math ($$...$$).
  */
 export function renderMarkdown(source: string): ReactNode {
   const lines = source.split("\n");
   const blocks: ReactNode[] = [];
   let listItems: string[] = [];
   let blockKey = 0;
+  let mathBlock: string[] | null = null;
 
   const flushList = () => {
     if (listItems.length === 0) return;
@@ -26,6 +29,31 @@ export function renderMarkdown(source: string): ReactNode {
 
   for (const line of lines) {
     const trimmed = line.trim();
+
+    // Block math: opening/closing $$
+    if (trimmed === "$$") {
+      if (mathBlock === null) {
+        flushList();
+        mathBlock = [];
+      } else {
+        const latex = mathBlock.join("\n");
+        const html = katex.renderToString(latex, { displayMode: true, throwOnError: false });
+        blocks.push(
+          createElement("div", {
+            key: blockKey++,
+            className: "my-2 text-center",
+            dangerouslySetInnerHTML: { __html: html },
+          }),
+        );
+        mathBlock = null;
+      }
+      continue;
+    }
+
+    if (mathBlock !== null) {
+      mathBlock.push(line);
+      continue;
+    }
 
     // List item
     if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
@@ -58,28 +86,23 @@ export function renderMarkdown(source: string): ReactNode {
 }
 
 function renderInline(text: string): ReactNode {
-  // Split by inline patterns: **bold**, *italic*, `code`, $math$
   const parts: ReactNode[] = [];
-  // Combined regex: bold(**), italic(*), inline code(`), math($)
+  // Combined regex: bold(**), italic(*), inline code(`), inline math($)
   const regex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(`(.+?)`)|(\$(.+?)\$)/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   let partKey = 0;
 
   while ((match = regex.exec(text)) !== null) {
-    // Push text before match
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
 
     if (match[2] !== undefined) {
-      // Bold
       parts.push(createElement("strong", { key: partKey++, className: "font-bold" }, match[2]));
     } else if (match[4] !== undefined) {
-      // Italic
       parts.push(createElement("em", { key: partKey++, className: "italic" }, match[4]));
     } else if (match[6] !== undefined) {
-      // Inline code
       parts.push(
         createElement(
           "code",
@@ -88,20 +111,19 @@ function renderInline(text: string): ReactNode {
         ),
       );
     } else if (match[8] !== undefined) {
-      // Math placeholder (KaTeX integration later)
+      const html = katex.renderToString(match[8], { displayMode: false, throwOnError: false });
       parts.push(
-        createElement(
-          "span",
-          { key: partKey++, className: "font-mono text-blue-300" },
-          match[8],
-        ),
+        createElement("span", {
+          key: partKey++,
+          className: "inline-block align-middle",
+          dangerouslySetInnerHTML: { __html: html },
+        }),
       );
     }
 
     lastIndex = match.index + match[0].length;
   }
 
-  // Push remaining text
   if (lastIndex < text.length) {
     parts.push(text.slice(lastIndex));
   }
