@@ -73,6 +73,41 @@ export function PropertyPanel() {
           />
         </div>
       )}
+
+      {/* Video properties */}
+      {element.type === "video" && (
+        <>
+          <div>
+            <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Video URL</div>
+            <input
+              type="text"
+              className="w-full bg-zinc-800 text-zinc-200 rounded px-2 py-1.5 text-xs font-mono border border-zinc-700 focus:border-blue-500 focus:outline-none"
+              value={element.src}
+              onChange={(e) => {
+                updateElement(slide.id, element.id, { src: e.target.value } as Partial<SlideElement>);
+              }}
+            />
+          </div>
+          <div>
+            <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Options</div>
+            <div className="space-y-1">
+              {(["autoplay", "loop", "muted", "controls"] as const).map((prop) => (
+                <label key={prop} className="flex items-center gap-2 text-xs text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={!!element[prop]}
+                    onChange={(e) => {
+                      updateElement(slide.id, element.id, { [prop]: e.target.checked } as Partial<SlideElement>);
+                    }}
+                    className="rounded border-zinc-600"
+                  />
+                  {prop}
+                </label>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

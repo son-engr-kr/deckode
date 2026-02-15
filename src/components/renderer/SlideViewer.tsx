@@ -87,7 +87,7 @@ export function SlideViewer() {
             exit={variant.exit}
             transition={{ duration }}
           >
-            <SlideRenderer slide={slide} scale={scale} />
+            <SlideRenderer slide={slide} scale={scale} animate />
           </motion.div>
         </AnimatePresence>
       </div>

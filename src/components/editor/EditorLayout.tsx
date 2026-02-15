@@ -240,7 +240,7 @@ function SlideViewerPresentation() {
   const variant = transitionVariants[transition.type] ?? transitionVariants.fade;
 
   return (
-    <div className="h-full w-full flex items-center justify-center bg-black cursor-none">
+    <div className="h-full w-full flex items-center justify-center bg-black cursor-default">
       <div>
         <AnimatePresence mode="wait">
           <motion.div
@@ -250,7 +250,7 @@ function SlideViewerPresentation() {
             exit={variant.exit}
             transition={{ duration: (transition.duration ?? 300) / 1000 }}
           >
-            <SlideRenderer slide={slide} scale={scale} />
+            <SlideRenderer slide={slide} scale={scale} animate />
           </motion.div>
         </AnimatePresence>
       </div>

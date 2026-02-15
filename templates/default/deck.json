@@ -230,6 +230,149 @@
           "style": { "fontSize": 16, "color": "#e2e8f0", "lineHeight": 1.4 }
         }
       ]
+    },
+    {
+      "id": "s6",
+      "background": { "color": "#0f172a" },
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "## Video Embedding",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "e2",
+          "type": "text",
+          "content": "YouTube, Vimeo, and native video files — all supported.",
+          "position": { "x": 60, "y": 85 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 18, "color": "#94a3b8" }
+        },
+        {
+          "id": "e3",
+          "type": "video",
+          "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          "position": { "x": 200, "y": 130 },
+          "size": { "w": 560, "h": 315 },
+          "controls": true,
+          "muted": true
+        },
+        {
+          "id": "e4",
+          "type": "code",
+          "language": "json",
+          "content": "{ \"type\": \"video\", \"src\": \"https://youtube.com/watch?v=...\",\n  \"controls\": true, \"muted\": true }",
+          "position": { "x": 200, "y": 460 },
+          "size": { "w": 560, "h": 60 },
+          "style": { "fontSize": 14, "borderRadius": 8 }
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "background": { "color": "#0f172a" },
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "## Per-Element Animations",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "e2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 60, "y": 120 },
+          "size": { "w": 260, "h": 140 },
+          "style": { "fill": "#3b82f6", "borderRadius": 16 }
+        },
+        {
+          "id": "e3",
+          "type": "text",
+          "content": "**Fade In**\n\nAppears on\nslide enter",
+          "position": { "x": 80, "y": 135 },
+          "size": { "w": 220, "h": 110 },
+          "style": { "fontSize": 18, "color": "#ffffff", "textAlign": "center", "verticalAlign": "middle" }
+        },
+        {
+          "id": "e4",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 350, "y": 120 },
+          "size": { "w": 260, "h": 140 },
+          "style": { "fill": "#8b5cf6", "borderRadius": 16 }
+        },
+        {
+          "id": "e5",
+          "type": "text",
+          "content": "**Slide In Right**\n\nEnters from\nthe right",
+          "position": { "x": 370, "y": 135 },
+          "size": { "w": 220, "h": 110 },
+          "style": { "fontSize": 18, "color": "#ffffff", "textAlign": "center", "verticalAlign": "middle" }
+        },
+        {
+          "id": "e6",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 640, "y": 120 },
+          "size": { "w": 260, "h": 140 },
+          "style": { "fill": "#ec4899", "borderRadius": 16 }
+        },
+        {
+          "id": "e7",
+          "type": "text",
+          "content": "**Scale In**\n\nZooms in\nwith delay",
+          "position": { "x": 660, "y": 135 },
+          "size": { "w": 220, "h": 110 },
+          "style": { "fontSize": 18, "color": "#ffffff", "textAlign": "center", "verticalAlign": "middle" }
+        },
+        {
+          "id": "e8",
+          "type": "text",
+          "content": "This text uses the **typewriter** effect with a 1-second delay.",
+          "position": { "x": 60, "y": 310 },
+          "size": { "w": 840, "h": 40 },
+          "style": { "fontSize": 22, "color": "#fbbf24" }
+        },
+        {
+          "id": "e9",
+          "type": "text",
+          "content": "Enter **presentation mode** (F5) to see animations play.\nIn the editor, elements render statically.",
+          "position": { "x": 60, "y": 400 },
+          "size": { "w": 840, "h": 60 },
+          "style": { "fontSize": 18, "color": "#64748b", "lineHeight": 1.6 }
+        },
+        {
+          "id": "e10",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 60, "y": 470 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fill": "#1e293b", "borderRadius": 8 }
+        },
+        {
+          "id": "e11",
+          "type": "text",
+          "content": "`animations: [{ target, trigger, effect, delay?, duration? }]`",
+          "position": { "x": 80, "y": 478 },
+          "size": { "w": 800, "h": 34 },
+          "style": { "fontSize": 16, "color": "#94a3b8", "verticalAlign": "middle" }
+        }
+      ],
+      "animations": [
+        { "target": "e2", "trigger": "onEnter", "effect": "fadeIn", "duration": 600 },
+        { "target": "e3", "trigger": "onEnter", "effect": "fadeIn", "duration": 600 },
+        { "target": "e4", "trigger": "onEnter", "effect": "slideInRight", "duration": 500, "delay": 200 },
+        { "target": "e5", "trigger": "onEnter", "effect": "slideInRight", "duration": 500, "delay": 200 },
+        { "target": "e6", "trigger": "onEnter", "effect": "scaleIn", "duration": 500, "delay": 400 },
+        { "target": "e7", "trigger": "onEnter", "effect": "scaleIn", "duration": 500, "delay": 400 },
+        { "target": "e8", "trigger": "onEnter", "effect": "typewriter", "duration": 1500, "delay": 1000 }
+      ]
     }
   ]
 }

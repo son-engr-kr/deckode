@@ -49,6 +49,18 @@ const ELEMENT_PRESETS: { label: string; create: () => SlideElement }[] = [
       style: { objectFit: "contain" as const },
     }),
   },
+  {
+    label: "Video",
+    create: () => ({
+      id: nextElementId(),
+      type: "video" as const,
+      src: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      position: { x: 200, y: 110 },
+      size: { w: 560, h: 315 },
+      controls: true,
+      muted: true,
+    }),
+  },
 ];
 
 export function ElementPalette() {

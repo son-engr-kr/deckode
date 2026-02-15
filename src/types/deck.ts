@@ -62,6 +62,11 @@ export interface ShapeStyle {
   opacity?: number;
 }
 
+export interface VideoStyle {
+  objectFit?: "contain" | "cover" | "fill";
+  borderRadius?: number;
+}
+
 // ----- Elements -----
 
 interface BaseElement {
@@ -96,7 +101,17 @@ export interface ShapeElement extends BaseElement {
   style?: ShapeStyle;
 }
 
-export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement;
+export interface VideoElement extends BaseElement {
+  type: "video";
+  src: string;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  controls?: boolean;
+  style?: VideoStyle;
+}
+
+export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement;
 
 // ----- Animations -----
 

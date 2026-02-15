@@ -78,7 +78,7 @@
       "required": ["id", "type", "position", "size"],
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["text", "image", "code", "shape"] },
+        "type": { "type": "string", "enum": ["text", "image", "code", "shape", "video"] },
         "position": { "$ref": "#/$defs/Position" },
         "size": { "$ref": "#/$defs/Size" },
         "rotation": { "type": "number" },
@@ -86,6 +86,10 @@
         "src": { "type": "string" },
         "language": { "type": "string" },
         "shape": { "type": "string", "enum": ["rectangle", "ellipse", "line", "arrow"] },
+        "autoplay": { "type": "boolean" },
+        "loop": { "type": "boolean" },
+        "muted": { "type": "boolean" },
+        "controls": { "type": "boolean" },
         "style": { "type": "object" }
       },
       "allOf": [
@@ -104,6 +108,10 @@
         {
           "if": { "properties": { "type": { "const": "shape" } } },
           "then": { "required": ["shape"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "video" } } },
+          "then": { "required": ["src"] }
         }
       ]
     },
