@@ -1,0 +1,181 @@
+{
+  "deckode": "0.1.0",
+  "meta": {
+    "title": "Introduction to Deckode",
+    "author": "Son",
+    "aspectRatio": "16:9",
+    "theme": "default"
+  },
+  "slides": [
+    {
+      "id": "s1",
+      "background": { "color": "#0f172a" },
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "# Deckode\n\nSlides as Code, Powered by AI",
+          "position": { "x": 180, "y": 160 },
+          "size": { "w": 600, "h": 220 },
+          "style": { "fontSize": 48, "color": "#f8fafc", "textAlign": "center", "verticalAlign": "middle" }
+        },
+        {
+          "id": "e2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 330, "y": 400 },
+          "size": { "w": 300, "h": 4 },
+          "style": { "fill": "#3b82f6" }
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "background": { "color": "#0f172a" },
+      "notes": "Explain the problem with existing tools",
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "## The Problem",
+          "position": { "x": 60, "y": 40 },
+          "size": { "w": 840, "h": 60 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "e2",
+          "type": "text",
+          "content": "- **Gamma/Tome**: Cloud-locked, no code access\n- **Slidev/Marp**: Code-only, no visual editor\n- **PowerPoint**: No AI, no web-native features",
+          "position": { "x": 60, "y": 130 },
+          "size": { "w": 480, "h": 280 },
+          "style": { "fontSize": 22, "color": "#cbd5e1", "lineHeight": 1.8 }
+        },
+        {
+          "id": "e3",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 580, "y": 130 },
+          "size": { "w": 340, "h": 280 },
+          "style": { "fill": "#1e293b", "borderRadius": 12 }
+        },
+        {
+          "id": "e4",
+          "type": "text",
+          "content": "### Deckode\n\nJSON + Visual Editor\n+ AI Agent\n= Full Control",
+          "position": { "x": 600, "y": 160 },
+          "size": { "w": 300, "h": 220 },
+          "style": { "fontSize": 20, "color": "#60a5fa", "textAlign": "center", "verticalAlign": "middle" }
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "background": { "color": "#0f172a" },
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "## How It Works",
+          "position": { "x": 60, "y": 40 },
+          "size": { "w": 840, "h": 60 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "e2",
+          "type": "code",
+          "language": "json",
+          "content": "{\n  \"type\": \"text\",\n  \"content\": \"# Hello World\",\n  \"position\": { \"x\": 120, \"y\": 200 },\n  \"size\": { \"w\": 720, \"h\": 120 }\n}",
+          "position": { "x": 60, "y": 130 },
+          "size": { "w": 840, "h": 180 },
+          "style": { "fontSize": 18, "borderRadius": 12 }
+        },
+        {
+          "id": "e3",
+          "type": "text",
+          "content": "Every visual change maps to a JSON field.\nDrag an element → `position` updates.\nResize → `size` updates.\nAI generates this JSON directly.",
+          "position": { "x": 60, "y": 350 },
+          "size": { "w": 840, "h": 150 },
+          "style": { "fontSize": 20, "color": "#94a3b8", "lineHeight": 1.8 }
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "background": { "color": "#0f172a" },
+      "elements": [
+        {
+          "id": "e1",
+          "type": "text",
+          "content": "## Tech Stack",
+          "position": { "x": 60, "y": 40 },
+          "size": { "w": 840, "h": 60 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "e2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 60, "y": 120 },
+          "size": { "w": 260, "h": 160 },
+          "style": { "fill": "#1e293b", "borderRadius": 12 }
+        },
+        {
+          "id": "e3",
+          "type": "text",
+          "content": "**Frontend**\n\nReact 19\nTailwind CSS v4\nFramer Motion",
+          "position": { "x": 80, "y": 135 },
+          "size": { "w": 220, "h": 130 },
+          "style": { "fontSize": 16, "color": "#e2e8f0", "lineHeight": 1.6 }
+        },
+        {
+          "id": "e4",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 350, "y": 120 },
+          "size": { "w": 260, "h": 160 },
+          "style": { "fill": "#1e293b", "borderRadius": 12 }
+        },
+        {
+          "id": "e5",
+          "type": "text",
+          "content": "**Editor**\n\nMonaco Editor\n@dnd-kit\nZustand + Immer",
+          "position": { "x": 370, "y": 135 },
+          "size": { "w": 220, "h": 130 },
+          "style": { "fontSize": 16, "color": "#e2e8f0", "lineHeight": 1.6 }
+        },
+        {
+          "id": "e6",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 640, "y": 120 },
+          "size": { "w": 260, "h": 160 },
+          "style": { "fill": "#1e293b", "borderRadius": 12 }
+        },
+        {
+          "id": "e7",
+          "type": "text",
+          "content": "**Rendering**\n\nKaTeX (math)\nShiki (code)\nJSON scene graph",
+          "position": { "x": 660, "y": 135 },
+          "size": { "w": 220, "h": 130 },
+          "style": { "fontSize": 16, "color": "#e2e8f0", "lineHeight": 1.6 }
+        },
+        {
+          "id": "e8",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": { "x": 380, "y": 340 },
+          "size": { "w": 200, "h": 140 },
+          "style": { "fill": "transparent", "stroke": "#3b82f6", "strokeWidth": 2 }
+        },
+        {
+          "id": "e9",
+          "type": "text",
+          "content": "**Local-First**\nNo cloud required",
+          "position": { "x": 400, "y": 380 },
+          "size": { "w": 160, "h": 60 },
+          "style": { "fontSize": 16, "color": "#60a5fa", "textAlign": "center" }
+        }
+      ]
+    }
+  ]
+}

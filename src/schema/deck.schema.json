@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deckode.dev/schema/deck.json",
+  "title": "Deckode Deck",
+  "description": "JSON schema for Deckode slide decks",
+  "type": "object",
+  "required": ["deckode", "meta", "slides"],
+  "properties": {
+    "deckode": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["title", "aspectRatio"],
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "aspectRatio": { "type": "string", "enum": ["16:9", "4:3"] },
+        "theme": { "type": "string" }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Slide" }
+    }
+  },
+  "$defs": {
+    "Position": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
+      }
+    },
+    "Size": {
+      "type": "object",
+      "required": ["w", "h"],
+      "properties": {
+        "w": { "type": "number", "minimum": 0 },
+        "h": { "type": "number", "minimum": 0 }
+      }
+    },
+    "Slide": {
+      "type": "object",
+      "required": ["id", "elements"],
+      "properties": {
+        "id": { "type": "string" },
+        "layout": { "type": "string" },
+        "background": {
+          "type": "object",
+          "properties": {
+            "color": { "type": "string" },
+            "image": { "type": "string" }
+          }
+        },
+        "transition": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["fade", "slide", "none"] },
+            "duration": { "type": "number", "minimum": 0 }
+          }
+        },
+        "notes": { "type": "string" },
+        "elements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Element" }
+        },
+        "animations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Animation" }
+        }
+      }
+    },
+    "Element": {
+      "type": "object",
+      "required": ["id", "type", "position", "size"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "code", "shape"] },
+        "position": { "$ref": "#/$defs/Position" },
+        "size": { "$ref": "#/$defs/Size" },
+        "rotation": { "type": "number" },
+        "content": { "type": "string" },
+        "src": { "type": "string" },
+        "language": { "type": "string" },
+        "shape": { "type": "string", "enum": ["rectangle", "ellipse", "line", "arrow"] },
+        "style": { "type": "object" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "text" } } },
+          "then": { "required": ["content"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "image" } } },
+          "then": { "required": ["src"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "code" } } },
+          "then": { "required": ["language", "content"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "shape" } } },
+          "then": { "required": ["shape"] }
+        }
+      ]
+    },
+    "Animation": {
+      "type": "object",
+      "required": ["target", "trigger", "effect"],
+      "properties": {
+        "target": { "type": "string" },
+        "trigger": { "type": "string", "enum": ["onEnter", "onClick"] },
+        "effect": {
+          "type": "string",
+          "enum": [
+            "fadeIn", "fadeOut",
+            "slideInLeft", "slideInRight", "slideInUp", "slideInDown",
+            "scaleIn", "scaleOut", "typewriter"
+          ]
+        },
+        "delay": { "type": "number", "minimum": 0 },
+        "duration": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}
