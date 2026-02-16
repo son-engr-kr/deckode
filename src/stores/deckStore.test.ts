@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useDeckStore } from "./deckStore";
-import type { Deck, Slide, SlideElement } from "@/types/deck";
+import type { Animation, Deck, Slide, SlideElement } from "@/types/deck";
 
 // -- Test fixtures --
 
@@ -370,6 +370,140 @@ describe("deckStore - moveSlide", () => {
     useDeckStore.getState().moveSlide(0, 3);
     // Current was at 2, a slide before it moved away → index decrements
     expect(useDeckStore.getState().currentSlideIndex).toBe(1);
+  });
+});
+
+// ============================================================
+// Animation CRUD
+// ============================================================
+
+describe("deckStore - animation CRUD", () => {
+  it("addAnimation creates animations array if undefined and pushes", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    const slide = useDeckStore.getState().deck!.slides[0]!;
+    expect(slide.animations).toBeUndefined();
+
+    const anim: Animation = { target: "e0-0", trigger: "onEnter", effect: "fadeIn", duration: 500 };
+    useDeckStore.getState().addAnimation("s0", anim);
+
+    const updated = useDeckStore.getState().deck!.slides[0]!;
+    expect(updated.animations).toHaveLength(1);
+    expect(updated.animations![0]!.effect).toBe("fadeIn");
+    expect(useDeckStore.getState().isDirty).toBe(true);
+  });
+
+  it("addAnimation appends to existing animations", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "scaleIn" });
+
+    expect(useDeckStore.getState().deck!.slides[0]!.animations).toHaveLength(2);
+  });
+
+  it("updateAnimation patches the animation at given index", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn", duration: 500 });
+    useDeckStore.getState().updateAnimation("s0", 0, { effect: "slideInLeft", delay: 200 });
+
+    const anim = useDeckStore.getState().deck!.slides[0]!.animations![0]!;
+    expect(anim.effect).toBe("slideInLeft");
+    expect(anim.delay).toBe(200);
+    expect(anim.trigger).toBe("onEnter"); // unchanged
+  });
+
+  it("updateAnimation throws on out-of-bounds index", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    expect(() => useDeckStore.getState().updateAnimation("s0", 0, { effect: "fadeOut" })).toThrow();
+  });
+
+  it("deleteAnimation removes the animation at given index", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "scaleIn" });
+
+    useDeckStore.getState().deleteAnimation("s0", 0);
+
+    const anims = useDeckStore.getState().deck!.slides[0]!.animations!;
+    expect(anims).toHaveLength(1);
+    expect(anims[0]!.effect).toBe("scaleIn");
+  });
+
+  it("deleteAnimation throws on out-of-bounds index", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    expect(() => useDeckStore.getState().deleteAnimation("s0", 0)).toThrow();
+  });
+});
+
+// ============================================================
+// moveAnimation
+// ============================================================
+
+describe("deckStore - moveAnimation", () => {
+  it("moves animation from one position to another", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "scaleIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "slideInLeft" });
+
+    useDeckStore.getState().moveAnimation("s0", 0, 2);
+
+    const anims = useDeckStore.getState().deck!.slides[0]!.animations!;
+    expect(anims[0]!.effect).toBe("scaleIn");
+    expect(anims[1]!.effect).toBe("slideInLeft");
+    expect(anims[2]!.effect).toBe("fadeIn");
+  });
+
+  it("sets isDirty to true", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "scaleIn" });
+
+    // Reset isDirty
+    useDeckStore.setState({ isDirty: false });
+
+    useDeckStore.getState().moveAnimation("s0", 0, 1);
+    expect(useDeckStore.getState().isDirty).toBe(true);
+  });
+
+  it("throws on out-of-bounds indices", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+
+    expect(() => useDeckStore.getState().moveAnimation("s0", -1, 0)).toThrow();
+    expect(() => useDeckStore.getState().moveAnimation("s0", 0, 5)).toThrow();
+  });
+
+  it("throws when slide has no animations", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    expect(() => useDeckStore.getState().moveAnimation("s0", 0, 0)).toThrow();
+  });
+});
+
+// ============================================================
+// deleteElement cleans up animations
+// ============================================================
+
+describe("deckStore - deleteElement cleans up animations", () => {
+  it("removes animations targeting the deleted element", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    // Add a second element so the slide isn't empty after deletion
+    useDeckStore.getState().addElement("s0", makeElement("other"));
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "other", trigger: "onEnter", effect: "scaleIn" });
+    useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "slideInLeft" });
+
+    useDeckStore.getState().deleteElement("s0", "e0-0");
+
+    const anims = useDeckStore.getState().deck!.slides[0]!.animations!;
+    expect(anims).toHaveLength(1);
+    expect(anims[0]!.target).toBe("other");
+  });
+
+  it("handles deletion when no animations exist", () => {
+    useDeckStore.getState().loadDeck(makeDeck(1));
+    // No animations on this slide — should not throw
+    useDeckStore.getState().deleteElement("s0", "e0-0");
+    expect(useDeckStore.getState().deck!.slides[0]!.elements).toHaveLength(0);
   });
 });
 

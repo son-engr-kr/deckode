@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import type { SlideElement, Animation } from "@/types/deck";
 import { getAnimationConfig } from "@/utils/animationEffects";
@@ -11,10 +10,12 @@ import { VideoElementRenderer } from "./elements/VideoElement";
 interface Props {
   element: SlideElement;
   animations?: Animation[];
+  /** Set of animations that should be in their "animate" state (controlled by parent step logic) */
+  activeAnimations?: Set<Animation>;
   thumbnail?: boolean;
 }
 
-export function ElementRenderer({ element, animations, thumbnail }: Props) {
+export function ElementRenderer({ element, animations, activeAnimations, thumbnail }: Props) {
   const transform = element.rotation ? `rotate(${element.rotation}deg)` : undefined;
 
   const positionStyle: React.CSSProperties = {
@@ -36,12 +37,9 @@ export function ElementRenderer({ element, animations, thumbnail }: Props) {
     );
   }
 
-  const onEnter = animations.filter((a) => a.trigger === "onEnter");
-  const onClick = animations.filter((a) => a.trigger === "onClick");
-
   return (
     <div data-element-id={element.id} className="absolute" style={positionStyle}>
-      <AnimatedWrapper onEnter={onEnter} onClick={onClick}>
+      <AnimatedWrapper animations={animations} activeAnimations={activeAnimations}>
         {child}
       </AnimatedWrapper>
     </div>
@@ -49,37 +47,28 @@ export function ElementRenderer({ element, animations, thumbnail }: Props) {
 }
 
 function AnimatedWrapper({
-  onEnter,
-  onClick,
+  animations,
+  activeAnimations,
   children,
 }: {
-  onEnter: Animation[];
-  onClick: Animation[];
+  animations: Animation[];
+  activeAnimations?: Set<Animation>;
   children: React.ReactNode;
 }) {
-  const [clicked, setClicked] = useState(false);
-
-  // Merge all onEnter animations into initial/animate
   let initial: Record<string, string | number> = {};
   let animate: Record<string, string | number> = {};
   let transition: Record<string, number> = {};
 
-  for (const anim of onEnter) {
+  for (const anim of animations) {
     const config = getAnimationConfig(anim.effect);
     initial = { ...initial, ...config.initial };
-    animate = { ...animate, ...config.animate };
-    transition = {
-      duration: (anim.duration ?? 500) / 1000,
-      delay: (anim.delay ?? 0) / 1000,
-      ...transition,
-    };
-  }
 
-  // onClick: apply animate state only after click
-  for (const anim of onClick) {
-    const config = getAnimationConfig(anim.effect);
-    initial = { ...initial, ...config.initial };
-    if (clicked) {
+    // onEnter: always activate. onClick: only if in activeAnimations set.
+    const isActive =
+      anim.trigger === "onEnter" ||
+      (activeAnimations !== undefined && activeAnimations.has(anim));
+
+    if (isActive) {
       animate = { ...animate, ...config.animate };
       transition = {
         duration: (anim.duration ?? 500) / 1000,
@@ -89,14 +78,11 @@ function AnimatedWrapper({
     }
   }
 
-  const handleClick = onClick.length > 0 ? () => setClicked(true) : undefined;
-
   return (
     <motion.div
       initial={initial}
       animate={animate}
       transition={transition}
-      onClick={handleClick}
       style={{ width: "100%", height: "100%" }}
     >
       {children}

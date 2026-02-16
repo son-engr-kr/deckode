@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { SlideList } from "./SlideList";
 import { EditorCanvas } from "./EditorCanvas";
 import { PropertyPanel } from "./PropertyPanel";
 import { CodePanel } from "./CodePanel";
 import { ElementPalette } from "./ElementPalette";
+import { SlideAnimationList } from "./SlideAnimationList";
 
 type BottomPanel = "code" | null;
 
@@ -164,9 +165,20 @@ export function EditorLayout() {
           )}
         </div>
 
-        {/* Right: property panel */}
-        <div className="w-[240px] border-l border-zinc-800 overflow-y-auto shrink-0">
-          <PropertyPanel />
+        {/* Right: properties (top) + animations (bottom) */}
+        <div className="w-[240px] border-l border-zinc-800 flex flex-col shrink-0">
+          {/* Properties — top half */}
+          <div className="flex-1 overflow-y-auto border-b border-zinc-800">
+            <PropertyPanel />
+          </div>
+          {/* Animations — bottom half */}
+          <div className="flex-1 overflow-y-auto">
+            <SlideAnimationList
+              onSelectElement={(elementId) => {
+                useDeckStore.getState().selectElement(elementId);
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -174,52 +186,11 @@ export function EditorLayout() {
 }
 
 // Inline presentation mode component
-function PresentationMode({ onExit }: { onExit: () => void }) {
-  const deck = useDeckStore((s) => s.deck);
-  const nextSlide = useDeckStore((s) => s.nextSlide);
-  const prevSlide = useDeckStore((s) => s.prevSlide);
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onExit();
-      } else if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prevSlide();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-
-    // Enter fullscreen
-    document.documentElement.requestFullscreen?.();
-
-    return () => {
-      window.removeEventListener("keydown", handleKey);
-      if (document.fullscreenElement) {
-        document.exitFullscreen?.();
-      }
-    };
-  }, [onExit, nextSlide, prevSlide]);
-
-  if (!deck) return null;
-
-  // Import SlideViewer lazily to avoid circular issues
-  // Just render inline for simplicity
-  return (
-    <div className="h-screen w-screen bg-black">
-      <SlideViewerPresentation />
-    </div>
-  );
-}
-
-// Simplified SlideViewer for presentation mode (no editor chrome)
 import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import { AnimatePresence, motion } from "framer-motion";
 import type { SlideTransition } from "@/types/deck";
+import { computeOnClickSteps } from "@/utils/animationSteps";
 
 const transitionVariants = {
   fade: { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } },
@@ -227,7 +198,82 @@ const transitionVariants = {
   none: { initial: {}, animate: {}, exit: {} },
 };
 
-function SlideViewerPresentation() {
+function PresentationMode({ onExit }: { onExit: () => void }) {
+  const deck = useDeckStore((s) => s.deck);
+  const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const nextSlide = useDeckStore((s) => s.nextSlide);
+  const prevSlide = useDeckStore((s) => s.prevSlide);
+  const [activeStep, setActiveStep] = useState(0);
+
+  const slide = deck?.slides[currentSlideIndex];
+  const steps = useMemo(
+    () => computeOnClickSteps(slide?.animations ?? []),
+    [slide?.animations],
+  );
+
+  // Reset activeStep when slide changes
+  useEffect(() => {
+    setActiveStep(0);
+  }, [currentSlideIndex]);
+
+  const advance = useCallback(() => {
+    if (activeStep < steps.length) {
+      setActiveStep((prev) => prev + 1);
+    } else {
+      nextSlide();
+    }
+  }, [activeStep, steps.length, nextSlide]);
+
+  // Use ref so the keydown handler always calls the latest advance without re-registering
+  const advanceRef = useRef(advance);
+  advanceRef.current = advance;
+
+  // Fullscreen: enter on mount, exit on unmount — runs once only
+  useEffect(() => {
+    document.documentElement.requestFullscreen?.();
+    return () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen?.();
+      }
+    };
+  }, []);
+
+  // Keyboard handler: stable deps via ref
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onExit();
+      } else if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        advanceRef.current();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onExit, prevSlide]);
+
+  if (!deck) return null;
+
+  return (
+    <div className="h-screen w-screen bg-black">
+      <SlideViewerPresentation activeStep={activeStep} steps={steps} onAdvance={advance} />
+    </div>
+  );
+}
+
+// Simplified SlideViewer for presentation mode (no editor chrome)
+function SlideViewerPresentation({
+  activeStep,
+  steps,
+  onAdvance,
+}: {
+  activeStep: number;
+  steps: import("@/types/deck").Animation[][];
+  onAdvance: () => void;
+}) {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const [scale, setScale] = useState(1);
@@ -259,7 +305,14 @@ function SlideViewerPresentation() {
             exit={variant.exit}
             transition={{ duration: (transition.duration ?? 300) / 1000 }}
           >
-            <SlideRenderer slide={slide} scale={scale} animate />
+            <SlideRenderer
+              slide={slide}
+              scale={scale}
+              animate
+              activeStep={activeStep}
+              onClickSteps={steps}
+              onAdvance={onAdvance}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

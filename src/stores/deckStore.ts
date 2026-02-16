@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { subscribeWithSelector } from "zustand/middleware";
 import { temporal } from "zundo";
-import type { Deck, Slide, SlideElement } from "@/types/deck";
+import type { Animation, Deck, Slide, SlideElement } from "@/types/deck";
 import { saveDeckToDisk } from "@/utils/api";
 import { nextElementId } from "@/utils/id";
 
@@ -31,6 +31,10 @@ interface DeckState {
   addElement: (slideId: string, element: SlideElement) => void;
   deleteElement: (slideId: string, elementId: string) => void;
   duplicateElement: (slideId: string, elementId: string) => void;
+  addAnimation: (slideId: string, animation: Animation) => void;
+  updateAnimation: (slideId: string, index: number, patch: Partial<Animation>) => void;
+  deleteAnimation: (slideId: string, index: number) => void;
+  moveAnimation: (slideId: string, fromIndex: number, toIndex: number) => void;
 }
 
 export const useDeckStore = create<DeckState>()(
@@ -195,6 +199,9 @@ export const useDeckStore = create<DeckState>()(
             const idx = slide.elements.findIndex((e) => e.id === elementId);
             assert(idx !== -1, `Element ${elementId} not found in slide ${slideId}`);
             slide.elements.splice(idx, 1);
+            if (slide.animations) {
+              slide.animations = slide.animations.filter(a => a.target !== elementId);
+            }
             if (state.selectedElementId === elementId) {
               state.selectedElementId = null;
             }
@@ -213,6 +220,50 @@ export const useDeckStore = create<DeckState>()(
             clone.position = { x: element.position.x + 20, y: element.position.y + 20 };
             slide.elements.push(clone);
             state.selectedElementId = clone.id;
+            state.isDirty = true;
+          }),
+
+        addAnimation: (slideId, animation) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = state.deck.slides.find((s) => s.id === slideId);
+            assert(slide !== undefined, `Slide ${slideId} not found`);
+            if (!slide.animations) slide.animations = [];
+            slide.animations.push(animation);
+            state.isDirty = true;
+          }),
+
+        updateAnimation: (slideId, index, patch) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = state.deck.slides.find((s) => s.id === slideId);
+            assert(slide !== undefined, `Slide ${slideId} not found`);
+            assert(slide.animations !== undefined && index >= 0 && index < slide.animations.length, `Animation index ${index} out of bounds`);
+            Object.assign(slide.animations[index]!, patch);
+            state.isDirty = true;
+          }),
+
+        deleteAnimation: (slideId, index) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = state.deck.slides.find((s) => s.id === slideId);
+            assert(slide !== undefined, `Slide ${slideId} not found`);
+            assert(slide.animations !== undefined && index >= 0 && index < slide.animations.length, `Animation index ${index} out of bounds`);
+            slide.animations.splice(index, 1);
+            state.isDirty = true;
+          }),
+
+        moveAnimation: (slideId, fromIndex, toIndex) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = state.deck.slides.find((s) => s.id === slideId);
+            assert(slide !== undefined, `Slide ${slideId} not found`);
+            assert(slide.animations !== undefined, `Slide ${slideId} has no animations`);
+            const anims = slide.animations;
+            assert(fromIndex >= 0 && fromIndex < anims.length, `fromIndex ${fromIndex} out of bounds`);
+            assert(toIndex >= 0 && toIndex < anims.length, `toIndex ${toIndex} out of bounds`);
+            const [moved] = anims.splice(fromIndex, 1);
+            anims.splice(toIndex, 0, moved!);
             state.isDirty = true;
           }),
       })),

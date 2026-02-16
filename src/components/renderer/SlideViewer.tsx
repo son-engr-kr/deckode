@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDeckStore } from "@/stores/deckStore";
 import { SlideRenderer } from "./SlideRenderer";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { SlideTransition } from "@/types/deck";
+import { computeOnClickSteps } from "@/utils/animationSteps";
 
 const transitionVariants = {
   fade: {
@@ -31,6 +32,26 @@ export function SlideViewer() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
+
+  const slide = deck?.slides[currentSlideIndex];
+  const steps = useMemo(
+    () => computeOnClickSteps(slide?.animations ?? []),
+    [slide?.animations],
+  );
+
+  // Reset activeStep when slide changes
+  useEffect(() => {
+    setActiveStep(0);
+  }, [currentSlideIndex]);
+
+  const advance = useCallback(() => {
+    if (activeStep < steps.length) {
+      setActiveStep((prev) => prev + 1);
+    } else {
+      nextSlide();
+    }
+  }, [activeStep, steps.length, nextSlide]);
 
   const updateScale = useCallback(() => {
     const container = containerRef.current;
@@ -51,7 +72,7 @@ export function SlideViewer() {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
-        nextSlide();
+        advance();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         prevSlide();
@@ -59,7 +80,7 @@ export function SlideViewer() {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [nextSlide, prevSlide]);
+  }, [advance, prevSlide]);
 
   if (!deck) {
     return (
@@ -69,7 +90,6 @@ export function SlideViewer() {
     );
   }
 
-  const slide = deck.slides[currentSlideIndex];
   assert(slide !== undefined, `Slide at index ${currentSlideIndex} not found`);
 
   const transition: SlideTransition = slide.transition ?? { type: "fade", duration: 300 };
@@ -87,7 +107,14 @@ export function SlideViewer() {
             exit={variant.exit}
             transition={{ duration }}
           >
-            <SlideRenderer slide={slide} scale={scale} animate />
+            <SlideRenderer
+              slide={slide}
+              scale={scale}
+              animate
+              activeStep={activeStep}
+              onClickSteps={steps}
+              onAdvance={advance}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

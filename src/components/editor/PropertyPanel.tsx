@@ -1,5 +1,6 @@
 import { useDeckStore } from "@/stores/deckStore";
 import type { SlideElement } from "@/types/deck";
+import { AnimationEditor } from "./AnimationEditor";
 
 export function PropertyPanel() {
   const deck = useDeckStore((s) => s.deck);
@@ -108,6 +109,13 @@ export function PropertyPanel() {
           </div>
         </>
       )}
+
+      {/* Animations */}
+      <AnimationEditor
+        slideId={slide.id}
+        elementId={element.id}
+        animations={slide.animations ?? []}
+      />
     </div>
   );
 }

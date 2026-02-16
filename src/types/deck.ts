@@ -134,6 +134,7 @@ export interface Animation {
   effect: AnimationEffect;
   delay?: number;
   duration?: number;
+  order?: number;
 }
 
 // ----- Slide -----

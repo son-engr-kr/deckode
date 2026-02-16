@@ -8,9 +8,15 @@ interface Props {
   scale: number;
   animate?: boolean;
   thumbnail?: boolean;
+  /** Current onClick step (0 = no onClick steps triggered yet) */
+  activeStep?: number;
+  /** Grouped onClick steps from computeOnClickSteps */
+  onClickSteps?: Animation[][];
+  /** Called when clicking the slide area — parent uses this to advance step */
+  onAdvance?: () => void;
 }
 
-export function SlideRenderer({ slide, scale, animate, thumbnail }: Props) {
+export function SlideRenderer({ slide, scale, animate, thumbnail, activeStep, onClickSteps, onAdvance }: Props) {
   const bg = slide.background;
 
   // Build element→animations lookup only when animating
@@ -28,6 +34,18 @@ export function SlideRenderer({ slide, scale, animate, thumbnail }: Props) {
     return map;
   }, [animate, slide.animations]);
 
+  // Build the set of active animations: all onEnter + onClick steps whose index < activeStep
+  const activeAnimations = useMemo(() => {
+    if (!animate || activeStep === undefined || !onClickSteps) return undefined;
+    const set = new Set<Animation>();
+    for (let i = 0; i < activeStep && i < onClickSteps.length; i++) {
+      for (const anim of onClickSteps[i]!) {
+        set.add(anim);
+      }
+    }
+    return set;
+  }, [animate, activeStep, onClickSteps]);
+
   return (
     <div
       style={{
@@ -38,6 +56,7 @@ export function SlideRenderer({ slide, scale, animate, thumbnail }: Props) {
       }}
     >
       <div
+        onClick={onAdvance}
         style={{
           width: CANVAS_WIDTH,
           height: CANVAS_HEIGHT,
@@ -50,6 +69,7 @@ export function SlideRenderer({ slide, scale, animate, thumbnail }: Props) {
           position: "absolute",
           top: 0,
           left: 0,
+          cursor: onAdvance ? "default" : undefined,
         }}
       >
         {slide.elements.map((element) => (
@@ -57,6 +77,7 @@ export function SlideRenderer({ slide, scale, animate, thumbnail }: Props) {
             key={element.id}
             element={element}
             animations={animationMap?.get(element.id)}
+            activeAnimations={activeAnimations}
             thumbnail={thumbnail}
           />
         ))}
