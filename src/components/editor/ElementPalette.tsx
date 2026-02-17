@@ -61,6 +61,16 @@ const ELEMENT_PRESETS: { label: string; create: () => SlideElement }[] = [
       muted: true,
     }),
   },
+  {
+    label: "TikZ",
+    create: () => ({
+      id: nextElementId(),
+      type: "tikz" as const,
+      content: "\\begin{tikzpicture}\n  \\draw[thick, blue] (0,0) -- (3,2) -- (1,3) -- cycle;\n\\end{tikzpicture}",
+      position: { x: 200, y: 100 },
+      size: { w: 400, h: 300 },
+    }),
+  },
 ];
 
 export function ElementPalette() {

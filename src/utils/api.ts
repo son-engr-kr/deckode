@@ -59,6 +59,21 @@ export async function uploadAsset(file: File, project: string): Promise<string> 
   return data.url;
 }
 
+export async function renderTikz(
+  project: string,
+  elementId: string,
+  content: string,
+  preamble?: string,
+): Promise<{ ok: true; svgUrl: string } | { ok: false; error: string }> {
+  const res = await fetch(`/api/render-tikz?project=${encodeURIComponent(project)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ elementId, content, preamble }),
+  });
+  assert(res.ok, `Failed to render TikZ: ${res.status}`);
+  return res.json();
+}
+
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(`[API] ${message}`);
 }

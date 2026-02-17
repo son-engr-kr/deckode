@@ -67,6 +67,11 @@ export interface VideoStyle {
   borderRadius?: number;
 }
 
+export interface TikZStyle {
+  backgroundColor?: string;
+  borderRadius?: number;
+}
+
 // ----- Elements -----
 
 interface BaseElement {
@@ -111,7 +116,15 @@ export interface VideoElement extends BaseElement {
   style?: VideoStyle;
 }
 
-export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement;
+export interface TikZElement extends BaseElement {
+  type: "tikz";
+  content: string;
+  svgUrl?: string;
+  preamble?: string;
+  style?: TikZStyle;
+}
+
+export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement;
 
 // ----- Animations -----
 

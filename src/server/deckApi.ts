@@ -2,6 +2,8 @@ import type { Plugin } from "vite";
 import type { IncomingMessage, ServerResponse } from "http";
 import fs from "fs";
 import path from "path";
+import os from "os";
+import { execFile, execFileSync } from "child_process";
 import Ajv2020 from "ajv/dist/2020";
 
 const DECK_FILENAME = "deck.json";
@@ -132,7 +134,7 @@ export function deckApiPlugin(): Plugin {
       // -- Static serving: /assets/{project}/* --
 
       server.middlewares.use("/assets", (req, res, next) => {
-        const urlPath = decodeURIComponent(req.url ?? "/");
+        const urlPath = decodeURIComponent((req.url ?? "/").split("?")[0]!);
         // URL format: /assets/{project}/{filename}
         // The urlPath here already has /assets stripped, so it starts with /{project}/{filename}
         const parts = urlPath.replace(/^\//, "").split("/").filter(Boolean);
@@ -186,6 +188,24 @@ export function deckApiPlugin(): Plugin {
         const buffer = await readBinaryBody(req);
         fs.writeFileSync(path.resolve(dir, finalName), buffer);
         jsonResponse(res, 200, { url: `/assets/${project}/${finalName}` });
+      });
+
+      // -- TikZ rendering endpoint --
+
+      server.middlewares.use("/api/render-tikz", async (req, res) => {
+        if (req.method !== "POST") { jsonResponse(res, 405, { error: "POST only" }); return; }
+        const project = getProjectParam(req);
+        const body = JSON.parse(await readBody(req));
+        const { elementId, content, preamble } = body;
+        assert(typeof elementId === "string" && elementId.length > 0, "Missing elementId");
+        assert(typeof content === "string" && content.length > 0, "Missing content");
+
+        const result = await compileTikz(project, elementId, content, preamble);
+        if (result.ok) {
+          jsonResponse(res, 200, { ok: true, svgUrl: result.svgUrl });
+        } else {
+          jsonResponse(res, 200, { ok: false, error: result.error });
+        }
       });
 
       // -- Project management endpoints --
@@ -530,6 +550,130 @@ function rewriteAssetUrls(deckFilePath: string, project: string) {
     fs.writeFileSync(deckFilePath, rewritten, "utf-8");
     console.log(`[deckode] Rewrote asset URLs in ${deckFilePath}`);
   }
+}
+
+// -- TikZ compilation pipeline --
+
+function wrapTikzDocument(content: string, preamble?: string): string {
+  if (content.includes("\\documentclass")) return content;
+  return [
+    "\\documentclass[dvisvgm]{standalone}",
+    "\\usepackage{tikz}",
+    "\\usepackage{pgfplots}",
+    "\\pgfplotsset{compat=1.18}",
+    preamble ?? "",
+    "\\begin{document}",
+    content,
+    "\\end{document}",
+  ].join("\n");
+}
+
+function execPromise(cmd: string, args: string[], cwd: string): Promise<{ stdout: string; stderr: string }> {
+  return new Promise((resolve, reject) => {
+    execFile(cmd, args, { cwd, timeout: 30000 }, (error, stdout, stderr) => {
+      if (error) {
+        reject({ error, stdout, stderr });
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+  });
+}
+
+function parseTexErrors(logContent: string): string {
+  const lines = logContent.split("\n");
+  const errorLines: string[] = [];
+  let capture = false;
+  for (const line of lines) {
+    if (line.startsWith("!")) {
+      capture = true;
+      errorLines.push(line);
+    } else if (capture) {
+      errorLines.push(line);
+      if (errorLines.length >= 6) capture = false;
+    }
+  }
+  return errorLines.length > 0 ? errorLines.join("\n") : "Unknown TeX compilation error";
+}
+
+let latexAvailable: boolean | null = null;
+
+function checkLatexAvailable(): boolean {
+  if (latexAvailable !== null) return latexAvailable;
+  try {
+    execFileSync("latex", ["--version"], { timeout: 5000, stdio: "ignore" });
+    execFileSync("dvisvgm", ["--version"], { timeout: 5000, stdio: "ignore" });
+    latexAvailable = true;
+  } catch {
+    latexAvailable = false;
+  }
+  return latexAvailable;
+}
+
+async function compileTikz(
+  project: string,
+  elementId: string,
+  content: string,
+  preamble?: string,
+): Promise<{ ok: true; svgUrl: string } | { ok: false; error: string }> {
+  if (!checkLatexAvailable()) {
+    return {
+      ok: false,
+      error: "LaTeX compiler not found. Install TeX Live (or MiKTeX) and ensure 'latex' and 'dvisvgm' are on your PATH.",
+    };
+  }
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "deckode-tikz-"));
+
+  const texSource = wrapTikzDocument(content, preamble);
+  const texFile = path.join(tmpDir, "input.tex");
+  fs.writeFileSync(texFile, texSource, "utf-8");
+
+  // Step 1: latex → DVI
+  try {
+    await execPromise("latex", [
+      "--interaction=nonstopmode",
+      `-output-directory=${tmpDir}`,
+      texFile,
+    ], tmpDir);
+  } catch (e: any) {
+    const logFile = path.join(tmpDir, "input.log");
+    const logContent = fs.existsSync(logFile) ? fs.readFileSync(logFile, "utf-8") : "";
+    const error = parseTexErrors(logContent);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    return { ok: false, error };
+  }
+
+  // Step 2: dvisvgm → SVG
+  const dviFile = path.join(tmpDir, "input.dvi");
+  const svgTmp = path.join(tmpDir, "output.svg");
+
+  try {
+    await execPromise("dvisvgm", [
+      "--no-fonts",
+      "--exact",
+      dviFile,
+      "-o", svgTmp,
+    ], tmpDir);
+  } catch (e: any) {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    return { ok: false, error: `dvisvgm failed: ${(e as any).stderr ?? "unknown error"}` };
+  }
+
+  assert(fs.existsSync(svgTmp), "dvisvgm produced no output SVG");
+
+  // Step 3: Copy SVG to project assets
+  const tikzDir = path.join(assetsDir(project), "tikz");
+  if (!fs.existsSync(tikzDir)) fs.mkdirSync(tikzDir, { recursive: true });
+
+  const destSvg = path.join(tikzDir, `${elementId}.svg`);
+  fs.copyFileSync(svgTmp, destSvg);
+
+  // Cleanup
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+
+  const svgUrl = `/assets/${project}/tikz/${elementId}.svg?v=${Date.now()}`;
+  return { ok: true, svgUrl };
 }
 
 // -- AI Tools Manifest --
