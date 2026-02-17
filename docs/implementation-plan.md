@@ -107,11 +107,11 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] Add/delete slides (sidebar + button, hover delete)
 - [X] Add/delete elements (toolbar palette: text, image, shape, code)
 - [X] Undo/redo (zundo temporal middleware, Ctrl+Z / Ctrl+Shift+Z, toolbar buttons)
-  - [ ] **Bug:** Undo/redo affects the entire deck state, so undoing on one slide can revert changes made on a different slide. Undo should be scoped per-slide.
+  - [X] Smart undo/redo: auto-navigate to affected slide, highlight changed elements, drag-safe debounce
 - [X] Keyboard shortcuts (Delete/Backspace, Ctrl+Z, Ctrl+Shift+Z, Ctrl+S, F5)
-- [ ] Slide reordering via drag-and-drop in sidebar
-- [ ] Element resize handles (drag corners to resize, update `size` in store)
-- [ ] Element duplicate (Ctrl+D)
+- [X] Slide reordering via drag-and-drop in sidebar (@dnd-kit/sortable)
+- [X] Element resize handles (drag corners to resize, update `size` in store)
+- [X] Element duplicate (Ctrl+D)
 
 ### Key Decisions
 
@@ -146,13 +146,13 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 
 ### Goals
 
-- [ ] Asset directory: project-level `assets/` folder for images, videos, and other media
-- [ ] Vite plugin API endpoint: `POST /api/upload-asset` — receives a file, saves it to `assets/` (or a user-specified subdirectory), returns the relative path
-- [ ] Vite static serving: serve `assets/` so relative paths like `assets/photo.png` resolve in the browser
-- [ ] Drag-and-drop on editor canvas: drop image/video files onto the slide → auto-upload to `assets/` → create an image or video element with the relative path as `src`
-- [ ] Default behavior: dropping a file saves it to `assets/` root with its original filename (deduplication via suffix if name collides)
-- [ ] Relative path resolution: all `src` fields in image/video elements use relative paths (e.g., `assets/diagrams/figure1.png`) so the project is portable
-- [ ] Property panel: `src` field shows the relative path; user can manually edit to point to any path within the project
+- [X] Asset directory: project-level `assets/` folder for images, videos, and other media
+- [X] Vite plugin API endpoint: `POST /api/upload-asset` — receives a file, saves it to `assets/` (or a user-specified subdirectory), returns the relative path
+- [X] Vite static serving: serve `assets/` so relative paths like `assets/photo.png` resolve in the browser
+- [X] Drag-and-drop on editor canvas: drop image/video files onto the slide → auto-upload to `assets/` → create an image or video element with the relative path as `src`
+- [X] Default behavior: dropping a file saves it to `assets/` root with its original filename (deduplication via suffix if name collides)
+- [X] Relative path resolution: all `src` fields in image/video elements use relative paths (e.g., `assets/diagrams/figure1.png`) so the project is portable
+- [X] Property panel: `src` field shows the relative path; user can manually edit to point to any path within the project
 
 ### Key Decisions
 
@@ -168,7 +168,8 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 ### Goals
 
 - [X] Framer Motion animations (per-element enter/exit animations)
-- [ ] Animation editor UI in Property Panel: add/remove/edit animations per element (effect, trigger, delay, duration) without touching JSON
+- [X] Animation editor UI in Property Panel: add/remove/edit animations per element (effect, trigger, delay, duration) without touching JSON
+- [X] Slide-wide animation list panel with reorder, target element selector
 - [ ] Extended animation triggers: `onKey` (specific keypress advances/triggers animation), `afterPrevious` (auto-chain after the previous animation completes), `withPrevious` (play simultaneously with previous animation)
 - [ ] Animation preview in editor: play button in Property Panel to preview selected element's animation without entering presentation mode
 - [ ] Presenter mode with BroadcastChannel (main window + presenter notes window)
@@ -184,8 +185,8 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 
 ### Goals
 
-- [ ] TikZ/PGFPlots rendering: server-side Docker TeX engine or WASM → high-quality SVG output
-- [ ] Server-side LaTeX compilation latency optimization (caching, incremental builds)
+- [X] TikZ/PGFPlots rendering: server-side TeX → DVI → SVG pipeline with TikZ editor UI (live preview, preamble, error display)
+- [ ] Server-side LaTeX compilation latency optimization (persistent caching, incremental builds)
 - [ ] Text-to-TikZ PoC: AI generates/modifies TikZ code from user feedback, rendered as slide element
 
 ### Key Decisions
