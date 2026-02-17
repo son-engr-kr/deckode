@@ -1,5 +1,6 @@
 import { useRef, useCallback } from "react";
-import { useDeckStore } from "@/stores/deckStore";
+import { motion } from "framer-motion";
+import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
 import type { Slide, SlideElement } from "@/types/deck";
 import { CANVAS_HEIGHT } from "@/types/deck";
 
@@ -10,6 +11,7 @@ interface Props {
 
 export function SelectionOverlay({ slide, scale }: Props) {
   const selectedElementId = useDeckStore((s) => s.selectedElementId);
+  const highlightedElementIds = useDeckStore((s) => s.highlightedElementIds);
   const selectElement = useDeckStore((s) => s.selectElement);
   const updateElement = useDeckStore((s) => s.updateElement);
 
@@ -20,7 +22,8 @@ export function SelectionOverlay({ slide, scale }: Props) {
     >
       {slide.elements.map((element) => (
         <InteractiveElement
-          key={element.id}
+          key={element.id + (highlightedElementIds.includes(element.id) ? "-hl" : "")}
+          isHighlighted={highlightedElementIds.includes(element.id)}
           element={element}
           slideId={slide.id}
           isSelected={element.id === selectedElementId}
@@ -58,19 +61,21 @@ interface InteractiveProps {
   element: SlideElement;
   slideId: string;
   isSelected: boolean;
+  isHighlighted: boolean;
   onSelect: () => void;
   onMove: (dx: number, dy: number) => void;
   onResize: (dx: number, dy: number, dw: number, dh: number) => void;
   scale: number;
 }
 
-function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, scale }: InteractiveProps) {
+function InteractiveElement({ element, isSelected, isHighlighted, onSelect, onMove, onResize, scale }: InteractiveProps) {
   const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       onSelect();
+      setDeckDragging(true);
       dragStart.current = {
         x: e.clientX,
         y: e.clientY,
@@ -79,6 +84,7 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
       };
 
       const handleMouseUp = () => {
+        setDeckDragging(false);
         dragStart.current = null;
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
@@ -105,6 +111,7 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
   const handleResizeMouseDown = useCallback(
     (e: React.MouseEvent, corner: Corner) => {
       e.stopPropagation();
+      setDeckDragging(true);
       const startX = e.clientX;
       const startY = e.clientY;
       const origX = element.position.x;
@@ -113,6 +120,7 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
       const origH = element.size.h;
 
       const handleMouseUp = () => {
+        setDeckDragging(false);
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
       };
@@ -167,7 +175,7 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
   );
 
   return (
-    <div
+    <motion.div
       className={`absolute cursor-move ${
         isSelected ? "ring-2 ring-blue-500 ring-offset-0" : "hover:ring-1 hover:ring-blue-400/50"
       }`}
@@ -180,6 +188,9 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
         // Selected video: let clicks pass through to native <video> controls
         pointerEvents: element.type === "video" && isSelected ? "none" : "auto",
       }}
+      initial={isHighlighted ? { boxShadow: "0 0 0 3px rgba(34,197,94,0.7)" } : false}
+      animate={{ boxShadow: "0 0 0 0px rgba(34,197,94,0)" }}
+      transition={{ duration: 0.8 }}
       onMouseDown={handleMouseDown}
     >
       {/* Transparent overlay to capture mouse events */}
@@ -199,7 +210,7 @@ function InteractiveElement({ element, isSelected, onSelect, onMove, onResize, s
           <ResizeHandle corner="se" onMouseDown={handleResizeMouseDown} />
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 

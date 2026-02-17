@@ -1,11 +1,32 @@
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useDeckStore } from "@/stores/deckStore";
+import { findUndoChanges } from "@/utils/deckDiff";
 import { SlideList } from "./SlideList";
 import { EditorCanvas } from "./EditorCanvas";
 import { PropertyPanel } from "./PropertyPanel";
 import { CodePanel } from "./CodePanel";
 import { ElementPalette } from "./ElementPalette";
 import { SlideAnimationList } from "./SlideAnimationList";
+
+function performUndoRedo(direction: "undo" | "redo") {
+  const temporal = useDeckStore.temporal.getState();
+  const pastLen = temporal.pastStates.length;
+  const futureLen = temporal.futureStates.length;
+  if (direction === "undo" && pastLen === 0) return;
+  if (direction === "redo" && futureLen === 0) return;
+
+  const oldDeck = useDeckStore.getState().deck;
+  temporal[direction]();
+  const newDeck = useDeckStore.getState().deck;
+
+  const changes = findUndoChanges(oldDeck, newDeck);
+  if (changes.slideIndex !== -1) {
+    useDeckStore.getState().setCurrentSlide(changes.slideIndex);
+  }
+  if (changes.elementIds.length > 0) {
+    useDeckStore.getState().highlightElements(changes.elementIds);
+  }
+}
 
 type BottomPanel = "code" | null;
 
@@ -44,13 +65,13 @@ export function EditorLayout() {
       // Undo: Ctrl+Z
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
         e.preventDefault();
-        useDeckStore.temporal.getState().undo();
+        performUndoRedo("undo");
         return;
       }
       // Redo: Ctrl+Shift+Z or Ctrl+Y
       if ((e.ctrlKey || e.metaKey) && (e.shiftKey && e.key === "Z" || e.key === "y")) {
         e.preventDefault();
-        useDeckStore.temporal.getState().redo();
+        performUndoRedo("redo");
         return;
       }
       // Duplicate element: Ctrl+D
@@ -104,14 +125,14 @@ export function EditorLayout() {
         <div className="flex-1" />
 
         <button
-          onClick={() => useDeckStore.temporal.getState().undo()}
+          onClick={() => performUndoRedo("undo")}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
           title="Undo (Ctrl+Z)"
         >
           Undo
         </button>
         <button
-          onClick={() => useDeckStore.temporal.getState().redo()}
+          onClick={() => performUndoRedo("redo")}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
           title="Redo (Ctrl+Shift+Z)"
         >

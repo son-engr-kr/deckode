@@ -11,6 +11,7 @@ interface DeckState {
   deck: Deck | null;
   currentSlideIndex: number;
   selectedElementId: string | null;
+  highlightedElementIds: string[];
   isDirty: boolean;
   isSaving: boolean;
 
@@ -35,6 +36,19 @@ interface DeckState {
   updateAnimation: (slideId: string, index: number, patch: Partial<Animation>) => void;
   deleteAnimation: (slideId: string, index: number) => void;
   moveAnimation: (slideId: string, fromIndex: number, toIndex: number) => void;
+  highlightElements: (ids: string[]) => void;
+}
+
+let highlightTimer: ReturnType<typeof setTimeout> | null = null;
+let isDragging = false;
+
+// Hoisted so we can cancel the pending batch on project switch
+let batchTimeout: ReturnType<typeof setTimeout> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let batchStartState: any = null;
+
+export function setDeckDragging(active: boolean) {
+  isDragging = active;
 }
 
 export const useDeckStore = create<DeckState>()(
@@ -45,6 +59,7 @@ export const useDeckStore = create<DeckState>()(
         deck: null,
         currentSlideIndex: 0,
         selectedElementId: null,
+        highlightedElementIds: [],
         isDirty: false,
         isSaving: false,
 
@@ -266,32 +281,61 @@ export const useDeckStore = create<DeckState>()(
             anims.splice(toIndex, 0, moved!);
             state.isDirty = true;
           }),
+
+        highlightElements: (ids) => {
+          if (highlightTimer) clearTimeout(highlightTimer);
+          set((state) => { state.highlightedElementIds = ids; });
+          highlightTimer = setTimeout(() => {
+            set((state) => { state.highlightedElementIds = []; });
+            highlightTimer = null;
+          }, 800);
+        },
       })),
       {
         partialize: (state) => ({ deck: state.deck }),
         limit: 50,
-        // Skip recording when deck didn't change (e.g. saveToDisk, selectElement)
-        equality: (pastState, currentState) => pastState.deck === currentState.deck,
+        // Skip recording when deck didn't change, OR when either side is null
+        // (null↔deck transitions are project lifecycle, not undoable edits)
+        equality: (pastState, currentState) =>
+          pastState.deck === currentState.deck ||
+          pastState.deck === null ||
+          currentState.deck === null,
         // Debounce: batch rapid changes (drag, typing) into one undo checkpoint.
         // Captures the state BEFORE the first change in a batch.
         handleSet: (handleSetImpl) => {
-          let timeout: ReturnType<typeof setTimeout> | null = null;
-          let batchStartState: Parameters<typeof handleSetImpl>[0] | null = null;
+          const tryFlush = () => {
+            if (isDragging) {
+              batchTimeout = setTimeout(tryFlush, 300);
+              return;
+            }
+            handleSetImpl(batchStartState!);
+            batchStartState = null;
+            batchTimeout = null;
+          };
           return (state: Parameters<typeof handleSetImpl>[0]) => {
             if (batchStartState === null) {
               batchStartState = state;
             }
-            if (timeout) clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              handleSetImpl(batchStartState!);
-              batchStartState = null;
-              timeout = null;
-            }, 500);
+            if (batchTimeout) clearTimeout(batchTimeout);
+            batchTimeout = setTimeout(tryFlush, 300);
           };
         },
       },
     ),
   ),
+);
+
+// Clear undo history on project switch (open/close are not undoable)
+useDeckStore.subscribe(
+  (s) => s.currentProject,
+  () => {
+    if (batchTimeout) {
+      clearTimeout(batchTimeout);
+      batchTimeout = null;
+      batchStartState = null;
+    }
+    useDeckStore.temporal.getState().clear();
+  },
 );
 
 // Auto-save: debounce 1s after any mutation
