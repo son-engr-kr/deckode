@@ -16,7 +16,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useDeckStore } from "@/stores/deckStore";
 import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { nextSlideId } from "@/utils/id";
-import type { Slide } from "@/types/deck";
+import type { Slide, DeckTheme } from "@/types/deck";
 
 const THUMB_SCALE = 0.15;
 const THUMB_W = Math.round(960 * THUMB_SCALE);
@@ -33,7 +33,9 @@ function createBlankSlide(): Slide {
 export function SlideList() {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
+  const setSelectedSlides = useDeckStore((s) => s.setSelectedSlides);
   const addSlide = useDeckStore((s) => s.addSlide);
   const deleteSlide = useDeckStore((s) => s.deleteSlide);
   const moveSlide = useDeckStore((s) => s.moveSlide);
@@ -93,9 +95,29 @@ export function SlideList() {
               slide={slide}
               index={index}
               isCurrent={index === currentSlideIndex}
+              isSelected={selectedSlideIds.includes(slide.id)}
               canDelete={deck.slides.length > 1}
-              onSelect={() => setCurrentSlide(index)}
+              onSelect={(e: React.MouseEvent) => {
+                if (e.ctrlKey || e.metaKey) {
+                  // Toggle in/out of selection
+                  const newIds = selectedSlideIds.includes(slide.id)
+                    ? selectedSlideIds.filter((id) => id !== slide.id)
+                    : [...selectedSlideIds, slide.id];
+                  setSelectedSlides(newIds.length > 0 ? newIds : [slide.id]);
+                  useDeckStore.setState({ currentSlideIndex: index, selectedElementId: null });
+                } else if (e.shiftKey) {
+                  // Range select from currentSlideIndex to clicked index
+                  const start = Math.min(currentSlideIndex, index);
+                  const end = Math.max(currentSlideIndex, index);
+                  const rangeIds = deck.slides.slice(start, end + 1).map((s) => s.id);
+                  setSelectedSlides(rangeIds);
+                  useDeckStore.setState({ currentSlideIndex: index, selectedElementId: null });
+                } else {
+                  setCurrentSlide(index);
+                }
+              }}
               onDelete={() => handleDeleteSlide(slide.id, index)}
+              theme={deck.theme}
             />
           ))}
         </SortableContext>
@@ -117,16 +139,20 @@ function SortableSlideItem({
   slide,
   index,
   isCurrent,
+  isSelected,
   canDelete,
   onSelect,
   onDelete,
+  theme,
 }: {
   slide: Slide;
   index: number;
   isCurrent: boolean;
+  isSelected: boolean;
   canDelete: boolean;
-  onSelect: () => void;
+  onSelect: (e: React.MouseEvent) => void;
   onDelete: () => void;
+  theme?: DeckTheme;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: slide.id });
@@ -144,11 +170,13 @@ function SortableSlideItem({
         className={`rounded border-2 transition-colors p-0.5 ${
           isCurrent
             ? "border-blue-500"
-            : "border-zinc-700 hover:border-zinc-500"
+            : isSelected
+              ? "border-blue-400/60"
+              : "border-zinc-700 hover:border-zinc-500"
         }`}
       >
         <div className="rounded-sm overflow-hidden pointer-events-none">
-          <SlideRenderer slide={slide} scale={THUMB_SCALE} thumbnail />
+          <SlideRenderer slide={slide} scale={THUMB_SCALE} thumbnail theme={theme} />
         </div>
         <span className="absolute bottom-0.5 right-1.5 text-[10px] text-zinc-500 font-mono">
           {index + 1}

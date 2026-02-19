@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { subscribeWithSelector } from "zustand/middleware";
 import { temporal } from "zundo";
-import type { Animation, Deck, Slide, SlideElement } from "@/types/deck";
+import type { Animation, Deck, DeckTheme, Slide, SlideElement } from "@/types/deck";
 import { saveDeckToDisk } from "@/utils/api";
 import { nextElementId } from "@/utils/id";
 
@@ -10,6 +10,7 @@ interface DeckState {
   currentProject: string | null;
   deck: Deck | null;
   currentSlideIndex: number;
+  selectedSlideIds: string[];
   selectedElementId: string | null;
   highlightedElementIds: string[];
   isDirty: boolean;
@@ -21,6 +22,7 @@ interface DeckState {
   replaceDeck: (deck: Deck) => void;
   saveToDisk: () => Promise<void>;
   setCurrentSlide: (index: number) => void;
+  setSelectedSlides: (ids: string[]) => void;
   nextSlide: () => void;
   prevSlide: () => void;
   selectElement: (id: string | null) => void;
@@ -36,6 +38,7 @@ interface DeckState {
   updateAnimation: (slideId: string, index: number, patch: Partial<Animation>) => void;
   deleteAnimation: (slideId: string, index: number) => void;
   moveAnimation: (slideId: string, fromIndex: number, toIndex: number) => void;
+  updateTheme: (patch: Partial<DeckTheme>) => void;
   highlightElements: (ids: string[]) => void;
 }
 
@@ -58,6 +61,7 @@ export const useDeckStore = create<DeckState>()(
         currentProject: null,
         deck: null,
         currentSlideIndex: 0,
+        selectedSlideIds: [],
         selectedElementId: null,
         highlightedElementIds: [],
         isDirty: false,
@@ -68,6 +72,7 @@ export const useDeckStore = create<DeckState>()(
             state.currentProject = project;
             state.deck = deck;
             state.currentSlideIndex = 0;
+            state.selectedSlideIds = deck.slides.length > 0 ? [deck.slides[0]!.id] : [];
             state.selectedElementId = null;
             state.isDirty = false;
           }),
@@ -77,6 +82,7 @@ export const useDeckStore = create<DeckState>()(
             state.currentProject = null;
             state.deck = null;
             state.currentSlideIndex = 0;
+            state.selectedSlideIds = [];
             state.selectedElementId = null;
             state.isDirty = false;
           }),
@@ -85,6 +91,7 @@ export const useDeckStore = create<DeckState>()(
           set((state) => {
             state.deck = deck;
             state.currentSlideIndex = 0;
+            state.selectedSlideIds = deck.slides.length > 0 ? [deck.slides[0]!.id] : [];
             state.selectedElementId = null;
             state.isDirty = false;
           }),
@@ -112,7 +119,13 @@ export const useDeckStore = create<DeckState>()(
             assert(state.deck !== null, "No deck loaded");
             assert(index >= 0 && index < state.deck.slides.length, `Slide index ${index} out of bounds`);
             state.currentSlideIndex = index;
+            state.selectedSlideIds = [state.deck.slides[index]!.id];
             state.selectedElementId = null;
+          }),
+
+        setSelectedSlides: (ids) =>
+          set((state) => {
+            state.selectedSlideIds = ids;
           }),
 
         nextSlide: () =>
@@ -120,6 +133,7 @@ export const useDeckStore = create<DeckState>()(
             if (!state.deck) return;
             if (state.currentSlideIndex < state.deck.slides.length - 1) {
               state.currentSlideIndex += 1;
+              state.selectedSlideIds = [state.deck.slides[state.currentSlideIndex]!.id];
               state.selectedElementId = null;
             }
           }),
@@ -129,6 +143,7 @@ export const useDeckStore = create<DeckState>()(
             if (!state.deck) return;
             if (state.currentSlideIndex > 0) {
               state.currentSlideIndex -= 1;
+              state.selectedSlideIds = [state.deck.slides[state.currentSlideIndex]!.id];
               state.selectedElementId = null;
             }
           }),
@@ -172,6 +187,7 @@ export const useDeckStore = create<DeckState>()(
             const idx = state.deck.slides.findIndex((s) => s.id === slideId);
             assert(idx !== -1, `Slide ${slideId} not found`);
             state.deck.slides.splice(idx, 1);
+            state.selectedSlideIds = state.selectedSlideIds.filter((id) => id !== slideId);
             if (state.currentSlideIndex >= state.deck.slides.length) {
               state.currentSlideIndex = Math.max(0, state.deck.slides.length - 1);
             }
@@ -282,6 +298,18 @@ export const useDeckStore = create<DeckState>()(
             state.isDirty = true;
           }),
 
+        updateTheme: (patch) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const prev = state.deck.theme ?? {};
+            const merged: DeckTheme = { ...prev };
+            for (const key of Object.keys(patch) as (keyof DeckTheme)[]) {
+              merged[key] = { ...prev[key], ...patch[key] } as never;
+            }
+            state.deck.theme = merged;
+            state.isDirty = true;
+          }),
+
         highlightElements: (ids) => {
           if (highlightTimer) clearTimeout(highlightTimer);
           set((state) => { state.highlightedElementIds = ids; });
@@ -292,6 +320,7 @@ export const useDeckStore = create<DeckState>()(
         },
       })),
       {
+        // Only track deck for undo/redo (selectedSlideIds is UI-only state)
         partialize: (state) => ({ deck: state.deck }),
         limit: 50,
         // Skip recording when deck didn't change, OR when either side is null

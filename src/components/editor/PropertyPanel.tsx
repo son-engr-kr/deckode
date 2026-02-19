@@ -1,20 +1,36 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
-import type { SlideElement, TikZElement } from "@/types/deck";
+import type { Slide, SlideElement, TikZElement } from "@/types/deck";
 import { renderTikz } from "@/utils/api";
 import { AnimationEditor } from "./AnimationEditor";
+import {
+  ColorField,
+  NumberField,
+  SelectField,
+  TextField,
+  CODE_THEMES,
+  OBJECT_FIT_OPTIONS,
+  TEXT_ALIGN_OPTIONS,
+  VERTICAL_ALIGN_OPTIONS,
+} from "./fields";
 
 export function PropertyPanel() {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
   const selectedElementId = useDeckStore((s) => s.selectedElementId);
   const updateElement = useDeckStore((s) => s.updateElement);
+  const updateSlide = useDeckStore((s) => s.updateSlide);
 
-  if (!deck || selectedElementId === null) {
+  if (!deck) return null;
+
+  if (selectedElementId === null) {
     return (
-      <div className="p-4 text-zinc-500 text-sm">
-        Select an element to edit its properties
-      </div>
+      <SlidePropertiesPanel
+        deck={deck}
+        selectedSlideIds={selectedSlideIds}
+        updateSlide={updateSlide}
+      />
     );
   }
 
@@ -121,12 +137,170 @@ export function PropertyPanel() {
         </>
       )}
 
+      {/* Style */}
+      <ElementStyleEditor
+        element={element}
+        slideId={slide.id}
+        updateElement={updateElement}
+      />
+
       {/* Animations */}
       <AnimationEditor
         slideId={slide.id}
         elementId={element.id}
         animations={slide.animations ?? []}
       />
+    </div>
+  );
+}
+
+function SlidePropertiesPanel({
+  deck,
+  selectedSlideIds,
+  updateSlide,
+}: {
+  deck: { slides: Slide[]; theme?: import("@/types/deck").DeckTheme };
+  selectedSlideIds: string[];
+  updateSlide: (slideId: string, patch: Partial<Slide>) => void;
+}) {
+  const selectedSlides = selectedSlideIds
+    .map((id) => deck.slides.find((s) => s.id === id))
+    .filter((s): s is Slide => s !== undefined);
+
+  if (selectedSlides.length === 0) {
+    return (
+      <div className="p-4 text-zinc-500 text-sm">
+        Select a slide to edit its properties
+      </div>
+    );
+  }
+
+  // Compute common background color across all selected slides
+  const bgColors = selectedSlides.map((s) => s.background?.color);
+  const allSame = bgColors.every((c) => c === bgColors[0]);
+  const isMixed = !allSame;
+  const commonBgColor = allSame ? bgColors[0] : undefined;
+  const themeBgColor = deck.theme?.slide?.background?.color;
+
+  // Check if any selected slide has a per-slide override
+  const hasOverride = selectedSlides.some((s) => s.background?.color !== undefined);
+  // All selected slides are using the theme default (no per-slide color set)
+  const allInherited = !isMixed && commonBgColor === undefined && themeBgColor !== undefined;
+
+  return (
+    <div className="p-3 space-y-4 text-sm overflow-y-auto">
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Slide</div>
+        <div className="text-zinc-300 font-mono">
+          {selectedSlides.length === 1
+            ? selectedSlides[0]!.id
+            : `${selectedSlides.length} slides selected`}
+        </div>
+      </div>
+
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-2">Background</div>
+        <div className="space-y-2">
+          <ColorField
+            label="Color"
+            value={commonBgColor ?? themeBgColor}
+            mixed={isMixed}
+            inherited={allInherited}
+            onChange={(v) => {
+              for (const slide of selectedSlides) {
+                updateSlide(slide.id, {
+                  background: { ...slide.background, color: v },
+                });
+              }
+            }}
+          />
+          {hasOverride && (
+            <button
+              onClick={() => {
+                for (const slide of selectedSlides) {
+                  const bg = { ...slide.background };
+                  delete bg.color;
+                  // If background object is now empty, remove it entirely
+                  const hasKeys = Object.keys(bg).length > 0;
+                  updateSlide(slide.id, { background: hasKeys ? bg : undefined });
+                }
+              }}
+              className="w-full px-3 py-1.5 text-xs font-medium rounded border border-zinc-600 text-zinc-400 hover:text-zinc-200 hover:border-zinc-500 transition-colors"
+            >
+              Use theme default
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ElementStyleEditor({
+  element,
+  slideId,
+  updateElement,
+}: {
+  element: SlideElement;
+  slideId: string;
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+}) {
+  const patchStyle = (prop: string, value: unknown) => {
+    updateElement(slideId, element.id, {
+      style: { ...element.style, [prop]: value },
+    } as Partial<SlideElement>);
+  };
+
+  return (
+    <div>
+      <div className="text-zinc-400 text-xs uppercase tracking-wider mb-2">Style</div>
+      <div className="space-y-2">
+        {element.type === "text" && (
+          <>
+            <ColorField label="Color" value={element.style?.color} onChange={(v) => patchStyle("color", v)} />
+            <TextField label="Font Family" value={element.style?.fontFamily} onChange={(v) => patchStyle("fontFamily", v)} placeholder="sans-serif" />
+            <NumberField label="Font Size" value={element.style?.fontSize} onChange={(v) => patchStyle("fontSize", v)} min={8} max={200} />
+            <SelectField label="Text Align" value={element.style?.textAlign} options={TEXT_ALIGN_OPTIONS} onChange={(v) => patchStyle("textAlign", v)} />
+            <NumberField label="Line Height" value={element.style?.lineHeight} onChange={(v) => patchStyle("lineHeight", v)} min={0.5} max={4} step={0.1} />
+            <SelectField label="Vertical Align" value={element.style?.verticalAlign} options={VERTICAL_ALIGN_OPTIONS} onChange={(v) => patchStyle("verticalAlign", v)} />
+          </>
+        )}
+        {element.type === "code" && (
+          <>
+            <SelectField label="Theme" value={element.style?.theme} options={CODE_THEMES} onChange={(v) => patchStyle("theme", v)} />
+            <NumberField label="Font Size" value={element.style?.fontSize} onChange={(v) => patchStyle("fontSize", v)} min={8} max={48} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={32} />
+          </>
+        )}
+        {element.type === "shape" && (
+          <>
+            <ColorField label="Fill" value={element.style?.fill} onChange={(v) => patchStyle("fill", v)} />
+            <ColorField label="Stroke" value={element.style?.stroke} onChange={(v) => patchStyle("stroke", v)} />
+            <NumberField label="Stroke Width" value={element.style?.strokeWidth} onChange={(v) => patchStyle("strokeWidth", v)} min={0} max={20} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={100} />
+            <NumberField label="Opacity" value={element.style?.opacity} onChange={(v) => patchStyle("opacity", v)} min={0} max={1} step={0.05} />
+          </>
+        )}
+        {element.type === "image" && (
+          <>
+            <SelectField label="Object Fit" value={element.style?.objectFit} options={OBJECT_FIT_OPTIONS} onChange={(v) => patchStyle("objectFit", v)} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={100} />
+            <NumberField label="Opacity" value={element.style?.opacity} onChange={(v) => patchStyle("opacity", v)} min={0} max={1} step={0.05} />
+          </>
+        )}
+        {element.type === "video" && (
+          <>
+            <SelectField label="Object Fit" value={element.style?.objectFit} options={OBJECT_FIT_OPTIONS} onChange={(v) => patchStyle("objectFit", v)} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={100} />
+          </>
+        )}
+        {element.type === "tikz" && (
+          <>
+            <ColorField label="Background" value={element.style?.backgroundColor} onChange={(v) => patchStyle("backgroundColor", v)} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={32} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
