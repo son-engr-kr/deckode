@@ -435,20 +435,14 @@ function TikZEditor({
         )}
       </div>
 
-      {/* Render button / FS Access mode notice */}
-      {adapter.mode === "fs-access" ? (
-        <div className="bg-zinc-800 border border-zinc-700 rounded p-2 text-xs text-zinc-400">
-          TikZ rendering is not available in static mode. Use <code className="text-zinc-300">npm run dev</code> for TikZ support.
-        </div>
-      ) : (
-        <button
-          onClick={handleManualRender}
-          disabled={status === "rendering"}
-          className="w-full px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {status === "rendering" ? "Rendering..." : "Render"}
-        </button>
-      )}
+      {/* Render button */}
+      <button
+        onClick={handleManualRender}
+        disabled={status === "rendering"}
+        className="w-full px-3 py-1.5 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {status === "rendering" ? "Rendering..." : "Render"}
+      </button>
 
       {/* Error display */}
       {error && (

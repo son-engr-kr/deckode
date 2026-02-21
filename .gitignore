@@ -6,3 +6,6 @@ dist
 
 # Runtime data (auto-saved by editor)
 projects/
+
+# TikZJax WASM assets (copied from node_modules by postinstall)
+public/tikzjax/

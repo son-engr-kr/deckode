@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "postinstall": "node -e \"const fs=require('fs');const src='node_modules/@drgrice1/tikzjax/dist';if(fs.existsSync(src)){fs.cpSync(src,'public/tikzjax',{recursive:true});console.log('Copied tikzjax assets to public/tikzjax/')}\""
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@drgrice1/tikzjax": "^1.0.0-beta24",
     "@monaco-editor/react": "^4.7.0",
     "@vitejs/plugin-react": "^5.1.4",
     "ajv": "^8.18.0",

@@ -5,16 +5,27 @@ Local-first, AI-agent-driven slide platform. Visual editor backed by a JSON scen
 ## Quick Start
 
 ```bash
-# Clone and install
 git clone <repo-url> deckode
 cd deckode
 npm install
+```
 
-# Start dev server
+### Development (Vite dev server)
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Opens at `http://localhost:5173`. In dev mode the Vite plugin handles file I/O — projects are read from and written to the `projects/` directory on disk. TikZ rendering uses a server-side `latex` + `dvisvgm` pipeline.
+
+### Production / Static (File System Access API)
+
+```bash
+npm run build
+npx serve dist
+```
+
+Opens at `http://localhost:3000`. In this mode there is no backend — the app uses the browser's File System Access API to read/write a local project folder you pick via the directory picker. The chosen folder is remembered across reloads (stored in IndexedDB). TikZ rendering runs client-side via TikZJax (WASM).
 
 ## Project Structure
 

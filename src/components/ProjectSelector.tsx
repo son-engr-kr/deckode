@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { FsAccessAdapter } from "@/adapters/fsAccess";
 import { ViteApiAdapter } from "@/adapters/viteApi";
+import { restoreHandle } from "@/utils/handleStore";
 import {
   listProjects,
   createProject,
@@ -146,6 +147,23 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
 
 function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: FileSystemAdapter) => void }) {
   const [error, setError] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(true);
+
+  // Try to auto-restore a previously opened directory handle from IndexedDB
+  useEffect(() => {
+    restoreHandle()
+      .then(async (handle) => {
+        if (!handle) { setRestoring(false); return; }
+        const adapter = FsAccessAdapter.fromHandle(handle);
+        const deck = await adapter.loadDeck();
+        onAdapterReady(adapter);
+        useDeckStore.getState().openProject(adapter.projectName, deck);
+      })
+      .catch(() => {
+        // Permission denied or handle stale — fall through to manual picker
+        setRestoring(false);
+      });
+  }, [onAdapterReady]);
 
   const handleOpenFolder = async () => {
     setError(null);
@@ -161,6 +179,14 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
       throw err;
     }
   };
+
+  if (restoring) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-zinc-950 text-zinc-400">
+        Restoring project...
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-zinc-950 text-white">

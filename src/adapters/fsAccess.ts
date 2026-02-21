@@ -1,5 +1,6 @@
 import type { Deck } from "@/types/deck";
 import type { FileSystemAdapter, ProjectInfo } from "./types";
+import { saveHandle, clearHandle } from "@/utils/handleStore";
 
 export class FsAccessAdapter implements FileSystemAdapter {
   readonly mode = "fs-access" as const;
@@ -19,7 +20,17 @@ export class FsAccessAdapter implements FileSystemAdapter {
       options?: { mode?: "read" | "readwrite" },
     ) => Promise<FileSystemDirectoryHandle>;
     const dirHandle = await showDirectoryPicker({ mode: "readwrite" });
+    await saveHandle(dirHandle);
     return new FsAccessAdapter(dirHandle);
+  }
+
+  static fromHandle(dirHandle: FileSystemDirectoryHandle): FsAccessAdapter {
+    return new FsAccessAdapter(dirHandle);
+  }
+
+  /** Remove the persisted handle (call when user explicitly closes project). */
+  static forget(): Promise<void> {
+    return clearHandle();
   }
 
   async loadDeck(): Promise<Deck> {
@@ -89,18 +100,42 @@ export class FsAccessAdapter implements FileSystemAdapter {
     const cached = this.blobUrlCache.get(path);
     if (cached) return cached;
 
-    // Path format: /assets/{project}/{filename}
-    // We need to read from the assets/ subdirectory in our handle
-    const parts = path.replace(/^\//, "").split("/");
+    // Strip query string (dev server adds ?v=timestamp as cache-buster)
+    const qIdx = path.indexOf("?");
+    const cleanPath = qIdx === -1 ? path : path.slice(0, qIdx);
+
+    // Path format: /assets/{project}/{subdir.../filename}
+    const parts = cleanPath.replace(/^\//, "").split("/");
     // Expected: ["assets", projectName, ...rest]
     assert(parts.length >= 3, `Invalid asset path: ${path}`);
 
-    let currentHandle: FileSystemDirectoryHandle = this.dirHandle;
-    // Navigate to the "assets" subdirectory (skip the project name in the path)
-    const assetsDir = await currentHandle.getDirectoryHandle("assets");
-    const filename = parts.slice(2).join("/");
+    // Navigate from assets/ through any subdirectories to reach the file
+    const subParts = parts.slice(2); // everything after "assets/{projectName}"
+    const fileName = subParts.pop()!;
+    assert(fileName.length > 0, `Empty filename in asset path: ${path}`);
 
-    const fileHandle = await assetsDir.getFileHandle(filename);
+    // Strip invisible Unicode characters that the FS Access API rejects
+    // (e.g. U+200B zero-width space embedded in filenames from browser downloads)
+    const stripInvisible = (s: string) => s.replace(/[\u200B-\u200F\u202A-\u202E\uFEFF]/g, "");
+
+    let dir = await this.dirHandle.getDirectoryHandle("assets");
+    for (const sub of subParts) {
+      dir = await dir.getDirectoryHandle(stripInvisible(sub));
+    }
+
+    const sanitizedName = stripInvisible(fileName);
+
+    let fileHandle: FileSystemFileHandle;
+    try {
+      fileHandle = await dir.getFileHandle(sanitizedName);
+    } catch {
+      // File not found — it may have been uploaded in dev mode and doesn't
+      // exist in this directory. Re-throw with context.
+      throw new Error(
+        `[FsAccessAdapter] Asset not found: "${sanitizedName}" (path: "${path}"). ` +
+        `The file may have been uploaded via the dev server and is not present in the opened folder.`
+      );
+    }
     const file = await fileHandle.getFile();
     const blobUrl = URL.createObjectURL(file);
     this.blobUrlCache.set(path, blobUrl);
@@ -108,14 +143,31 @@ export class FsAccessAdapter implements FileSystemAdapter {
   }
 
   async renderTikz(
-    _elementId: string,
-    _content: string,
-    _preamble?: string,
+    elementId: string,
+    content: string,
+    preamble?: string,
   ): Promise<{ ok: true; svgUrl: string } | { ok: false; error: string }> {
-    return {
-      ok: false,
-      error: "TikZ rendering requires the dev server (npm run dev). It is not available in static/offline mode.",
-    };
+    const { renderTikzToSvg } = await import("@/utils/tikzjax");
+    const svgMarkup = await renderTikzToSvg(content, preamble);
+
+    // Write SVG to assets/tikz/{elementId}.svg
+    const assetsDir = await this.dirHandle.getDirectoryHandle("assets", { create: true });
+    const tikzDir = await assetsDir.getDirectoryHandle("tikz", { create: true });
+    const fileHandle = await tikzDir.getFileHandle(`${elementId}.svg`, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(svgMarkup);
+    await writable.close();
+
+    // Cache a blob URL for immediate display.
+    // Append ?v=timestamp so useAssetUrl detects the change (same element ID
+    // produces the same base path, so React's useEffect wouldn't re-fire).
+    const basePath = `/assets/${this.projectName}/tikz/${elementId}.svg`;
+    const storedPath = `${basePath}?v=${Date.now()}`;
+    const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
+    const blobUrl = URL.createObjectURL(blob);
+    this.blobUrlCache.set(storedPath, blobUrl);
+
+    return { ok: true, svgUrl: storedPath };
   }
 }
 
