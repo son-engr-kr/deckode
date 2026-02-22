@@ -7,6 +7,7 @@ import { CodeElementRenderer } from "./elements/CodeElement";
 import { ShapeElementRenderer } from "./elements/ShapeElement";
 import { VideoElementRenderer } from "./elements/VideoElement";
 import { TikZElementRenderer } from "./elements/TikZElement";
+import { CustomElementRenderer } from "./elements/CustomElement";
 
 interface Props {
   element: SlideElement;
@@ -124,5 +125,7 @@ function renderByType(element: SlideElement, thumbnail?: boolean) {
       return <VideoElementRenderer element={element} thumbnail={thumbnail} />;
     case "tikz":
       return <TikZElementRenderer element={element} thumbnail={thumbnail} />;
+    case "custom":
+      return <CustomElementRenderer element={element} />;
   }
 }

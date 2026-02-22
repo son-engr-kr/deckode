@@ -148,6 +148,22 @@ export class FsAccessAdapter implements FileSystemAdapter {
     return blobUrl;
   }
 
+  async listComponents(): Promise<string[]> {
+    let componentsDir: FileSystemDirectoryHandle;
+    try {
+      componentsDir = await this.dirHandle.getDirectoryHandle("components");
+    } catch {
+      return [];
+    }
+    const names: string[] = [];
+    for await (const [name, handle] of componentsDir as any) {
+      if (handle.kind === "file" && /\.(tsx|jsx)$/.test(name)) {
+        names.push(name.replace(/\.(tsx|jsx)$/, ""));
+      }
+    }
+    return names;
+  }
+
   async renderTikz(
     elementId: string,
     content: string,

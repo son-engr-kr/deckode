@@ -72,6 +72,13 @@ export async function renderTikz(
   return res.json();
 }
 
+export async function listComponents(project: string): Promise<string[]> {
+  const res = await fetch(`/api/list-components?project=${encodeURIComponent(project)}`);
+  assert(res.ok, `Failed to list components: ${res.status}`);
+  const data = await res.json();
+  return data.components;
+}
+
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(`[API] ${message}`);
 }

@@ -124,7 +124,13 @@ export interface TikZElement extends BaseElement {
   style?: TikZStyle;
 }
 
-export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement;
+export interface CustomElement extends BaseElement {
+  type: "custom";
+  component: string;
+  props?: Record<string, unknown>;
+}
+
+export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement | CustomElement;
 
 // ----- Animations -----
 

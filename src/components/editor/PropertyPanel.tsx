@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
-import type { Slide, SlideElement, TikZElement } from "@/types/deck";
+import type { Slide, SlideElement, TikZElement, CustomElement } from "@/types/deck";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { AnimationEditor } from "./AnimationEditor";
 import {
@@ -96,6 +96,15 @@ export function PropertyPanel() {
       {/* TikZ editor */}
       {element.type === "tikz" && (
         <TikZEditor
+          element={element}
+          slideId={slide.id}
+          updateElement={updateElement}
+        />
+      )}
+
+      {/* Custom component properties */}
+      {element.type === "custom" && (
+        <CustomPropsEditor
           element={element}
           slideId={slide.id}
           updateElement={updateElement}
@@ -245,6 +254,8 @@ function ElementStyleEditor({
   slideId: string;
   updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
 }) {
+  if (element.type === "custom") return null;
+
   const patchStyle = (prop: string, value: unknown) => {
     updateElement(slideId, element.id, {
       style: { ...element.style, [prop]: value },
@@ -452,6 +463,58 @@ function TikZEditor({
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+function CustomPropsEditor({
+  element,
+  slideId,
+  updateElement,
+}: {
+  element: CustomElement;
+  slideId: string;
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+}) {
+  const [draft, setDraft] = useState(() => JSON.stringify(element.props ?? {}, null, 2));
+  const [parseError, setParseError] = useState<string | null>(null);
+
+  // Sync draft when element.props changes externally (undo/redo)
+  useEffect(() => {
+    setDraft(JSON.stringify(element.props ?? {}, null, 2));
+    setParseError(null);
+  }, [element.id]);
+
+  const handleBlur = () => {
+    try {
+      const parsed = JSON.parse(draft);
+      setParseError(null);
+      updateElement(slideId, element.id, { props: parsed } as Partial<SlideElement>);
+    } catch (e: any) {
+      setParseError(e.message);
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Component</div>
+        <div className="text-purple-300 font-mono text-xs">{element.component}</div>
+      </div>
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Props (JSON)</div>
+        <textarea
+          className="w-full bg-zinc-800 text-zinc-200 rounded px-2 py-1.5 text-xs font-mono resize-y min-h-20 border border-zinc-700 focus:border-blue-500 focus:outline-none"
+          value={draft}
+          rows={6}
+          spellCheck={false}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={handleBlur}
+        />
+        {parseError && (
+          <div className="text-red-400 text-xs mt-1 font-mono">{parseError}</div>
+        )}
+      </div>
     </>
   );
 }

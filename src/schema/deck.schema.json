@@ -148,7 +148,7 @@
       "required": ["id", "type", "position", "size"],
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["text", "image", "code", "shape", "video", "tikz"] },
+        "type": { "type": "string", "enum": ["text", "image", "code", "shape", "video", "tikz", "custom"] },
         "position": { "$ref": "#/$defs/Position" },
         "size": { "$ref": "#/$defs/Size" },
         "rotation": { "type": "number" },
@@ -162,6 +162,8 @@
         "controls": { "type": "boolean" },
         "svgUrl": { "type": "string" },
         "preamble": { "type": "string" },
+        "component": { "type": "string" },
+        "props": { "type": "object" },
         "style": { "type": "object" }
       },
       "allOf": [
@@ -188,6 +190,10 @@
         {
           "if": { "properties": { "type": { "const": "tikz" } } },
           "then": { "required": ["content"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "custom" } } },
+          "then": { "required": ["component"] }
         }
       ]
     },

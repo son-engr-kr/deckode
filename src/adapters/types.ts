@@ -24,6 +24,7 @@ export interface FileSystemAdapter {
     content: string,
     preamble?: string,
   ): Promise<{ ok: true; svgUrl: string } | { ok: false; error: string }>;
+  listComponents(): Promise<string[]>;
   readonly mode: "vite" | "fs-access";
   readonly projectName: string;
 }

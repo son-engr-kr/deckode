@@ -131,6 +131,44 @@ export function deckApiPlugin(): Plugin {
       // -- Migrate legacy layouts --
       migrateToProjectDir();
 
+      // -- Serving custom components: /components/{project}/{file}.tsx --
+
+      server.middlewares.use("/components", async (req, res, next) => {
+        const urlPath = decodeURIComponent((req.url ?? "/").split("?")[0]!);
+        const parts = urlPath.replace(/^\//, "").split("/").filter(Boolean);
+        if (parts.length < 2) { next(); return; }
+        const project = parts[0]!;
+        if (!isValidProjectName(project)) { next(); return; }
+        const fileName = parts.slice(1).join("/");
+        const filePath = path.resolve(projectDir(project), "components", fileName);
+        // Path traversal guard
+        if (!filePath.startsWith(path.resolve(projectDir(project), "components"))) { next(); return; }
+        if (!fs.existsSync(filePath)) { next(); return; }
+        const source = fs.readFileSync(filePath, "utf-8");
+        const result = await server.pluginContainer.transform(source, filePath);
+        res.writeHead(200, {
+          "Content-Type": "application/javascript",
+          "Cache-Control": "no-cache",
+        });
+        res.end(result.code);
+      });
+
+      // -- List custom components: GET /api/list-components?project=name --
+
+      server.middlewares.use("/api/list-components", (req, res) => {
+        const project = getProjectParam(req);
+        const componentsDir = path.resolve(projectDir(project), "components");
+        if (!fs.existsSync(componentsDir)) {
+          jsonResponse(res, 200, { components: [] });
+          return;
+        }
+        const entries = fs.readdirSync(componentsDir);
+        const components = entries
+          .filter((f) => /\.(tsx|jsx)$/.test(f))
+          .map((f) => f.replace(/\.(tsx|jsx)$/, ""));
+        jsonResponse(res, 200, { components });
+      });
+
       // -- Static serving: /assets/{project}/* --
 
       server.middlewares.use("/assets", (req, res, next) => {

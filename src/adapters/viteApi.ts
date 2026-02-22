@@ -8,6 +8,7 @@ import {
   saveDeckToDisk,
   uploadAsset as apiUploadAsset,
   renderTikz as apiRenderTikz,
+  listComponents as apiListComponents,
 } from "@/utils/api";
 
 export class ViteApiAdapter implements FileSystemAdapter {
@@ -56,6 +57,10 @@ export class ViteApiAdapter implements FileSystemAdapter {
     preamble?: string,
   ): Promise<{ ok: true; svgUrl: string } | { ok: false; error: string }> {
     return apiRenderTikz(this.projectName, elementId, content, preamble);
+  }
+
+  async listComponents(): Promise<string[]> {
+    return apiListComponents(this.projectName);
   }
 }
 

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useDeckStore } from "@/stores/deckStore";
+import { useAdapter } from "@/contexts/AdapterContext";
 import { nextElementId } from "@/utils/id";
 import type { SlideElement } from "@/types/deck";
 
@@ -75,7 +76,9 @@ const ELEMENT_PRESETS: { label: string; create: () => SlideElement }[] = [
 
 export function ElementPalette() {
   const [open, setOpen] = useState(false);
+  const [customComponents, setCustomComponents] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement>(null);
+  const adapter = useAdapter();
 
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
@@ -91,12 +94,31 @@ export function ElementPalette() {
     return () => window.removeEventListener("mousedown", handleClick);
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    adapter.listComponents().then(setCustomComponents);
+  }, [open, adapter]);
+
   if (!deck) return null;
   const slide = deck.slides[currentSlideIndex];
   if (!slide) return null;
 
   const handleAdd = (preset: (typeof ELEMENT_PRESETS)[number]) => {
     const element = preset.create();
+    addElement(slide.id, element);
+    selectElement(element.id);
+    setOpen(false);
+  };
+
+  const handleAddCustom = (componentName: string) => {
+    const element: SlideElement = {
+      id: nextElementId(),
+      type: "custom" as const,
+      component: componentName,
+      props: {},
+      position: { x: 200, y: 150 },
+      size: { w: 300, h: 200 },
+    };
     addElement(slide.id, element);
     selectElement(element.id);
     setOpen(false);
@@ -124,6 +146,21 @@ export function ElementPalette() {
               {preset.label}
             </button>
           ))}
+          {customComponents.length > 0 && (
+            <>
+              <div className="border-t border-zinc-700 my-1" />
+              <div className="px-3 py-1 text-[10px] text-zinc-500 uppercase tracking-wider">Custom</div>
+              {customComponents.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => handleAddCustom(name)}
+                  className="block w-full text-left px-3 py-1.5 text-xs text-purple-300 hover:bg-zinc-700 transition-colors"
+                >
+                  {name}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       )}
     </div>
