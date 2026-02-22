@@ -21,8 +21,7 @@ Opens at `http://localhost:5173`. In dev mode the Vite plugin handles file I/O �
 ### Production / Static (File System Access API)
 
 ```bash
-npm run build
-npx serve dist
+npm run build && npx serve dist
 ```
 
 Opens at `http://localhost:3000`. In this mode there is no backend — the app uses the browser's File System Access API to read/write a local project folder you pick via the directory picker. The chosen folder is remembered across reloads (stored in IndexedDB). TikZ rendering runs client-side via TikZJax (WASM).
@@ -86,9 +85,9 @@ Slides are stored as `deck.json` — a JSON scene graph. See [AI Slide Guide](do
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
+| Command             | Description              |
+| ------------------- | ------------------------ |
+| `npm run dev`     | Start dev server         |
+| `npm run build`   | Production build         |
 | `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| `npm run lint`    | Run ESLint               |

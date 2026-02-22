@@ -413,9 +413,23 @@ function PresenterConsole({
 
         {/* Right sidebar (~35%): next slide + notes */}
         <div className="flex-[1] flex flex-col border-l border-zinc-800 min-w-0">
-          {/* Next slide preview */}
-          <div className="flex items-center justify-center p-3 border-b border-zinc-800 shrink-0">
-            {nextSlide ? (
+          {/* Next preview: next animation step or next slide */}
+          <div className="flex flex-col items-center justify-center p-3 border-b border-zinc-800 shrink-0">
+            <div className="text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">
+              {activeStep < steps.length
+                ? `Next Step (${activeStep + 1}/${steps.length})`
+                : "Next Slide"}
+            </div>
+            {activeStep < steps.length ? (
+              <SlideRenderer
+                slide={slide}
+                scale={nextScale}
+                animate
+                activeStep={activeStep + 1}
+                steps={steps}
+                theme={deck.theme}
+              />
+            ) : nextSlide ? (
               <SlideRenderer
                 slide={nextSlide}
                 scale={nextScale}
