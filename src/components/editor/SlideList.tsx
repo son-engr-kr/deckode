@@ -20,9 +20,12 @@ import { useAdapter } from "@/contexts/AdapterContext";
 import type { Slide, DeckTheme } from "@/types/deck";
 import type { LayoutInfo } from "@/adapters/types";
 
-const THUMB_SCALE = 0.15;
-const THUMB_W = Math.round(960 * THUMB_SCALE);
-const THUMB_H = Math.round(540 * THUMB_SCALE);
+const CANVAS_W = 960;
+const CANVAS_H = 540;
+// Chrome around each thumbnail: button border-2 (4px) + p-0.5 (4px)
+const THUMB_CHROME = 8;
+const DEFAULT_THUMB_SCALE = 0.15;
+const MIN_THUMB_SCALE = 0.1;
 
 function createBlankSlide(): Slide {
   return {
@@ -45,11 +48,28 @@ export function SlideList() {
   const listRef = useRef<HTMLDivElement>(null);
   const [showLayoutPicker, setShowLayoutPicker] = useState(false);
   const [layouts, setLayouts] = useState<LayoutInfo[]>([]);
+  const [thumbScale, setThumbScale] = useState(DEFAULT_THUMB_SCALE);
 
   // Require 5px movement before drag starts (so clicks still work)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
+
+  // Responsive thumbnail scale: observe container width
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      if (w > 0) {
+        setThumbScale(Math.max(MIN_THUMB_SCALE, (w - THUMB_CHROME) / CANVAS_W));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const thumbH = Math.round(CANVAS_H * thumbScale);
 
   // Load layouts when picker opens
   useEffect(() => {
@@ -124,6 +144,7 @@ export function SlideList() {
               key={slide.id}
               slide={slide}
               index={index}
+              scale={thumbScale}
               isCurrent={index === currentSlideIndex}
               isSelected={selectedSlideIds.includes(slide.id)}
               canDelete={deck.slides.length > 1}
@@ -154,11 +175,11 @@ export function SlideList() {
       </DndContext>
 
       {/* Add slide buttons */}
-      <div className="flex gap-1 shrink-0" style={{ width: THUMB_W + 6 }}>
+      <div className="flex gap-1 shrink-0">
         <button
           onClick={handleAddSlide}
           className="flex-1 rounded border-2 border-dashed border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 transition-colors flex items-center justify-center text-lg"
-          style={{ height: THUMB_H + 6 }}
+          style={{ height: thumbH + 6 }}
           title="Add blank slide"
         >
           +
@@ -170,7 +191,7 @@ export function SlideList() {
               ? "border-blue-500 text-blue-400"
               : "border-dashed border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300"
           }`}
-          style={{ height: THUMB_H + 6 }}
+          style={{ height: thumbH + 6 }}
           title="Add from layout"
         >
           L
@@ -179,7 +200,7 @@ export function SlideList() {
 
       {/* Layout picker dropdown */}
       {showLayoutPicker && (
-        <div className="shrink-0 rounded bg-zinc-900 border border-zinc-700 p-1.5" style={{ width: THUMB_W + 6 }}>
+        <div className="shrink-0 rounded bg-zinc-900 border border-zinc-700 p-1.5">
           <div className="text-[9px] text-zinc-500 uppercase tracking-wider mb-1 px-1">Layouts</div>
           {layouts.length === 0 && (
             <div className="text-[10px] text-zinc-600 px-1">No layouts found</div>
@@ -202,6 +223,7 @@ export function SlideList() {
 function SortableSlideItem({
   slide,
   index,
+  scale,
   isCurrent,
   isSelected,
   canDelete,
@@ -211,6 +233,7 @@ function SortableSlideItem({
 }: {
   slide: Slide;
   index: number;
+  scale: number;
   isCurrent: boolean;
   isSelected: boolean;
   canDelete: boolean;
@@ -240,7 +263,7 @@ function SortableSlideItem({
         }`}
       >
         <div className="rounded-sm overflow-hidden pointer-events-none">
-          <SlideRenderer slide={slide} scale={THUMB_SCALE} thumbnail theme={theme} />
+          <SlideRenderer slide={slide} scale={scale} thumbnail theme={theme} />
         </div>
         <span className="absolute bottom-0.5 right-1.5 text-[10px] text-zinc-500 font-mono">
           {index + 1}

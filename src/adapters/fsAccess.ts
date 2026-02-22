@@ -6,7 +6,6 @@ import { generateBlankDeck, generateWizardDeck } from "@/utils/projectTemplates"
 
 // Bundled template data for prod/FS Access mode (no server available)
 import exampleDeck from "../../templates/default/deck.json";
-import deckSchema from "@/schema/deck.schema.json";
 import aiGuideText from "../../docs/ai-slide-guide.md?raw";
 import layoutBlank from "../../templates/default/layouts/blank.json";
 import layoutTitle from "../../templates/default/layouts/title.json";
@@ -104,7 +103,6 @@ export class FsAccessAdapter implements FileSystemAdapter {
 
     // Write docs/
     const docsDir = await projectDir.getDirectoryHandle("docs", { create: true });
-    await writeTextFile(docsDir, "deck.schema.json", JSON.stringify(deckSchema, null, 2));
     await writeTextFile(docsDir, "ai-slide-guide.md", aiGuideText);
 
     return projectDir;

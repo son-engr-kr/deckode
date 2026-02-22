@@ -370,11 +370,6 @@ export function deckApiPlugin(): Plugin {
         const docsDir = path.resolve(dir, "docs");
         fs.mkdirSync(docsDir, { recursive: true });
 
-        const schemaSource = path.resolve(process.cwd(), "src", "schema", "deck.schema.json");
-        if (fs.existsSync(schemaSource)) {
-          fs.copyFileSync(schemaSource, path.resolve(docsDir, "deck.schema.json"));
-        }
-
         const guideSource = path.resolve(process.cwd(), "docs", "ai-slide-guide.md");
         if (fs.existsSync(guideSource)) {
           fs.copyFileSync(guideSource, path.resolve(docsDir, "ai-slide-guide.md"));

@@ -1,6 +1,31 @@
 # Deckode AI Slide Guide
 
-You are creating slides for Deckode, a JSON-based slide platform. This document is the complete specification for generating and modifying slide decks.
+You are creating slides for Deckode, a local-first, JSON-based slide platform. This document is the complete specification for generating and modifying slide decks. It is the only reference you need.
+
+---
+
+## Project Structure
+
+A Deckode project is a folder with this layout:
+
+```
+my-project/
+  deck.json            # The presentation (source of truth)
+  layouts/             # Layout templates (pre-positioned element sets)
+    blank.json
+    title.json
+    title-content.json
+    two-column.json
+    section-header.json
+    code-slide.json
+    image-left.json
+  assets/              # Images, videos, and other media (created on demand)
+  components/          # Custom React components (optional, dev mode only)
+  docs/
+    ai-slide-guide.md  # This file
+```
+
+Your primary task is to read and write `deck.json`. Assets go in `assets/` with relative paths (`"./assets/photo.png"`).
 
 ---
 
