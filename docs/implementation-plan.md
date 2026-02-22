@@ -179,11 +179,12 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] Layout templates (`layouts/` directory, reusable slide structures)
 - [X] Fix: F5 fullscreen presentation mode regression (F5 should enter fullscreen, currently requires F11)
 - [X] Fix: ellipse shape stroke clipping (inset radii by half stroke width)
-- [X] Presenter view (PowerPoint-style): dual-screen support with slide display on one screen and presenter console on another
-  - [X] Presenter console: current slide preview, next slide preview, elapsed timer, presenter notes
+- [X] Presenter view: in-window presenter console (replaces popup-window approach)
+  - [X] F5 enters fullscreen presenter console: current slide (left 2/3) + next slide preview + notes + timer (right 1/3)
+  - [X] P key toggles between presenter console and slide-only audience view
+  - [X] W key opens audience popup window for dual-monitor setups (synced via BroadcastChannel)
   - [X] Presenter notes editor: per-slide script/notes editable in the editor's property panel
   - [X] Animation-aware script highlighting: notes highlight the relevant section as animations progress (marker-based, e.g. `[step:1]...[/step]` tags in notes so users can easily edit the mapping)
-  - [X] Zoom/screen-share friendly: presenter console works as a separate window, so users can share only the slide window
   - [X] Laser pointer overlay on presentation slide (toggle with L key, synced via BroadcastChannel)
 - [ ] PDF export via browser print API (window.print() with @media print CSS, no server dependency)
 - [ ] PPTX export (client-side via pptxgenjs, no server dependency)
@@ -252,6 +253,17 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - AI integration is through `deck.json` manipulation. The AI does not need to know about React components or internal rendering. It only needs to produce valid `deck.json`.
 - See `docs/ai-slide-guide.md` for the full AI-facing specification.
 - **External tools are first-class citizens**: Claude Code, Cursor, or any tool that reads the guide and schema can generate valid decks without any integration work.
+
+---
+
+## Ideas & Future Considerations
+
+Items to discuss or explore. Not yet committed to any phase.
+
+- **Presentation API integration**: Use the browser Presentation API (`navigator.presentation`) for native dual-display support (present on secondary display without manual popup management)
+- **Presenter console font size slider**: Allow presenters to adjust notes font size for readability at a distance
+- **Slide overview grid**: Press G in presentation mode to see a grid of all slides for quick jump navigation
+- **Speaker timer alerts**: Configurable time alerts (e.g., flash border at 5 min, 10 min) in presenter console
 
 ---
 
