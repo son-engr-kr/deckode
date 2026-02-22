@@ -38,6 +38,7 @@ export function PresenterView() {
     visible: boolean;
   }>({ x: 0, y: 0, visible: false });
   const [scale, setScale] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const slide = deck?.slides[currentSlideIndex];
   const steps = useMemo(
@@ -84,10 +85,29 @@ export function PresenterView() {
     postSyncRequest();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keyboard: Escape to close
+  // Track fullscreen changes
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  // Keyboard: Escape to close, F to toggle fullscreen
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") window.close();
+      if (e.key === "Escape") {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          window.close();
+        }
+      } else if (e.key === "f" || e.key === "F") {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          document.documentElement.requestFullscreen?.();
+        }
+      }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
@@ -103,7 +123,7 @@ export function PresenterView() {
     transitionVariants[transition.type] ?? transitionVariants.fade;
 
   return (
-    <div className="h-screen w-screen bg-black flex items-center justify-center">
+    <div className="h-screen w-screen bg-black flex items-center justify-center relative">
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -135,6 +155,16 @@ export function PresenterView() {
           />
         )}
       </div>
+      {/* Fullscreen control — fades out after a moment */}
+      {!isFullscreen && (
+        <button
+          onClick={() => document.documentElement.requestFullscreen?.()}
+          className="absolute top-3 right-3 text-xs px-3 py-1.5 rounded bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
+          title="Fullscreen (F)"
+        >
+          Fullscreen (F)
+        </button>
+      )}
     </div>
   );
 }
