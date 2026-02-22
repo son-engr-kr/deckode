@@ -58,6 +58,7 @@ export function EditorLayout() {
       }
       if (e.key === "F5") {
         e.preventDefault();
+        document.documentElement.requestFullscreen?.();
         setPresenting(true);
         return;
       }
@@ -154,7 +155,10 @@ export function EditorLayout() {
           Save
         </button>
         <button
-          onClick={() => setPresenting(true)}
+          onClick={() => {
+            document.documentElement.requestFullscreen?.();
+            setPresenting(true);
+          }}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
         >
           Present (F5)
@@ -343,9 +347,8 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
     onExit();
   }, [postExit, onExit]);
 
-  // Fullscreen: enter on mount, exit on unmount — runs once only
+  // Exit fullscreen on unmount (entry is handled by the user-gesture handler — F5 key / button click)
   useEffect(() => {
-    document.documentElement.requestFullscreen?.();
     return () => {
       if (document.fullscreenElement) {
         document.exitFullscreen?.();
