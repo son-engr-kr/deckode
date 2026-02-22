@@ -241,6 +241,27 @@ function SlidePropertiesPanel({
           )}
         </div>
       </div>
+
+      {/* Presenter Notes */}
+      {selectedSlides.length === 1 && (
+        <div>
+          <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">
+            Presenter Notes
+          </div>
+          <div className="text-zinc-600 text-[10px] mb-1">
+            Use [step:N]...[/step] to highlight text at animation step N
+          </div>
+          <textarea
+            className="w-full bg-zinc-800 text-zinc-200 rounded px-2 py-1.5 text-xs resize-y min-h-24 border border-zinc-700 focus:border-blue-500 focus:outline-none"
+            value={selectedSlides[0]!.notes ?? ""}
+            rows={6}
+            placeholder="Enter presenter notes here...&#10;&#10;Use [step:1]text[/step] to highlight during animation step 1"
+            onChange={(e) => {
+              updateSlide(selectedSlides[0]!.id, { notes: e.target.value });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

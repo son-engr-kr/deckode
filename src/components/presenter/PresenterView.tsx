@@ -5,6 +5,36 @@ import { usePresentationChannel } from "@/hooks/usePresentationChannel";
 import { computeSteps } from "@/utils/animationSteps";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 
+/**
+ * Parse notes with [step:N]...[/step] markers into segments.
+ * Each segment is either plain text or tagged text with a step number.
+ */
+interface NoteSegment {
+  text: string;
+  step: number | null; // null = always visible, number = highlighted at that step
+}
+
+function parseNotes(notes: string): NoteSegment[] {
+  const segments: NoteSegment[] = [];
+  const regex = /\[step:(\d+)\]([\s\S]*?)\[\/step\]/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(notes)) !== null) {
+    // Text before the tag
+    if (match.index > lastIndex) {
+      segments.push({ text: notes.slice(lastIndex, match.index), step: null });
+    }
+    segments.push({ text: match[2]!, step: parseInt(match[1]!, 10) });
+    lastIndex = match.index + match[0].length;
+  }
+  // Remaining text after last tag
+  if (lastIndex < notes.length) {
+    segments.push({ text: notes.slice(lastIndex), step: null });
+  }
+  return segments;
+}
+
 export function PresenterView() {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
@@ -12,6 +42,7 @@ export function PresenterView() {
 
   const [activeStep, setActiveStep] = useState(0);
   const [elapsed, setElapsed] = useState(0);
+  const [pointerActive, setPointerActive] = useState(false);
 
   const slide = deck?.slides[currentSlideIndex];
   const nextSlide = deck?.slides[currentSlideIndex + 1] ?? null;
@@ -20,6 +51,11 @@ export function PresenterView() {
   const steps = useMemo(
     () => computeSteps(slide?.animations ?? []),
     [slide?.animations],
+  );
+
+  const noteSegments = useMemo(
+    () => parseNotes(slide?.notes ?? ""),
+    [slide?.notes],
   );
 
   // Reset activeStep on slide change
@@ -40,7 +76,7 @@ export function PresenterView() {
   // --- BroadcastChannel ---
   const skipNextBroadcast = useRef(false);
 
-  const { postNavigate, postExit, postSyncRequest } = usePresentationChannel({
+  const { postNavigate, postExit, postSyncRequest, postPointer } = usePresentationChannel({
     onNavigate: (slideIndex, step) => {
       skipNextBroadcast.current = true;
       setCurrentSlide(slideIndex);
@@ -111,6 +147,9 @@ export function PresenterView() {
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         goBack();
+      } else if (e.key === "l" || e.key === "L") {
+        // Toggle laser pointer
+        setPointerActive((p) => !p);
       } else {
         const currentStep = stepsRef.current[activeStepRef.current];
         if (currentStep?.trigger === "onKey" && currentStep.key === e.key) {
@@ -122,6 +161,24 @@ export function PresenterView() {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [postExit, goBack]);
+
+  // Pointer movement on the current slide preview
+  const slideContainerRef = useRef<HTMLDivElement>(null);
+
+  const handlePointerMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!pointerActive || !slideContainerRef.current) return;
+      const rect = slideContainerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      postPointer(x, y, true);
+    },
+    [pointerActive, postPointer],
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    if (pointerActive) postPointer(0, 0, false);
+  }, [pointerActive, postPointer]);
 
   // Elapsed timer
   useEffect(() => {
@@ -169,7 +226,12 @@ export function PresenterView() {
       {/* Top area: current slide + right sidebar */}
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Current slide (large) */}
-        <div className="flex-[2] flex items-center justify-center p-4">
+        <div
+          ref={slideContainerRef}
+          className={`flex-[2] flex items-center justify-center p-4 relative ${pointerActive ? "cursor-crosshair" : ""}`}
+          onMouseMove={handlePointerMove}
+          onMouseLeave={handlePointerLeave}
+        >
           <SlideRenderer
             slide={slide}
             scale={currentScale}
@@ -205,34 +267,74 @@ export function PresenterView() {
             )}
           </div>
 
-          {/* Speaker notes */}
+          {/* Speaker notes with animation-aware highlighting */}
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
             <div className="text-xs font-semibold text-zinc-500 mb-2 uppercase tracking-wider">
               Notes
             </div>
-            <div className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
-              {slide.notes || (
+            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+              {noteSegments.length === 0 ? (
                 <span className="text-zinc-600 italic">No notes for this slide</span>
+              ) : (
+                noteSegments.map((seg, i) => {
+                  if (seg.step === null) {
+                    // Plain text — always visible
+                    return (
+                      <span key={i} className="text-zinc-300">
+                        {seg.text}
+                      </span>
+                    );
+                  }
+                  // Step-tagged text — highlight when activeStep matches
+                  const isActive = activeStep >= seg.step;
+                  return (
+                    <span
+                      key={i}
+                      className={
+                        isActive
+                          ? "text-yellow-300 bg-yellow-900/30 rounded px-0.5"
+                          : "text-zinc-500"
+                      }
+                    >
+                      {seg.text}
+                    </span>
+                  );
+                })
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar: counters + timer */}
+      {/* Bottom bar: controls + counters + timer */}
       <div className="h-10 border-t border-zinc-800 flex items-center justify-between px-6 shrink-0 text-sm">
-        <div className="text-zinc-400">
-          Slide{" "}
-          <span className="text-white font-semibold">{currentSlideIndex + 1}</span>
-          <span className="text-zinc-600">/{totalSlides}</span>
-          {steps.length > 0 && (
-            <>
-              <span className="mx-3 text-zinc-700">|</span>
-              Step{" "}
-              <span className="text-white font-semibold">{activeStep}</span>
-              <span className="text-zinc-600">/{steps.length}</span>
-            </>
-          )}
+        <div className="text-zinc-400 flex items-center gap-4">
+          <span>
+            Slide{" "}
+            <span className="text-white font-semibold">{currentSlideIndex + 1}</span>
+            <span className="text-zinc-600">/{totalSlides}</span>
+            {steps.length > 0 && (
+              <>
+                <span className="mx-3 text-zinc-700">|</span>
+                Step{" "}
+                <span className="text-white font-semibold">{activeStep}</span>
+                <span className="text-zinc-600">/{steps.length}</span>
+              </>
+            )}
+          </span>
+
+          {/* Laser pointer toggle */}
+          <button
+            onClick={() => setPointerActive(!pointerActive)}
+            className={`text-xs px-2 py-0.5 rounded transition-colors ${
+              pointerActive
+                ? "bg-red-600 text-white"
+                : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+            }`}
+            title="Toggle laser pointer (L)"
+          >
+            Pointer {pointerActive ? "ON" : "OFF"}
+          </button>
         </div>
         <div className="font-mono text-zinc-300 text-base">
           {mm}:{ss}

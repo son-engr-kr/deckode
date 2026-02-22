@@ -253,6 +253,7 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
   const nextSlide = useDeckStore((s) => s.nextSlide);
   const prevSlide = useDeckStore((s) => s.prevSlide);
   const [activeStep, setActiveStep] = useState(0);
+  const [pointer, setPointer] = useState<{ x: number; y: number; visible: boolean }>({ x: 0, y: 0, visible: false });
 
   const slide = deck?.slides[currentSlideIndex];
   const steps = useMemo(
@@ -302,6 +303,9 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
         useDeckStore.getState().currentSlideIndex,
         activeStepRef.current,
       );
+    },
+    onPointer: (x, y, visible) => {
+      setPointer({ x, y, visible });
     },
   });
 
@@ -384,7 +388,7 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
 
   return (
     <div className="h-screen w-screen bg-black">
-      <SlideViewerPresentation activeStep={activeStep} steps={steps} onAdvance={advance} />
+      <SlideViewerPresentation activeStep={activeStep} steps={steps} onAdvance={advance} pointer={pointer} />
     </div>
   );
 }
@@ -394,10 +398,12 @@ function SlideViewerPresentation({
   activeStep,
   steps,
   onAdvance,
+  pointer,
 }: {
   activeStep: number;
   steps: AnimationStep[];
   onAdvance: () => void;
+  pointer: { x: number; y: number; visible: boolean };
 }) {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
@@ -421,7 +427,7 @@ function SlideViewerPresentation({
 
   return (
     <div className="h-full w-full flex items-center justify-center bg-black cursor-default">
-      <div>
+      <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id}
@@ -441,6 +447,18 @@ function SlideViewerPresentation({
             />
           </motion.div>
         </AnimatePresence>
+        {/* Laser pointer dot */}
+        {pointer.visible && (
+          <div
+            className="absolute w-3 h-3 rounded-full bg-red-500 pointer-events-none"
+            style={{
+              left: `${pointer.x * 100}%`,
+              top: `${pointer.y * 100}%`,
+              transform: "translate(-50%, -50%)",
+              boxShadow: "0 0 12px 4px rgba(239, 68, 68, 0.6)",
+            }}
+          />
+        )}
       </div>
     </div>
   );

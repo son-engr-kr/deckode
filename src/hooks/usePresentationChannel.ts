@@ -3,12 +3,14 @@ import { useEffect, useRef } from "react";
 export type PresentMessage =
   | { type: "navigate"; slideIndex: number; activeStep: number }
   | { type: "exit" }
-  | { type: "sync-request" };
+  | { type: "sync-request" }
+  | { type: "pointer"; x: number; y: number; visible: boolean };
 
 interface Callbacks {
   onNavigate?: (slideIndex: number, activeStep: number) => void;
   onExit?: () => void;
   onSyncRequest?: () => void;
+  onPointer?: (x: number, y: number, visible: boolean) => void;
 }
 
 export function usePresentationChannel(callbacks: Callbacks) {
@@ -29,6 +31,8 @@ export function usePresentationChannel(callbacks: Callbacks) {
         cbRef.current.onExit?.();
       } else if (msg.type === "sync-request") {
         cbRef.current.onSyncRequest?.();
+      } else if (msg.type === "pointer") {
+        cbRef.current.onPointer?.(msg.x, msg.y, msg.visible);
       }
     };
 
@@ -56,5 +60,14 @@ export function usePresentationChannel(callbacks: Callbacks) {
     } satisfies PresentMessage);
   };
 
-  return { postNavigate, postExit, postSyncRequest };
+  const postPointer = (x: number, y: number, visible: boolean) => {
+    channelRef.current?.postMessage({
+      type: "pointer",
+      x,
+      y,
+      visible,
+    } satisfies PresentMessage);
+  };
+
+  return { postNavigate, postExit, postSyncRequest, postPointer };
 }
