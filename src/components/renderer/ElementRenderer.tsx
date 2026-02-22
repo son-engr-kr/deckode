@@ -7,6 +7,7 @@ import { CodeElementRenderer } from "./elements/CodeElement";
 import { ShapeElementRenderer } from "./elements/ShapeElement";
 import { VideoElementRenderer } from "./elements/VideoElement";
 import { TikZElementRenderer } from "./elements/TikZElement";
+import { TableElementRenderer } from "./elements/TableElement";
 import { CustomElementRenderer } from "./elements/CustomElement";
 
 interface Props {
@@ -125,6 +126,8 @@ function renderByType(element: SlideElement, thumbnail?: boolean) {
       return <VideoElementRenderer element={element} thumbnail={thumbnail} />;
     case "tikz":
       return <TikZElementRenderer element={element} thumbnail={thumbnail} />;
+    case "table":
+      return <TableElementRenderer element={element} />;
     case "custom":
       return <CustomElementRenderer element={element} />;
   }

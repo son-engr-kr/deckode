@@ -63,7 +63,8 @@ A Deckode presentation is a single `deck.json` file. It is a JSON scene graph: a
     "shape": { "stroke": "#ffffff", "strokeWidth": 1 },
     "image": { "objectFit": "contain" },
     "video": { "objectFit": "contain" },
-    "tikz": { "backgroundColor": "#1e1e2e" }
+    "tikz": { "backgroundColor": "#1e1e2e" },
+    "table": { "headerBackground": "#1e293b", "borderColor": "#334155" }
   },
   "slides": [ ... ]
 }
@@ -348,6 +349,51 @@ Renders a TikZ/PGFPlots diagram via a WASM-based TeX engine (compiled entirely i
 }
 ```
 
+### `"table"`
+
+Renders a data table with column headers and rows.
+
+```json
+{
+  "id": "e8",
+  "type": "table",
+  "columns": ["Name", "Role", "Status"],
+  "rows": [
+    ["Alice", "Engineer", "Active"],
+    ["Bob", "Designer", "Active"],
+    ["Carol", "PM", "On Leave"]
+  ],
+  "position": { "x": 60, "y": 120 },
+  "size": { "w": 500, "h": 200 },
+  "style": {
+    "fontSize": 14,
+    "color": "#e2e8f0",
+    "headerBackground": "#1e293b",
+    "headerColor": "#f8fafc",
+    "borderColor": "#334155",
+    "striped": true,
+    "borderRadius": 8
+  }
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `columns` | string[] | yes | Header labels for each column |
+| `rows` | string[][] | yes | 2D array of cell data. Each inner array is one row |
+
+**Style fields**:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `fontSize` | number | `14` | Font size in px |
+| `color` | string | `"#e2e8f0"` | Body text color |
+| `headerBackground` | string | `"#1e293b"` | Header row background color |
+| `headerColor` | string | `"#f8fafc"` | Header row text color |
+| `borderColor` | string | `"#334155"` | Border/divider color |
+| `striped` | boolean | `false` | Alternate row background shading |
+| `borderRadius` | number | `8` | Corner radius of the table container |
+
 ### `"custom"`
 
 Renders a user-defined React component loaded from the project's `components/` directory.
@@ -560,6 +606,7 @@ Each key in the theme object corresponds to an element type and accepts the same
 | `theme.image` | `objectFit`, `borderRadius`, `opacity` | `objectFit: "contain"` |
 | `theme.video` | `objectFit`, `borderRadius` | `objectFit: "contain"` |
 | `theme.tikz` | `backgroundColor`, `borderRadius` | `backgroundColor: "#1e1e2e"` |
+| `theme.table` | `fontSize`, `color`, `headerBackground`, `headerColor`, `borderColor`, `striped`, `borderRadius` | `fontSize: 14`, `headerBackground: "#1e293b"` |
 
 To change the default text color for the entire deck to red without touching individual elements:
 

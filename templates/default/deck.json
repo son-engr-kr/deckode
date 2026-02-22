@@ -2363,6 +2363,84 @@
       ]
     },
     {
+      "id": "tables",
+      "transition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "notes": "Table element — structured data with headers, striped rows, and theme-aware styling.",
+      "elements": [
+        {
+          "id": "tbl-title",
+          "type": "text",
+          "content": "## Table Element",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#f8fafc" }
+        },
+        {
+          "id": "tbl-desc",
+          "type": "text",
+          "content": "Structured data with headers, configurable borders, and optional striped rows.",
+          "position": { "x": 60, "y": 80 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 16, "color": "#64748b" }
+        },
+        {
+          "id": "tbl-demo",
+          "type": "table",
+          "columns": ["Feature", "Type", "Default"],
+          "rows": [
+            ["fontSize", "number", "14"],
+            ["headerBackground", "string", "#1e293b"],
+            ["striped", "boolean", "false"],
+            ["borderColor", "string", "#334155"],
+            ["borderRadius", "number", "8"]
+          ],
+          "position": { "x": 60, "y": 130 },
+          "size": { "w": 440, "h": 220 },
+          "style": { "fontSize": 14, "striped": true, "borderRadius": 8 }
+        },
+        {
+          "id": "tbl-demo2",
+          "type": "table",
+          "columns": ["Quarter", "Revenue", "Growth"],
+          "rows": [
+            ["Q1 2025", "$1.2M", "+12%"],
+            ["Q2 2025", "$1.5M", "+25%"],
+            ["Q3 2025", "$1.8M", "+20%"],
+            ["Q4 2025", "$2.1M", "+17%"]
+          ],
+          "position": { "x": 520, "y": 130 },
+          "size": { "w": 380, "h": 200 },
+          "style": {
+            "fontSize": 14,
+            "headerBackground": "#3b82f6",
+            "headerColor": "#ffffff",
+            "striped": true,
+            "borderRadius": 8
+          }
+        },
+        {
+          "id": "tbl-code",
+          "type": "code",
+          "language": "json",
+          "content": "{ \"type\": \"table\", \"columns\": [\"A\", \"B\"],\n  \"rows\": [[\"1\", \"2\"], [\"3\", \"4\"]], \"style\": { \"striped\": true } }",
+          "position": { "x": 140, "y": 400 },
+          "size": { "w": 680, "h": 60 },
+          "style": { "fontSize": 13, "borderRadius": 8 }
+        },
+        {
+          "id": "tbl-hint",
+          "type": "text",
+          "content": "Add/remove rows and columns in the **Property Panel**. PPTX export is supported.",
+          "position": { "x": 60, "y": 480 },
+          "size": { "w": 840, "h": 25 },
+          "style": { "fontSize": 14, "color": "#475569", "textAlign": "center" }
+        }
+      ]
+    },
+    {
       "id": "end",
       "transition": {
         "type": "fade",

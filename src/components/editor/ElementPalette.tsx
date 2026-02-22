@@ -63,6 +63,20 @@ const ELEMENT_PRESETS: { label: string; create: () => SlideElement }[] = [
     }),
   },
   {
+    label: "Table",
+    create: () => ({
+      id: nextElementId(),
+      type: "table" as const,
+      columns: ["Column 1", "Column 2", "Column 3"],
+      rows: [
+        ["Row 1", "Data", "Data"],
+        ["Row 2", "Data", "Data"],
+      ],
+      position: { x: 100, y: 150 },
+      size: { w: 500, h: 200 },
+    }),
+  },
+  {
     label: "TikZ",
     create: () => ({
       id: nextElementId(),

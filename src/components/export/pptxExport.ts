@@ -6,6 +6,7 @@ import type {
   CodeElement,
   ShapeElement,
   ImageElement,
+  TableElement,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 
@@ -111,6 +112,9 @@ async function addElement(
       break;
     case "shape":
       addShape(slide, el, x, y, w, h);
+      break;
+    case "table":
+      addTable(slide, el, x, y, w, h);
       break;
     // video, tikz, custom — not representable in PPTX
     default:
@@ -230,4 +234,53 @@ function addShape(
       },
     });
   }
+}
+
+function addTable(
+  slide: PptxGenJS.Slide,
+  el: TableElement,
+  x: number,
+  y: number,
+  w: number,
+  _h: number,
+) {
+  const s = el.style;
+  const headerBg = toHex(s?.headerBackground ?? "#1e293b");
+  const headerColor = toHex(s?.headerColor ?? "#f8fafc");
+  const textColor = toHex(s?.color ?? "#e2e8f0");
+  const borderColor = toHex(s?.borderColor ?? "#334155");
+  const fontSize = s?.fontSize ? Math.round(s.fontSize * 0.75) : 10;
+
+  const headerRow: PptxGenJS.TableRow = el.columns.map((col) => ({
+    text: col,
+    options: {
+      bold: true,
+      fontSize,
+      color: headerColor,
+      fill: headerBg ? { color: headerBg } : undefined,
+    },
+  }));
+
+  const dataRows: PptxGenJS.TableRow[] = el.rows.map((row) =>
+    el.columns.map((_, ci) => ({
+      text: row[ci] ?? "",
+      options: {
+        fontSize,
+        color: textColor,
+      },
+    })),
+  );
+
+  const colW = w / el.columns.length;
+
+  slide.addTable([headerRow, ...dataRows], {
+    x,
+    y,
+    w,
+    colW,
+    border: borderColor
+      ? { type: "solid", pt: 0.5, color: borderColor }
+      : undefined,
+    margin: [2, 4, 2, 4],
+  });
 }

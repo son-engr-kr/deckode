@@ -72,6 +72,16 @@ export interface TikZStyle {
   borderRadius?: number;
 }
 
+export interface TableStyle {
+  fontSize?: number;
+  color?: string;
+  headerBackground?: string;
+  headerColor?: string;
+  borderColor?: string;
+  striped?: boolean;
+  borderRadius?: number;
+}
+
 // ----- Elements -----
 
 interface BaseElement {
@@ -124,13 +134,20 @@ export interface TikZElement extends BaseElement {
   style?: TikZStyle;
 }
 
+export interface TableElement extends BaseElement {
+  type: "table";
+  columns: string[];
+  rows: string[][];
+  style?: TableStyle;
+}
+
 export interface CustomElement extends BaseElement {
   type: "custom";
   component: string;
   props?: Record<string, unknown>;
 }
 
-export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement | CustomElement;
+export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement | TableElement | CustomElement;
 
 // ----- Animations -----
 
@@ -179,6 +196,7 @@ export interface DeckTheme {
   image?: Partial<ImageStyle>;
   video?: Partial<VideoStyle>;
   tikz?: Partial<TikZStyle>;
+  table?: Partial<TableStyle>;
 }
 
 // ----- Deck (top-level) -----

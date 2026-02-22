@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
-import type { Slide, SlideElement, TikZElement, CustomElement } from "@/types/deck";
+import type { Slide, SlideElement, TikZElement, TableElement, CustomElement } from "@/types/deck";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { AnimationEditor } from "./AnimationEditor";
 import {
@@ -105,6 +105,15 @@ export function PropertyPanel() {
       {/* Custom component properties */}
       {element.type === "custom" && (
         <CustomPropsEditor
+          element={element}
+          slideId={slide.id}
+          updateElement={updateElement}
+        />
+      )}
+
+      {/* Table properties */}
+      {element.type === "table" && (
+        <TableDataEditor
           element={element}
           slideId={slide.id}
           updateElement={updateElement}
@@ -332,6 +341,16 @@ function ElementStyleEditor({
             <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={32} />
           </>
         )}
+        {element.type === "table" && (
+          <>
+            <NumberField label="Font Size" value={element.style?.fontSize} onChange={(v) => patchStyle("fontSize", v)} min={8} max={48} />
+            <ColorField label="Color" value={element.style?.color} onChange={(v) => patchStyle("color", v)} />
+            <ColorField label="Header BG" value={element.style?.headerBackground} onChange={(v) => patchStyle("headerBackground", v)} />
+            <ColorField label="Header Color" value={element.style?.headerColor} onChange={(v) => patchStyle("headerColor", v)} />
+            <ColorField label="Border Color" value={element.style?.borderColor} onChange={(v) => patchStyle("borderColor", v)} />
+            <NumberField label="Border Radius" value={element.style?.borderRadius} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={32} />
+          </>
+        )}
       </div>
     </div>
   );
@@ -535,6 +554,141 @@ function CustomPropsEditor({
         {parseError && (
           <div className="text-red-400 text-xs mt-1 font-mono">{parseError}</div>
         )}
+      </div>
+    </>
+  );
+}
+
+function TableDataEditor({
+  element,
+  slideId,
+  updateElement,
+}: {
+  element: TableElement;
+  slideId: string;
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+}) {
+  const updateColumn = (index: number, value: string) => {
+    const columns = [...element.columns];
+    columns[index] = value;
+    updateElement(slideId, element.id, { columns } as Partial<SlideElement>);
+  };
+
+  const updateCell = (rowIndex: number, colIndex: number, value: string) => {
+    const rows = element.rows.map((r) => [...r]);
+    rows[rowIndex]![colIndex] = value;
+    updateElement(slideId, element.id, { rows } as Partial<SlideElement>);
+  };
+
+  const addColumn = () => {
+    const columns = [...element.columns, `Col ${element.columns.length + 1}`];
+    const rows = element.rows.map((r) => [...r, ""]);
+    updateElement(slideId, element.id, { columns, rows } as Partial<SlideElement>);
+  };
+
+  const removeColumn = () => {
+    if (element.columns.length <= 1) return;
+    const columns = element.columns.slice(0, -1);
+    const rows = element.rows.map((r) => r.slice(0, -1));
+    updateElement(slideId, element.id, { columns, rows } as Partial<SlideElement>);
+  };
+
+  const addRow = () => {
+    const rows = [...element.rows, Array(element.columns.length).fill("")];
+    updateElement(slideId, element.id, { rows } as Partial<SlideElement>);
+  };
+
+  const removeRow = () => {
+    if (element.rows.length <= 1) return;
+    const rows = element.rows.slice(0, -1);
+    updateElement(slideId, element.id, { rows } as Partial<SlideElement>);
+  };
+
+  const toggleStriped = () => {
+    updateElement(slideId, element.id, {
+      style: { ...element.style, striped: !(element.style?.striped ?? false) },
+    } as Partial<SlideElement>);
+  };
+
+  return (
+    <>
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Columns</div>
+        <div className="space-y-1">
+          {element.columns.map((col, i) => (
+            <input
+              key={i}
+              type="text"
+              className="w-full bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs font-mono border border-zinc-700 focus:border-blue-500 focus:outline-none"
+              value={col}
+              onChange={(e) => updateColumn(i, e.target.value)}
+            />
+          ))}
+        </div>
+        <div className="flex gap-1 mt-1">
+          <button
+            onClick={addColumn}
+            className="flex-1 px-2 py-1 text-xs rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500 transition-colors"
+          >
+            + Col
+          </button>
+          <button
+            onClick={removeColumn}
+            disabled={element.columns.length <= 1}
+            className="flex-1 px-2 py-1 text-xs rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            - Col
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Rows</div>
+        <div className="space-y-2">
+          {element.rows.map((row, ri) => (
+            <div key={ri} className="space-y-1">
+              <div className="text-zinc-500 text-[10px]">Row {ri + 1}</div>
+              <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${element.columns.length}, 1fr)` }}>
+                {element.columns.map((_, ci) => (
+                  <input
+                    key={ci}
+                    type="text"
+                    className="w-full bg-zinc-800 text-zinc-200 rounded px-1.5 py-1 text-xs font-mono border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                    value={row[ci] ?? ""}
+                    onChange={(e) => updateCell(ri, ci, e.target.value)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-1 mt-1">
+          <button
+            onClick={addRow}
+            className="flex-1 px-2 py-1 text-xs rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500 transition-colors"
+          >
+            + Row
+          </button>
+          <button
+            onClick={removeRow}
+            disabled={element.rows.length <= 1}
+            className="flex-1 px-2 py-1 text-xs rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            - Row
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-2 text-xs text-zinc-300">
+          <input
+            type="checkbox"
+            checked={element.style?.striped ?? false}
+            onChange={toggleStriped}
+            className="rounded border-zinc-600"
+          />
+          Striped rows
+        </label>
       </div>
     </>
   );

@@ -93,6 +93,18 @@
             "backgroundColor": { "type": "string" },
             "borderRadius": { "type": "number" }
           }
+        },
+        "table": {
+          "type": "object",
+          "properties": {
+            "fontSize": { "type": "number" },
+            "color": { "type": "string" },
+            "headerBackground": { "type": "string" },
+            "headerColor": { "type": "string" },
+            "borderColor": { "type": "string" },
+            "striped": { "type": "boolean" },
+            "borderRadius": { "type": "number" }
+          }
         }
       }
     },
@@ -148,7 +160,7 @@
       "required": ["id", "type", "position", "size"],
       "properties": {
         "id": { "type": "string" },
-        "type": { "type": "string", "enum": ["text", "image", "code", "shape", "video", "tikz", "custom"] },
+        "type": { "type": "string", "enum": ["text", "image", "code", "shape", "video", "tikz", "table", "custom"] },
         "position": { "$ref": "#/$defs/Position" },
         "size": { "$ref": "#/$defs/Size" },
         "rotation": { "type": "number" },
@@ -162,6 +174,8 @@
         "controls": { "type": "boolean" },
         "svgUrl": { "type": "string" },
         "preamble": { "type": "string" },
+        "columns": { "type": "array", "items": { "type": "string" } },
+        "rows": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } },
         "component": { "type": "string" },
         "props": { "type": "object" },
         "style": { "type": "object" }
@@ -190,6 +204,10 @@
         {
           "if": { "properties": { "type": { "const": "tikz" } } },
           "then": { "required": ["content"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "table" } } },
+          "then": { "required": ["columns", "rows"] }
         },
         {
           "if": { "properties": { "type": { "const": "custom" } } },
