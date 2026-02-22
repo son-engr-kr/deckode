@@ -60,14 +60,23 @@ export class FsAccessAdapter implements FileSystemAdapter {
   /**
    * Write a new project into the given directory handle.
    * Creates deck.json, layouts/, and docs/ with AI discoverability files.
+   *
+   * If `config.name` is provided, a subdirectory `{name}/` is created inside
+   * `dirHandle` and all files are written there. Returns the actual project
+   * directory handle (the subdirectory when name is given, dirHandle otherwise).
    */
   static async writeNewProject(
     dirHandle: FileSystemDirectoryHandle,
     config: NewProjectConfig,
-  ): Promise<void> {
+  ): Promise<FileSystemDirectoryHandle> {
+    // If a project name is provided, create a subdirectory for the project
+    const projectDir = config.name
+      ? await dirHandle.getDirectoryHandle(config.name, { create: true })
+      : dirHandle;
+
     // Check for existing deck.json to prevent overwrite
     let exists = true;
-    try { await dirHandle.getFileHandle("deck.json"); } catch { exists = false; }
+    try { await projectDir.getFileHandle("deck.json"); } catch { exists = false; }
     assert(!exists, "This folder already contains a deck.json. Pick an empty folder or remove the existing file.");
 
     // Generate deck based on template kind
@@ -85,18 +94,20 @@ export class FsAccessAdapter implements FileSystemAdapter {
     }
 
     // Write deck.json
-    await writeTextFile(dirHandle, "deck.json", JSON.stringify(deck, null, 2));
+    await writeTextFile(projectDir, "deck.json", JSON.stringify(deck, null, 2));
 
     // Write layouts/
-    const layoutsDir = await dirHandle.getDirectoryHandle("layouts", { create: true });
+    const layoutsDir = await projectDir.getDirectoryHandle("layouts", { create: true });
     for (const [name, data] of Object.entries(BUNDLED_LAYOUTS)) {
       await writeTextFile(layoutsDir, `${name}.json`, JSON.stringify(data, null, 2));
     }
 
     // Write docs/
-    const docsDir = await dirHandle.getDirectoryHandle("docs", { create: true });
+    const docsDir = await projectDir.getDirectoryHandle("docs", { create: true });
     await writeTextFile(docsDir, "deck.schema.json", JSON.stringify(deckSchema, null, 2));
     await writeTextFile(docsDir, "ai-slide-guide.md", aiGuideText);
+
+    return projectDir;
   }
 
   async loadDeck(): Promise<Deck> {

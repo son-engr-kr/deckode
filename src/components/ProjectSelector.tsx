@@ -39,7 +39,6 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
   const [projects, setProjects] = useState<ProjectInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [projectName, setProjectName] = useState("");
   const [creating, setCreating] = useState(false);
 
   const fetchProjects = () => {
@@ -61,15 +60,12 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
   };
 
   const handleWizardConfirm = async (config: NewProjectConfig) => {
-    const trimmed = projectName.trim();
-    assert(trimmed.length > 0, "Project name is required");
-    assert(/^[a-zA-Z0-9_-]+$/.test(trimmed), "Project name may only contain letters, digits, hyphens, and underscores");
+    assert(config.name !== undefined && config.name.length > 0, "Project name is required");
     setCreating(true);
     setWizardOpen(false);
-    await createProject(trimmed, config);
-    setProjectName("");
+    await createProject(config.name, config);
     setCreating(false);
-    await handleOpen(trimmed);
+    await handleOpen(config.name);
   };
 
   const handleDelete = async (name: string) => {
@@ -121,23 +117,13 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
         {/* New project */}
         <div className="border border-zinc-800 rounded-lg p-4 bg-zinc-900">
           <h2 className="text-sm font-semibold text-zinc-300 mb-3">New Project</h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="project-name (letters, digits, hyphens)"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && projectName.trim()) setWizardOpen(true); }}
-              className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
-            />
-            <button
-              onClick={() => setWizardOpen(true)}
-              disabled={!projectName.trim() || creating}
-              className="px-4 py-2 rounded bg-blue-600 text-sm text-white hover:bg-blue-500 disabled:opacity-40 transition-colors"
-            >
-              {creating ? "Creating..." : "Create"}
-            </button>
-          </div>
+          <button
+            onClick={() => setWizardOpen(true)}
+            disabled={creating}
+            className="w-full px-4 py-2.5 rounded bg-blue-600 text-sm text-white hover:bg-blue-500 disabled:opacity-40 transition-colors"
+          >
+            {creating ? "Creating..." : "Create New Project"}
+          </button>
         </div>
       </div>
 
@@ -145,7 +131,7 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
         open={wizardOpen}
         onClose={() => setWizardOpen(false)}
         onConfirm={handleWizardConfirm}
-        showNameField={false}
+        showNameField={true}
       />
     </div>
   );
@@ -240,10 +226,10 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
       const showDirectoryPicker = (window as any).showDirectoryPicker as (
         options?: { mode?: "read" | "readwrite" },
       ) => Promise<FileSystemDirectoryHandle>;
-      const dirHandle = await showDirectoryPicker({ mode: "readwrite" });
+      const baseDir = await showDirectoryPicker({ mode: "readwrite" });
 
-      await FsAccessAdapter.writeNewProject(dirHandle, config);
-      await openWithHandle(dirHandle);
+      const projectDir = await FsAccessAdapter.writeNewProject(baseDir, config);
+      await openWithHandle(projectDir);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         setCreating(false);
@@ -332,7 +318,7 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
         open={wizardOpen}
         onClose={() => setWizardOpen(false)}
         onConfirm={handleNewProject}
-        showNameField={false}
+        showNameField={true}
       />
     </div>
   );

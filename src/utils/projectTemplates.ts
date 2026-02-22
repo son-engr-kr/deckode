@@ -14,6 +14,7 @@ export interface WizardConfig {
 
 export interface NewProjectConfig {
   template: TemplateKind;
+  name?: string;
   title?: string;
   wizard?: WizardConfig;
 }

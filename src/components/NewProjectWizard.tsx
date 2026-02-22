@@ -44,8 +44,12 @@ export function NewProjectWizard({ open, onClose, onConfirm, showNameField }: Pr
       setStep("wizard");
       return;
     }
+    if (showNameField) {
+      assert(projectName.trim().length > 0, "Project name is required");
+      assert(/^[a-zA-Z0-9_-]+$/.test(projectName.trim()), "Project name: letters, digits, hyphens, underscores only");
+    }
     // Blank and Example proceed directly
-    onConfirm({ template: kind });
+    onConfirm({ template: kind, name: showNameField ? projectName.trim() : undefined });
     reset();
   };
 
@@ -62,7 +66,7 @@ export function NewProjectWizard({ open, onClose, onConfirm, showNameField }: Pr
       theme,
       slideCount,
     };
-    onConfirm({ template: "wizard", title: title.trim(), wizard });
+    onConfirm({ template: "wizard", name: showNameField ? projectName.trim() : undefined, title: title.trim(), wizard });
     reset();
   };
 

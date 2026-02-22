@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { findUndoChanges } from "@/utils/deckDiff";
+import { skipNextRestore } from "@/utils/handleStore";
 import { SlideList } from "./SlideList";
 import { EditorCanvas } from "./EditorCanvas";
 import { PropertyPanel } from "./PropertyPanel";
@@ -179,7 +180,7 @@ export function EditorLayout() {
       {/* Toolbar */}
       <div className="h-10 border-b border-zinc-800 flex items-center px-4 gap-4 shrink-0">
         <button
-          onClick={() => useDeckStore.getState().closeProject()}
+          onClick={() => { skipNextRestore(); useDeckStore.getState().closeProject(); }}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
           title="Back to projects"
         >

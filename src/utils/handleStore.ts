@@ -40,6 +40,15 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
+// ── Skip-restore flag (set synchronously before closeProject to win the race) ──
+
+let _skipRestore = false;
+
+/** Call synchronously before closeProject() so the next restoreHandle() is a no-op. */
+export function skipNextRestore(): void {
+  _skipRestore = true;
+}
+
 // ── Single handle (legacy, used for auto-restore on load) ──
 
 export async function saveHandle(handle: FileSystemDirectoryHandle): Promise<void> {
@@ -53,6 +62,12 @@ export async function saveHandle(handle: FileSystemDirectoryHandle): Promise<voi
 }
 
 export async function restoreHandle(): Promise<FileSystemDirectoryHandle | null> {
+  if (_skipRestore) {
+    _skipRestore = false;
+    clearHandle();
+    return null;
+  }
+
   const db = await openDB();
   const handle: FileSystemDirectoryHandle | undefined = await new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readonly");
