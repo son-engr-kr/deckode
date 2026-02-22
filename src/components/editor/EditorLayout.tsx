@@ -39,10 +39,21 @@ export function EditorLayout() {
   const isDirty = useDeckStore((s) => s.isDirty);
   const isSaving = useDeckStore((s) => s.isSaving);
   const saveToDisk = useDeckStore((s) => s.saveToDisk);
+  const presenterWindowRef = useRef<Window | null>(null);
 
   const handleSave = useCallback(() => {
     saveToDisk();
   }, [saveToDisk]);
+
+  // Open presenter window + enter fullscreen — must be called from a user gesture handler
+  const startPresentation = useCallback(() => {
+    // Open presenter window FIRST (before fullscreen consumes the gesture)
+    const project = useDeckStore.getState().currentProject;
+    const url = `?project=${encodeURIComponent(project!)}&mode=presenter`;
+    presenterWindowRef.current = window.open(url, "deckode-presenter", "width=960,height=600");
+    document.documentElement.requestFullscreen?.();
+    setPresenting(true);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -58,8 +69,7 @@ export function EditorLayout() {
       }
       if (e.key === "F5") {
         e.preventDefault();
-        document.documentElement.requestFullscreen?.();
-        setPresenting(true);
+        startPresentation();
         return;
       }
 
@@ -100,10 +110,10 @@ export function EditorLayout() {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [handleSave]);
+  }, [handleSave, startPresentation]);
 
   if (presenting) {
-    return <PresentationMode onExit={() => setPresenting(false)} />;
+    return <PresentationMode onExit={() => setPresenting(false)} presenterWindowRef={presenterWindowRef} />;
   }
 
   return (
@@ -155,10 +165,7 @@ export function EditorLayout() {
           Save
         </button>
         <button
-          onClick={() => {
-            document.documentElement.requestFullscreen?.();
-            setPresenting(true);
-          }}
+          onClick={startPresentation}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
         >
           Present (F5)
@@ -246,7 +253,7 @@ const transitionVariants = {
   none: { initial: {}, animate: {}, exit: {} },
 };
 
-function PresentationMode({ onExit }: { onExit: () => void }) {
+function PresentationMode({ onExit, presenterWindowRef }: { onExit: () => void; presenterWindowRef: React.MutableRefObject<Window | null> }) {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
@@ -281,9 +288,6 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
   stepsRef.current = steps;
   const activeStepRef = useRef(activeStep);
   activeStepRef.current = activeStep;
-
-  // --- Presenter window ---
-  const presenterWindowRef = useRef<Window | null>(null);
 
   // Skip broadcasting when the navigation change came from the channel
   const skipNextBroadcast = useRef(false);
@@ -329,20 +333,13 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
     postNavigate(currentSlideIndex, activeStep);
   }, [currentSlideIndex, activeStep, postNavigate]);
 
-  // Open presenter window on mount, close on unmount
+  // Close presenter window on unmount
   useEffect(() => {
-    const project = useDeckStore.getState().currentProject;
-    const url = `?project=${encodeURIComponent(project!)}&mode=presenter`;
-    presenterWindowRef.current = window.open(
-      url,
-      "deckode-presenter",
-      "width=960,height=600",
-    );
     return () => {
       presenterWindowRef.current?.close();
       presenterWindowRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [presenterWindowRef]);
 
   const handleExit = useCallback(() => {
     postExit();
