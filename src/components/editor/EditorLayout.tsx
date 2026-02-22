@@ -234,6 +234,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { SlideTransition } from "@/types/deck";
 import { computeSteps } from "@/utils/animationSteps";
 import type { AnimationStep } from "@/utils/animationSteps";
+import { usePresentationChannel } from "@/hooks/usePresentationChannel";
 
 const transitionVariants = {
   fade: { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } },
@@ -244,6 +245,7 @@ const transitionVariants = {
 function PresentationMode({ onExit }: { onExit: () => void }) {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
   const nextSlide = useDeckStore((s) => s.nextSlide);
   const prevSlide = useDeckStore((s) => s.prevSlide);
   const [activeStep, setActiveStep] = useState(0);
@@ -275,6 +277,72 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
   const activeStepRef = useRef(activeStep);
   activeStepRef.current = activeStep;
 
+  // --- Presenter window ---
+  const presenterWindowRef = useRef<Window | null>(null);
+
+  // Skip broadcasting when the navigation change came from the channel
+  const skipNextBroadcast = useRef(false);
+
+  const { postNavigate, postExit } = usePresentationChannel({
+    onNavigate: (slideIndex, step) => {
+      skipNextBroadcast.current = true;
+      setCurrentSlide(slideIndex);
+      setActiveStep(step);
+    },
+    onExit: () => {
+      presenterWindowRef.current = null;
+      onExit();
+    },
+    onSyncRequest: () => {
+      postNavigate(
+        useDeckStore.getState().currentSlideIndex,
+        activeStepRef.current,
+      );
+    },
+  });
+
+  // Broadcast navigation changes to presenter (skip if the change came from channel)
+  const prevSlideIndex = useRef(currentSlideIndex);
+  const prevActiveStep = useRef(activeStep);
+  useEffect(() => {
+    if (
+      prevSlideIndex.current === currentSlideIndex &&
+      prevActiveStep.current === activeStep
+    ) {
+      return;
+    }
+    prevSlideIndex.current = currentSlideIndex;
+    prevActiveStep.current = activeStep;
+
+    if (skipNextBroadcast.current) {
+      skipNextBroadcast.current = false;
+      return;
+    }
+    postNavigate(currentSlideIndex, activeStep);
+  }, [currentSlideIndex, activeStep, postNavigate]);
+
+  // Open presenter window on mount, close on unmount
+  useEffect(() => {
+    const project = useDeckStore.getState().currentProject;
+    const url = `?project=${encodeURIComponent(project!)}&mode=presenter`;
+    presenterWindowRef.current = window.open(
+      url,
+      "deckode-presenter",
+      "width=960,height=600",
+    );
+    return () => {
+      presenterWindowRef.current?.close();
+      presenterWindowRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleExit = useCallback(() => {
+    postExit();
+    presenterWindowRef.current?.close();
+    presenterWindowRef.current = null;
+    onExit();
+  }, [postExit, onExit]);
+
   // Fullscreen: enter on mount, exit on unmount — runs once only
   useEffect(() => {
     document.documentElement.requestFullscreen?.();
@@ -289,7 +357,7 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onExit();
+        handleExit();
       } else if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
         advanceRef.current();
@@ -307,7 +375,7 @@ function PresentationMode({ onExit }: { onExit: () => void }) {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [onExit, prevSlide]);
+  }, [handleExit, prevSlide]);
 
   if (!deck) return null;
 

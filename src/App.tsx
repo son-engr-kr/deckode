@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { setStoreAdapter } from "@/stores/deckStore";
 import { EditorLayout } from "@/components/editor/EditorLayout";
+import { PresenterView } from "@/components/presenter/PresenterView";
 import { ProjectSelector } from "@/components/ProjectSelector";
 import { AdapterProvider } from "@/contexts/AdapterContext";
 import { ViteApiAdapter } from "@/adapters/viteApi";
@@ -29,11 +30,16 @@ export function App() {
     }
   }, []);
 
+  const isPresenterMode =
+    new URLSearchParams(window.location.search).get("mode") === "presenter";
+
   // Sync URL when project changes (dev mode only)
   useEffect(() => {
     if (!IS_DEV) return;
     if (currentProject) {
-      history.replaceState(null, "", `?project=${encodeURIComponent(currentProject)}`);
+      const params = new URLSearchParams(window.location.search);
+      params.set("project", currentProject);
+      history.replaceState(null, "", `?${params.toString()}`);
     } else {
       history.replaceState(null, "", window.location.pathname);
     }
@@ -81,7 +87,7 @@ export function App() {
 
   return (
     <AdapterProvider adapter={adapter}>
-      <EditorLayout />
+      {isPresenterMode ? <PresenterView /> : <EditorLayout />}
     </AdapterProvider>
   );
 }

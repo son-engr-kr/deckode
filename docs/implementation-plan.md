@@ -138,7 +138,7 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - The `projects/` directory becomes a workspace containing multiple independent presentations.
 - Each sub-project is fully portable — copy a sub-directory to move a presentation.
 - Structure: `projects/{name}/deck.json` and `projects/{name}/assets/`
-- Asset URL scheme: `/assets/{project}/{filename}` maps to `projects/{project}/assets/{filename}`
+- Asset URL scheme: `./assets/{filename}` (project-relative, resolved to `/assets/{project}/{filename}` at runtime)
 
 ---
 
@@ -170,7 +170,7 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] Framer Motion animations (per-element enter/exit animations)
 - [X] Animation editor UI in Property Panel: add/remove/edit animations per element (effect, trigger, delay, duration) without touching JSON
 - [X] Slide-wide animation list panel with reorder, target element selector
-- [ ] Extended animation triggers: `onKey` (specific keypress advances/triggers animation), `afterPrevious` (auto-chain after the previous animation completes), `withPrevious` (play simultaneously with previous animation)
+- [X] Extended animation triggers: `onKey` (specific keypress advances/triggers animation), `afterPrevious` (auto-chain after the previous animation completes), `withPrevious` (play simultaneously with previous animation)
 - [ ] Animation preview in editor: play button in Property Panel to preview selected element's animation without entering presentation mode
 - [ ] Presenter mode with BroadcastChannel (main window + presenter notes window)
 - [ ] Custom component loading from `components/` directory
@@ -221,11 +221,11 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 
 ### Goals
 
-- [ ] Define a "tool" interface for AI: `createDeck`, `addSlide`, `updateElement`, `deleteElement`
+- [X] Define a "tool" interface for AI: `createDeck`, `addSlide`, `updateElement`, `deleteElement`
 - [ ] AI generates `deck.json` from natural language prompt
 - [ ] AI modifies existing deck based on conversational instructions
-- [ ] JSON Schema serves as the contract between AI and Deckode
-- [ ] Validate AI output against schema before applying
+- [X] JSON Schema serves as the contract between AI and Deckode
+- [X] Validate AI output against schema before applying
 - [ ] AI guardrails: validate and auto-correct AI-generated code (LaTeX, Tailwind classes, animation params) before rendering
 - [ ] AI natural language → animation mapping (e.g. "slide this logo to the top-right" → Framer Motion animation config in `deck.json`)
 
