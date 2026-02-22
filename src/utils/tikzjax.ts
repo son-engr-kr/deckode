@@ -220,17 +220,77 @@ async function embedFonts(svg: string): Promise<string> {
   return svg.slice(0, svgTagEnd + 1) + styleBlock + svg.slice(svgTagEnd + 1);
 }
 
+// ── IndexedDB SVG cache ─────────────────────────────────────────────
+
+const CACHE_DB = "deckode-tikz-cache";
+const CACHE_STORE = "svgCache";
+
+function openCacheDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(CACHE_DB, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(CACHE_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function cacheKey(content: string, preamble: string): Promise<string> {
+  const data = new TextEncoder().encode(content + "\0" + preamble);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function getCachedSvg(
+  content: string,
+  preamble: string,
+): Promise<string | null> {
+  const key = await cacheKey(content, preamble);
+  const db = await openCacheDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction(CACHE_STORE, "readonly");
+    const req = tx.objectStore(CACHE_STORE).get(key);
+    req.onsuccess = () => resolve((req.result as string) ?? null);
+    req.onerror = () => resolve(null);
+  });
+}
+
+async function setCachedSvg(
+  content: string,
+  preamble: string,
+  svg: string,
+): Promise<void> {
+  const key = await cacheKey(content, preamble);
+  const db = await openCacheDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction(CACHE_STORE, "readwrite");
+    tx.objectStore(CACHE_STORE).put(svg, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => resolve(); // don't fail on cache errors
+  });
+}
+
 // ── Public API ──────────────────────────────────────────────────────
 
 export async function renderTikzToSvg(
   content: string,
   preamble?: string,
 ): Promise<string> {
-  const worker = await getWorker();
-
   const fullPreamble = preamble
     ? STANDARD_PREAMBLE + "\n" + preamble
     : STANDARD_PREAMBLE;
+
+  // Check IndexedDB cache first
+  const cached = await getCachedSvg(content, fullPreamble);
+  if (cached) {
+    console.log("[tikzjax] Cache hit, skipping WASM compilation");
+    return cached;
+  }
+
+  const worker = await getWorker();
 
   const dataset: Record<string, string> = {
     showConsole: "true",
@@ -244,6 +304,9 @@ export async function renderTikzToSvg(
   // Embed fonts directly into SVG for <img> tag rendering
   const svgWithFonts = await embedFonts(svgHtml);
   console.log("[tikzjax] Fonts embedded, final length:", svgWithFonts.length);
+
+  // Store in cache for future renders
+  await setCachedSvg(content, fullPreamble, svgWithFonts);
 
   return svgWithFonts;
 }
