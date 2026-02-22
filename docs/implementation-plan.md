@@ -112,6 +112,8 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] Slide reordering via drag-and-drop in sidebar (@dnd-kit/sortable)
 - [X] Element resize handles (drag corners to resize, update `size` in store)
 - [X] Element duplicate (Ctrl+D)
+- [ ] Resizable panels: left sidebar and right panel width adjustable by dragging dividers
+- [ ] Custom scrollbar styling: thin, minimal scrollbar matching the dark theme
 
 ### Key Decisions
 
