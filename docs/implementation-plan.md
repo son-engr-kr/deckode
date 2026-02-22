@@ -186,7 +186,7 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
   - [X] Presenter notes editor: per-slide script/notes editable in the editor's property panel
   - [X] Animation-aware script highlighting: notes highlight the relevant section as animations progress (marker-based, e.g. `[step:1]...[/step]` tags in notes so users can easily edit the mapping)
   - [X] Laser pointer overlay on presentation slide (toggle with L key, synced via BroadcastChannel)
-- [ ] PDF export via browser print API (window.print() with @media print CSS, no server dependency)
+- [X] PDF export via browser print API (window.print() with @media print CSS, no server dependency)
 - [ ] PPTX export (client-side via pptxgenjs, no server dependency)
 - [ ] CLI: `npx deckode dev` (local development only)
 
@@ -260,7 +260,10 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 
 Items to discuss or explore. Not yet committed to any phase.
 
-- **Presentation API integration**: Use the browser Presentation API (`navigator.presentation`) for native dual-display support (present on secondary display without manual popup management)
+- **Dual-display fullscreen control**: The user wants to choose which window goes fullscreen when using Pop Out (W key). Currently `window.open()` from a fullscreen context may cause browsers to exit fullscreen (browser security restriction — `requestFullscreen()` requires a user gesture and popup windows don't inherit the gesture context). Possible workarounds:
+  - The audience popup could have its own "Fullscreen" button (requires user to click in the popup)
+  - Use the **Presentation API** (`navigator.presentation.requestPresent()`) for native secondary-display support — but browser support is very limited (Chrome only, requires HTTPS, experimental)
+  - Alternative workflow: user opens the audience popup FIRST (from the editor, before going fullscreen), then enters fullscreen presenter mode. This avoids the gesture context issue.
 - **Presenter console font size slider**: Allow presenters to adjust notes font size for readability at a distance
 - **Slide overview grid**: Press G in presentation mode to see a grid of all slides for quick jump navigation
 - **Speaker timer alerts**: Configurable time alerts (e.g., flash border at 5 min, 10 min) in presenter console
