@@ -253,7 +253,101 @@ Renders a geometric shape.
 | `borderRadius` | number | `0` | Corner radius (rectangle only) |
 | `opacity` | number | `1` | Opacity (0-1) |
 
-For `"line"` and `"arrow"`: `position` is the start point, `position + size` is the end point.
+For `"line"` and `"arrow"`: `position` is the start point. The line extends horizontally by `size.w` pixels. `size.h` is ignored (set to a small value like `4` for the click target).
+
+**Line example** (horizontal divider):
+```json
+{
+  "id": "divider",
+  "type": "shape",
+  "shape": "line",
+  "position": { "x": 60, "y": 260 },
+  "size": { "w": 840, "h": 4 },
+  "style": { "stroke": "#475569", "strokeWidth": 1 }
+}
+```
+
+**Arrow example** (pointing right):
+```json
+{
+  "id": "flow-arrow",
+  "type": "shape",
+  "shape": "arrow",
+  "position": { "x": 200, "y": 300 },
+  "size": { "w": 560, "h": 4 },
+  "style": { "stroke": "#3b82f6", "strokeWidth": 3 }
+}
+```
+
+### `"tikz"`
+
+Renders a TikZ/PGFPlots diagram via a WASM-based TeX engine (compiled entirely in the browser).
+
+```json
+{
+  "id": "e6",
+  "type": "tikz",
+  "content": "\\begin{tikzpicture}\n  \\draw[thick, blue, ->] (0,0) -- (3,2) node[right] {$\\vec{v}$};\n  \\draw[thick, red, ->] (0,0) -- (2,-1) node[right] {$\\vec{u}$};\n  \\draw[dashed, gray] (3,2) -- (5,1);\n  \\draw[dashed, gray] (2,-1) -- (5,1);\n  \\draw[thick, purple, ->] (0,0) -- (5,1) node[right] {$\\vec{v}+\\vec{u}$};\n\\end{tikzpicture}",
+  "position": { "x": 200, "y": 100 },
+  "size": { "w": 560, "h": 340 },
+  "preamble": "",
+  "style": {
+    "backgroundColor": "#1e1e2e",
+    "borderRadius": 8
+  }
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `content` | string | yes | TikZ source code (the body inside `\begin{tikzpicture}...\end{tikzpicture}`) |
+| `svgUrl` | string | no | URL to a pre-rendered SVG. If provided, the renderer uses this instead of compiling |
+| `preamble` | string | no | Additional LaTeX preamble (e.g., extra `\usepackage{}` declarations). `pgfplots` and `pgfplotsset{compat=1.18}` are included by default |
+
+**Style fields**:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `backgroundColor` | string | `"#1e1e2e"` | Background color behind the rendered SVG |
+| `borderRadius` | number | `0` | Corner radius in px |
+
+**PGFPlots example** (bar chart):
+```json
+{
+  "id": "chart",
+  "type": "tikz",
+  "content": "\\begin{tikzpicture}\n  \\begin{axis}[\n    ybar,\n    bar width=20pt,\n    xlabel={Category},\n    ylabel={Value},\n    symbolic x coords={A, B, C, D},\n    xtick=data,\n    nodes near coords,\n    axis lines=left,\n    enlarge x limits=0.2\n  ]\n    \\addplot coordinates {(A,45) (B,72) (C,38) (D,91)};\n  \\end{axis}\n\\end{tikzpicture}",
+  "position": { "x": 160, "y": 80 },
+  "size": { "w": 640, "h": 400 },
+  "style": { "backgroundColor": "#0f172a" }
+}
+```
+
+### `"custom"`
+
+Renders a user-defined React component loaded from the project's `components/` directory.
+
+```json
+{
+  "id": "e7",
+  "type": "custom",
+  "component": "InteractiveChart",
+  "props": {
+    "data": [10, 25, 40, 30, 55],
+    "color": "#3b82f6",
+    "animated": true
+  },
+  "position": { "x": 100, "y": 100 },
+  "size": { "w": 760, "h": 380 }
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `component` | string | yes | Component filename (without extension) from the project's `components/` directory |
+| `props` | object | no | Arbitrary props passed to the component. The component also receives `size: { w, h }` automatically |
+
+The component must be a default-exported React component placed in the project folder (e.g., `components/InteractiveChart.tsx`).
 
 ### `"video"`
 
@@ -353,6 +447,7 @@ Animations are defined per-slide and reference elements by ID.
 | `effect` | string | yes | Animation effect name |
 | `delay` | number | no | Delay in ms. Default: `0` |
 | `duration` | number | no | Duration in ms. Default: `400` |
+| `order` | number | no | Explicit animation sequence number. Controls the step order for `onClick` triggers |
 | `key` | string | no | Key to press (required when trigger is `"onKey"`) |
 
 **Triggers**:
@@ -450,6 +545,97 @@ To change the default text color for the entire deck to red without touching ind
 ```
 
 Elements with an explicit `style.color` will still use their own value.
+
+---
+
+## Layout Templates
+
+Deckode includes built-in layout templates that provide pre-positioned elements as a starting point for slides. Set the `layout` field on a slide to use one. Elements from the template are merged into the slide; you can override them or add more.
+
+| Layout Name | Description |
+|-------------|-------------|
+| `"blank"` | Empty slide with only a background. The default when no layout is specified |
+| `"title"` | Large centered title with optional subtitle |
+| `"title-content"` | Heading at top + body text area below |
+| `"two-column"` | Heading + two side-by-side content columns |
+| `"section-header"` | Full-slide section divider with centered text |
+| `"code-slide"` | Heading + large code block area |
+| `"image-left"` | Image on the left half, text content on the right |
+
+**Usage**: Set the `layout` field on a slide object:
+
+```json
+{
+  "id": "s1",
+  "layout": "title-content",
+  "elements": [
+    {
+      "id": "heading",
+      "type": "text",
+      "content": "## My Custom Title",
+      "position": { "x": 60, "y": 30 },
+      "size": { "w": 840, "h": 60 },
+      "style": { "fontSize": 32, "color": "#f8fafc" }
+    },
+    {
+      "id": "body",
+      "type": "text",
+      "content": "Content goes here...",
+      "position": { "x": 60, "y": 110 },
+      "size": { "w": 840, "h": 380 },
+      "style": { "fontSize": 20, "color": "#cbd5e1" }
+    }
+  ]
+}
+```
+
+---
+
+## Speaker Notes
+
+Each slide can have a `notes` field with plain text or Markdown content. Notes are displayed in the presenter console during presentations.
+
+### Animation-Aware Notes
+
+Use `[step:N]...[/step]` markers to highlight sections of your notes as animations progress. This helps presenters know what to say at each animation step.
+
+```json
+{
+  "id": "s2",
+  "notes": "Welcome everyone to today's talk.\n\n[step:1]First, let's look at the problem statement. Our current tools are too restrictive.[/step]\n\n[step:2]Here's our proposed solution — a JSON-based approach that gives full control.[/step]\n\n[step:3]And these are the results from our beta testing.[/step]",
+  "elements": [ ... ],
+  "animations": [
+    { "target": "problem", "trigger": "onClick", "effect": "fadeIn" },
+    { "target": "solution", "trigger": "onClick", "effect": "slideInLeft" },
+    { "target": "results", "trigger": "onClick", "effect": "fadeIn" }
+  ]
+}
+```
+
+**Behavior**:
+- Text outside `[step:N]...[/step]` markers is always visible
+- Text inside markers is dimmed by default and highlighted (yellow) when the animation reaches that step
+- Steps correspond to the order of `onClick` animations: the first `onClick` is step 1, the second is step 2, etc.
+
+---
+
+## Rotation
+
+Any element can be rotated by setting the `rotation` field (degrees, clockwise).
+
+```json
+{
+  "id": "label",
+  "type": "text",
+  "content": "DRAFT",
+  "position": { "x": 300, "y": 200 },
+  "size": { "w": 360, "h": 80 },
+  "rotation": -15,
+  "style": { "fontSize": 48, "color": "#ef444480", "textAlign": "center" }
+}
+```
+
+Rotation is applied as a CSS `transform: rotate()` on the element's bounding box. The element rotates around its center point.
 
 ---
 
