@@ -255,6 +255,79 @@ Renders a geometric shape.
 
 For `"line"` and `"arrow"`: `position` is the start point, `position + size` is the end point.
 
+### `"video"`
+
+Renders a video player. Supports local MP4/WebM files, YouTube URLs, and Vimeo URLs.
+
+```json
+{
+  "id": "e5",
+  "type": "video",
+  "src": "./assets/demo.mp4",
+  "position": { "x": 60, "y": 100 },
+  "size": { "w": 840, "h": 380 },
+  "autoplay": false,
+  "loop": false,
+  "muted": false,
+  "controls": true,
+  "style": {
+    "objectFit": "contain",
+    "borderRadius": 8
+  }
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `src` | string | yes | Video source: local path (`./assets/video.mp4`), YouTube URL, or Vimeo URL |
+| `autoplay` | boolean | no | Auto-play when slide is shown. Default: `false` |
+| `loop` | boolean | no | Loop playback. Default: `false` |
+| `muted` | boolean | no | Mute audio. Default: `false` |
+| `controls` | boolean | no | Show player controls. Default: `false` |
+
+**Style fields**:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `objectFit` | `"contain"` \| `"cover"` \| `"fill"` | `"contain"` | Video fit behavior |
+| `borderRadius` | number | `0` | Corner radius in px |
+
+**Source URL handling**:
+
+- **Local files**: `"./assets/video.mp4"` — served from the project's assets folder
+- **YouTube**: `"https://www.youtube.com/watch?v=VIDEO_ID"` or `"https://youtu.be/VIDEO_ID"` — auto-converted to embed iframe
+- **Vimeo**: `"https://vimeo.com/VIDEO_ID"` — auto-converted to embed iframe
+
+**Video examples**:
+
+Local MP4 with autoplay (muted required for browser autoplay policy):
+```json
+{
+  "id": "bg-video",
+  "type": "video",
+  "src": "./assets/background.mp4",
+  "position": { "x": 0, "y": 0 },
+  "size": { "w": 960, "h": 540 },
+  "autoplay": true,
+  "loop": true,
+  "muted": true,
+  "style": { "objectFit": "cover" }
+}
+```
+
+YouTube embed with controls:
+```json
+{
+  "id": "yt-demo",
+  "type": "video",
+  "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "position": { "x": 180, "y": 80 },
+  "size": { "w": 600, "h": 338 },
+  "controls": true,
+  "muted": true
+}
+```
+
 ---
 
 ## Animations
@@ -265,7 +338,10 @@ Animations are defined per-slide and reference elements by ID.
 {
   "animations": [
     { "target": "e1", "trigger": "onEnter", "effect": "fadeIn", "delay": 0, "duration": 400 },
-    { "target": "e2", "trigger": "onClick", "effect": "slideInLeft", "delay": 200, "duration": 500 }
+    { "target": "e2", "trigger": "onClick", "effect": "slideInLeft", "delay": 200, "duration": 500 },
+    { "target": "e3", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
+    { "target": "e4", "trigger": "withPrevious", "effect": "scaleIn", "duration": 400 },
+    { "target": "e5", "trigger": "onKey", "key": "v", "effect": "fadeIn", "duration": 300 }
   ]
 }
 ```
@@ -273,12 +349,77 @@ Animations are defined per-slide and reference elements by ID.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `target` | string | yes | Element ID to animate |
-| `trigger` | `"onEnter"` \| `"onClick"` | yes | When to trigger |
+| `trigger` | string | yes | When to trigger (see below) |
 | `effect` | string | yes | Animation effect name |
 | `delay` | number | no | Delay in ms. Default: `0` |
 | `duration` | number | no | Duration in ms. Default: `400` |
+| `key` | string | no | Key to press (required when trigger is `"onKey"`) |
+
+**Triggers**:
+
+| Trigger | Description |
+|---------|-------------|
+| `"onEnter"` | Plays automatically when the slide is entered |
+| `"onClick"` | Plays on click/spacebar/right-arrow (advances through one step at a time) |
+| `"afterPrevious"` | Auto-plays after the previous animation finishes |
+| `"withPrevious"` | Plays simultaneously with the previous animation |
+| `"onKey"` | Plays when a specific key is pressed (requires `key` field) |
 
 **Available effects**: `fadeIn`, `fadeOut`, `slideInLeft`, `slideInRight`, `slideInUp`, `slideInDown`, `scaleIn`, `scaleOut`, `typewriter`
+
+### Animation Examples
+
+**Step-by-step reveal** (click to reveal each bullet):
+```json
+{
+  "animations": [
+    { "target": "bullet1", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
+    { "target": "bullet2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
+    { "target": "bullet3", "trigger": "onClick", "effect": "fadeIn", "duration": 300 }
+  ]
+}
+```
+
+**Auto-cascade** (elements appear one after another):
+```json
+{
+  "animations": [
+    { "target": "title", "trigger": "onEnter", "effect": "slideInDown", "duration": 400 },
+    { "target": "subtitle", "trigger": "afterPrevious", "effect": "fadeIn", "delay": 100, "duration": 300 },
+    { "target": "image", "trigger": "afterPrevious", "effect": "scaleIn", "duration": 500 }
+  ]
+}
+```
+
+**Video reveal on click** (click to fade in a video player):
+```json
+{
+  "elements": [
+    {
+      "id": "play-label",
+      "type": "text",
+      "content": "Click to play demo",
+      "position": { "x": 300, "y": 250 },
+      "size": { "w": 360, "h": 40 },
+      "style": { "fontSize": 20, "color": "#94a3b8", "textAlign": "center" }
+    },
+    {
+      "id": "demo-video",
+      "type": "video",
+      "src": "./assets/demo.mp4",
+      "position": { "x": 80, "y": 80 },
+      "size": { "w": 800, "h": 400 },
+      "autoplay": true,
+      "muted": true,
+      "controls": true
+    }
+  ],
+  "animations": [
+    { "target": "demo-video", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
+    { "target": "play-label", "trigger": "withPrevious", "effect": "fadeOut", "duration": 200 }
+  ]
+}
+```
 
 ---
 
