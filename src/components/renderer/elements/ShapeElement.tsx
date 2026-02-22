@@ -11,16 +11,20 @@ export function ShapeElementRenderer({ element }: Props) {
   const { w, h } = element.size;
 
   if (element.shape === "ellipse") {
+    // Inset radii by half the stroke width so the stroke doesn't get clipped at the edges
+    const sw = style.strokeWidth ?? 1;
+    const rx = Math.max(0, w / 2 - sw / 2);
+    const ry = Math.max(0, h / 2 - sw / 2);
     return (
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
         <ellipse
           cx={w / 2}
           cy={h / 2}
-          rx={w / 2}
-          ry={h / 2}
+          rx={rx}
+          ry={ry}
           fill={style.fill ?? "transparent"}
           stroke={style.stroke ?? "#ffffff"}
-          strokeWidth={style.strokeWidth ?? 1}
+          strokeWidth={sw}
           opacity={style.opacity ?? 1}
         />
       </svg>
