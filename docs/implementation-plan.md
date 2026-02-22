@@ -174,14 +174,15 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] Animation preview in editor: play button in Property Panel to preview selected element's animation without entering presentation mode
 - [X] Presenter mode with BroadcastChannel (main window + presenter notes window)
 - [X] Custom component loading from `components/` directory
-- [ ] Layout templates (`layouts/` directory, reusable slide structures)
-- [ ] Fix: F5 fullscreen presentation mode regression (F5 should enter fullscreen, currently requires F11)
-- [ ] Presenter view (PowerPoint-style): dual-screen support with slide display on one screen and presenter console on another
-  - [ ] Presenter console: current slide preview, next slide preview, elapsed timer, presenter notes
-  - [ ] Presenter notes editor: per-slide script/notes editable in the editor's property panel
-  - [ ] Animation-aware script highlighting: notes highlight the relevant section as animations progress (marker-based, e.g. `[step:1]...[/step]` tags in notes so users can easily edit the mapping)
-  - [ ] Zoom/screen-share friendly: presenter console works as a separate window, so users can share only the slide window
-  - [ ] Laser pointer overlay on presentation slide
+- [X] Layout templates (`layouts/` directory, reusable slide structures)
+- [X] Fix: F5 fullscreen presentation mode regression (F5 should enter fullscreen, currently requires F11)
+- [X] Fix: ellipse shape stroke clipping (inset radii by half stroke width)
+- [X] Presenter view (PowerPoint-style): dual-screen support with slide display on one screen and presenter console on another
+  - [X] Presenter console: current slide preview, next slide preview, elapsed timer, presenter notes
+  - [X] Presenter notes editor: per-slide script/notes editable in the editor's property panel
+  - [X] Animation-aware script highlighting: notes highlight the relevant section as animations progress (marker-based, e.g. `[step:1]...[/step]` tags in notes so users can easily edit the mapping)
+  - [X] Zoom/screen-share friendly: presenter console works as a separate window, so users can share only the slide window
+  - [X] Laser pointer overlay on presentation slide (toggle with L key, synced via BroadcastChannel)
 - [ ] PDF export via browser print API (window.print() with @media print CSS, no server dependency)
 - [ ] PPTX export (client-side via pptxgenjs, no server dependency)
 - [ ] CLI: `npx deckode dev` (local development only)
