@@ -16,9 +16,13 @@ interface Props {
   /** Computed delay overrides for afterPrevious animations (ms) */
   delayOverrides?: Map<Animation, number>;
   thumbnail?: boolean;
+  /** When true, disables onEnter auto-activation — only activeAnimations fire */
+  previewMode?: boolean;
+  /** Incrementing counter to force AnimatedWrapper remount for replay */
+  previewKey?: number;
 }
 
-export function ElementRenderer({ element, animations, activeAnimations, delayOverrides, thumbnail }: Props) {
+export function ElementRenderer({ element, animations, activeAnimations, delayOverrides, thumbnail, previewMode, previewKey }: Props) {
   const transform = element.rotation ? `rotate(${element.rotation}deg)` : undefined;
 
   const positionStyle: React.CSSProperties = {
@@ -42,7 +46,13 @@ export function ElementRenderer({ element, animations, activeAnimations, delayOv
 
   return (
     <div data-element-id={element.id} className="absolute" style={positionStyle}>
-      <AnimatedWrapper animations={animations} activeAnimations={activeAnimations} delayOverrides={delayOverrides}>
+      <AnimatedWrapper
+        key={previewKey}
+        animations={animations}
+        activeAnimations={activeAnimations}
+        delayOverrides={delayOverrides}
+        previewMode={previewMode}
+      >
         {child}
       </AnimatedWrapper>
     </div>
@@ -53,11 +63,13 @@ function AnimatedWrapper({
   animations,
   activeAnimations,
   delayOverrides,
+  previewMode,
   children,
 }: {
   animations: Animation[];
   activeAnimations?: Set<Animation>;
   delayOverrides?: Map<Animation, number>;
+  previewMode?: boolean;
   children: React.ReactNode;
 }) {
   let initial: Record<string, string | number> = {};
@@ -68,11 +80,12 @@ function AnimatedWrapper({
     const config = getAnimationConfig(anim.effect);
     initial = { ...initial, ...config.initial };
 
-    // onEnter: always activate.
-    // onClick/onKey/withPrevious/afterPrevious: only if in activeAnimations set.
-    const isActive =
-      anim.trigger === "onEnter" ||
-      (activeAnimations !== undefined && activeAnimations.has(anim));
+    // In preview mode, only activate animations explicitly in activeAnimations set.
+    // In normal mode, onEnter always activates; others need activeAnimations.
+    const isActive = previewMode
+      ? activeAnimations !== undefined && activeAnimations.has(anim)
+      : anim.trigger === "onEnter" ||
+        (activeAnimations !== undefined && activeAnimations.has(anim));
 
     if (isActive) {
       animate = { ...animate, ...config.animate };

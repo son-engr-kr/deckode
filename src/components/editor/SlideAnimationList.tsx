@@ -1,5 +1,7 @@
 import { useDeckStore } from "@/stores/deckStore";
-import type { AnimationEffect, AnimationTrigger } from "@/types/deck";
+import { usePreviewStore } from "@/stores/previewStore";
+import { computeSteps } from "@/utils/animationSteps";
+import type { Animation, AnimationEffect, AnimationTrigger } from "@/types/deck";
 
 const EFFECTS: AnimationEffect[] = [
   "fadeIn", "fadeOut",
@@ -21,6 +23,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
   const updateAnimation = useDeckStore((s) => s.updateAnimation);
   const deleteAnimation = useDeckStore((s) => s.deleteAnimation);
   const moveAnimation = useDeckStore((s) => s.moveAnimation);
+  const startPreview = usePreviewStore((s) => s.startPreview);
 
   if (!deck) return null;
 
@@ -38,6 +41,40 @@ export function SlideAnimationList({ onSelectElement }: Props) {
       effect: "fadeIn",
       duration: 500,
     });
+  };
+
+  const handlePlayAll = () => {
+    if (animations.length === 0) return;
+    const delays = new Map<Animation, number>();
+    const flashTimes: number[] = [];
+
+    // onEnter animations play first with their original delays
+    let onEnterEnd = 0;
+    for (const anim of animations) {
+      if (anim.trigger === "onEnter") {
+        onEnterEnd = Math.max(onEnterEnd, (anim.delay ?? 0) + (anim.duration ?? 500));
+      }
+    }
+
+    // Step-based animations play sequentially after onEnter completes
+    const steps = computeSteps(animations);
+    let cursor = onEnterEnd;
+    for (const step of steps) {
+      // Record flash time for onClick/onKey steps
+      if (step.trigger === "onClick" || step.trigger === "onKey") {
+        flashTimes.push(cursor);
+      }
+      let stepEnd = cursor;
+      for (const anim of step.animations) {
+        const stepDelay = step.delayOverrides.get(anim) ?? (anim.delay ?? 0);
+        const totalDelay = cursor + stepDelay;
+        delays.set(anim, totalDelay);
+        stepEnd = Math.max(stepEnd, totalDelay + (anim.duration ?? 500));
+      }
+      cursor = stepEnd;
+    }
+
+    startPreview(animations, delays, flashTimes);
   };
 
   const handleMoveUp = (index: number) => {
@@ -59,8 +96,19 @@ export function SlideAnimationList({ onSelectElement }: Props) {
 
   return (
     <div className="p-3 space-y-2 text-sm">
-      <div className="text-zinc-400 text-xs uppercase tracking-wider mb-2">
-        Slide Animations
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-zinc-400 text-xs uppercase tracking-wider">
+          Slide Animations
+        </div>
+        {animations.length > 1 && (
+          <button
+            className="text-zinc-500 hover:text-green-400 text-xs px-1.5 py-0.5 border border-zinc-700 hover:border-green-400/50 rounded transition-colors"
+            onClick={handlePlayAll}
+            title="Play all animations in order"
+          >
+            ▶ All
+          </button>
+        )}
       </div>
 
       {animations.length === 0 && (
@@ -98,6 +146,13 @@ export function SlideAnimationList({ onSelectElement }: Props) {
                   disabled={index === animations.length - 1}
                 >
                   v
+                </button>
+                <button
+                  className="text-zinc-500 hover:text-green-400 text-xs px-1"
+                  onClick={() => startPreview([anim])}
+                  title="Preview animation"
+                >
+                  ▶
                 </button>
                 <button
                   className="text-zinc-500 hover:text-red-400 text-xs px-1"

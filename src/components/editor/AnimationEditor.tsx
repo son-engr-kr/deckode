@@ -1,4 +1,5 @@
 import { useDeckStore } from "@/stores/deckStore";
+import { usePreviewStore } from "@/stores/previewStore";
 import type { Animation, AnimationEffect, AnimationTrigger } from "@/types/deck";
 
 const EFFECTS: AnimationEffect[] = [
@@ -20,6 +21,7 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
   const addAnimation = useDeckStore((s) => s.addAnimation);
   const updateAnimation = useDeckStore((s) => s.updateAnimation);
   const deleteAnimation = useDeckStore((s) => s.deleteAnimation);
+  const startPreview = usePreviewStore((s) => s.startPreview);
 
   // Build list of (globalIndex, animation) for entries targeting this element
   const entries: { globalIndex: number; animation: Animation }[] = [];
@@ -28,6 +30,18 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
       entries.push({ globalIndex: i, animation: animations[i]! });
     }
   }
+
+  const handlePlayAll = () => {
+    if (entries.length === 0) return;
+    const anims = entries.map((e) => e.animation);
+    const delays = new Map<Animation, number>();
+    let cursor = 0;
+    for (const anim of anims) {
+      delays.set(anim, cursor + (anim.delay ?? 0));
+      cursor += (anim.delay ?? 0) + (anim.duration ?? 500);
+    }
+    startPreview(anims, delays);
+  };
 
   const handleAdd = () => {
     addAnimation(slideId, {
@@ -40,7 +54,18 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
 
   return (
     <div>
-      <div className="text-zinc-400 text-xs uppercase tracking-wider mb-2">Animations</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-zinc-400 text-xs uppercase tracking-wider">Animations</div>
+        {entries.length > 1 && (
+          <button
+            className="text-zinc-500 hover:text-green-400 text-xs px-1.5 py-0.5 border border-zinc-700 hover:border-green-400/50 rounded transition-colors"
+            onClick={handlePlayAll}
+            title="Play all animations in order"
+          >
+            ▶ All
+          </button>
+        )}
+      </div>
 
       {entries.length === 0 && (
         <div className="text-zinc-600 text-xs mb-2">No animations</div>
@@ -59,6 +84,13 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
                   (slide #{globalIndex + 1})
                 </span>
               </span>
+              <button
+                className="text-zinc-500 hover:text-green-400 text-xs px-1"
+                onClick={() => startPreview([animation])}
+                title="Preview animation"
+              >
+                ▶
+              </button>
               <button
                 className="text-zinc-500 hover:text-red-400 text-xs px-1"
                 onClick={() => deleteAnimation(slideId, globalIndex)}

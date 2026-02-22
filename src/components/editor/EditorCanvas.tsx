@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
+import { usePreviewStore } from "@/stores/previewStore";
 import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { ImageElement, VideoElement } from "@/types/deck";
@@ -12,6 +13,39 @@ export function EditorCanvas() {
   const selectElement = useDeckStore((s) => s.selectElement);
   const addElement = useDeckStore((s) => s.addElement);
   const adapter = useAdapter();
+
+  const previewAnimations = usePreviewStore((s) => s.animations);
+  const previewDelayOverrides = usePreviewStore((s) => s.delayOverrides);
+  const previewFlashTimes = usePreviewStore((s) => s.flashTimes);
+  const previewKey = usePreviewStore((s) => s.key);
+  const clearPreview = usePreviewStore((s) => s.clearPreview);
+
+  const [flashActive, setFlashActive] = useState(false);
+
+  // Auto-clear preview after animations complete
+  useEffect(() => {
+    if (!previewAnimations || previewAnimations.length === 0) return;
+    const maxMs = previewAnimations.reduce(
+      (max, a) => {
+        const delay = previewDelayOverrides?.get(a) ?? (a.delay ?? 0);
+        return Math.max(max, delay + (a.duration ?? 500));
+      },
+      0,
+    );
+    const timer = setTimeout(clearPreview, maxMs + 100);
+    return () => clearTimeout(timer);
+  }, [previewAnimations, previewDelayOverrides, previewKey, clearPreview]);
+
+  // Schedule border flashes for onClick/onKey step boundaries
+  useEffect(() => {
+    if (previewFlashTimes.length === 0) return;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (const t of previewFlashTimes) {
+      timers.push(setTimeout(() => setFlashActive(true), t));
+      timers.push(setTimeout(() => setFlashActive(false), t + 300));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [previewFlashTimes, previewKey]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
@@ -105,8 +139,24 @@ export function EditorCanvas() {
       onDrop={handleDrop}
     >
       <div ref={canvasWrapperRef} className="relative">
-        <SlideRenderer slide={slide} scale={scale} theme={deck.theme} />
+        <SlideRenderer
+          slide={slide}
+          scale={scale}
+          theme={deck.theme}
+          previewAnimations={previewAnimations ?? undefined}
+          previewDelayOverrides={previewDelayOverrides ?? undefined}
+          previewKey={previewKey}
+        />
         <SelectionOverlay slide={slide} scale={scale} />
+        {flashActive && (
+          <div
+            className="absolute inset-0 pointer-events-none rounded-sm"
+            style={{
+              boxShadow: "inset 0 0 0 3px rgba(59,130,246,0.8), 0 0 12px 2px rgba(59,130,246,0.4)",
+              animation: "flash-fade 300ms ease-out forwards",
+            }}
+          />
+        )}
       </div>
     </div>
   );
