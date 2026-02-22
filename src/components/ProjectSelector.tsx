@@ -161,10 +161,14 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
         onAdapterReady(adapter);
         useDeckStore.getState().openProject(adapter.projectName, deck);
       })
-      .catch(() => {
-        // Permission denied or handle stale — fall through to manual picker
+      .catch((err) => {
         setRestoring(false);
         loadRecentProjects();
+        if (err instanceof DOMException && err.name === "NotFoundError") {
+          setError("Last opened folder no longer contains a deck.json file.");
+          return;
+        }
+        // Permission denied or handle stale — fall through to manual picker
       });
   }, [onAdapterReady]);
 
@@ -188,6 +192,10 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
       useDeckStore.getState().openProject(adapter.projectName, deck);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
+      if (err instanceof DOMException && err.name === "NotFoundError") {
+        setError("This folder does not contain a deck.json file. A project folder must contain deck.json — make sure you opened the project folder itself, not its parent. To start fresh, use \"New Project\".");
+        return;
+      }
       throw err;
     }
   };
@@ -204,6 +212,10 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
       }
       await openWithHandle(entry.handle);
     } catch (err) {
+      if (err instanceof DOMException && err.name === "NotFoundError") {
+        setError(`"${entry.name}" does not contain a deck.json file.`);
+        return;
+      }
       // Handle stale or removed — remove from recents
       await removeRecentProject(entry.name);
       loadRecentProjects();
