@@ -31,19 +31,25 @@ Opens at `http://localhost:3000`. In this mode there is no backend — the app u
 ```
 deckode/
 ├── src/
+│   ├── adapters/          # File-system adapters (Vite API / FS Access API)
 │   ├── components/
-│   │   ├── editor/       # Visual editor (drag-and-drop, property panel)
-│   │   ├── renderer/     # Slide rendering components
-│   │   └── ui/           # Shared UI components
-│   ├── stores/           # Zustand state management
-│   ├── types/            # TypeScript type definitions
-│   ├── schema/           # JSON Schema for deck.json validation
-│   └── utils/            # Utilities
+│   │   ├── editor/        # Visual editor (canvas, property panel, palettes)
+│   │   ├── export/        # PDF / PPTX export
+│   │   ├── presenter/     # Presenter console & audience view
+│   │   ├── renderer/      # Slide & element rendering
+│   │   └── ui/            # Shared UI components
+│   ├── hooks/             # Custom React hooks
+│   ├── stores/            # Zustand state management
+│   ├── types/             # TypeScript type definitions
+│   ├── schema/            # JSON Schema for deck.json validation
+│   ├── server/            # Vite dev-server plugin (file I/O, TikZ compilation)
+│   └── utils/             # Utilities (TikZJax, diff, API helpers)
 ├── docs/
 │   ├── implementation-plan.md
-│   └── ai-slide-guide.md # Guide for AI agents to create decks
-├── templates/            # Built-in slide templates
+│   └── ai-slide-guide.md  # Specification for AI agents creating decks
+├── templates/             # Built-in project templates
 └── public/
+    └── tikzjax/           # WASM-based TeX engine for client-side TikZ
 ```
 
 ## Deck Format

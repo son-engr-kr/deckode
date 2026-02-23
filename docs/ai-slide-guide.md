@@ -327,8 +327,17 @@ Renders a TikZ/PGFPlots diagram via a WASM-based TeX engine (compiled entirely i
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `content` | string | yes | TikZ source code (the body inside `\begin{tikzpicture}...\end{tikzpicture}`) |
-| `svgUrl` | string | no | URL to a pre-rendered SVG. If provided, the renderer uses this instead of compiling |
 | `preamble` | string | no | Additional LaTeX preamble (e.g., extra `\usepackage{}` declarations). `pgfplots` and `pgfplotsset{compat=1.18}` are included by default |
+
+**Auto-managed fields** (do not set these manually — the editor manages them):
+
+| Field | Description |
+|-------|-------------|
+| `svgUrl` | Path to the rendered SVG. Set automatically after compilation |
+| `renderedContent` | Snapshot of `content` at the time of last render. Used to detect stale SVGs |
+| `renderedPreamble` | Snapshot of `preamble` at the time of last render |
+
+When you create or modify a TikZ element, only set `content` and optionally `preamble`. The editor will compile the TikZ source and populate the other fields automatically.
 
 **Style fields**:
 
