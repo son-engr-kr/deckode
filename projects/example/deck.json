@@ -734,12 +734,14 @@
             "w": 280,
             "h": 250
           },
-          "svgUrl": "./assets/tikz/tikz-demo-1.svg"
+          "svgUrl": "./assets/tikz/tikz-geo.svg?v=1771819124094",
+          "renderedContent": "\\begin{tikzpicture}[scale=1.5]\n  \\draw[thick, fill=blue!20] (0,0) -- (3,0) -- (1.5,2.6) -- cycle;\n  \\draw[thick, fill=red!20] (1.5,0) circle (1);\n  \\node at (1.5, -0.5) {Geometry};\n\\end{tikzpicture}",
+          "renderedPreamble": ""
         },
         {
           "id": "tikz-plot",
           "type": "tikz",
-          "content": "\\begin{tikzpicture}\n  \\begin{axis}[\n    width=6cm, height=5cm,\n    xlabel=$x$, ylabel=$f(x)$,\n    grid=major,\n    title={$\\sin(x)$ and $\\cos(x)$}\n  ]\n    \\addplot[green, thick, domain=0:360, samples=100] {sin(x)};\n    \\addplot[red, thick, dashed, domain=0:360, samples=100] {cos(x)};\n    \\legend{$\\sin$, $\\cos$}\n  \\end{axis}\n\\end{tikzpicture}",
+          "content": "\\begin{tikzpicture}\n  \\begin{axis}[\n    width=6cm, height=5cm,\n    xlabel=$x$, ylabel=$f(x)$,\n    grid=major,\n    title={$\\sin(x)$ and $\\cos(x)$}\n  ]\n    \\addplot[yellow, thick, domain=0:360, samples=100] {sin(x)};\n    \\addplot[red, thick, dashed, domain=0:360, samples=100] {cos(x)};\n    \\legend{$\\sin$, $\\cos$}\n  \\end{axis}\n\\end{tikzpicture}",
           "position": {
             "x": 340,
             "y": 130
@@ -748,7 +750,9 @@
             "w": 280,
             "h": 250
           },
-          "svgUrl": "./assets/tikz/tikz-demo-2.svg"
+          "svgUrl": "./assets/tikz/tikz-plot.svg?v=1771821322054",
+          "renderedContent": "\\begin{tikzpicture}\n  \\begin{axis}[\n    width=6cm, height=5cm,\n    xlabel=$x$, ylabel=$f(x)$,\n    grid=major,\n    title={$\\sin(x)$ and $\\cos(x)$}\n  ]\n    \\addplot[yellow, thick, domain=0:360, samples=100] {sin(x)};\n    \\addplot[red, thick, dashed, domain=0:360, samples=100] {cos(x)};\n    \\legend{$\\sin$, $\\cos$}\n  \\end{axis}\n\\end{tikzpicture}",
+          "renderedPreamble": ""
         },
         {
           "id": "tikz-flow",
@@ -762,7 +766,9 @@
             "w": 280,
             "h": 250
           },
-          "svgUrl": "./assets/tikz/tikz-demo-3.svg"
+          "svgUrl": "./assets/tikz/tikz-flow.svg?v=1771819613894",
+          "renderedContent": "\\begin{tikzpicture}[node distance=1.5cm, auto,\n    block/.style={rectangle, draw, fill=blue!20, text width=4em, text centered, rounded corners, minimum height=2.5em},\n    line/.style={draw, -latex}]\n  \\node [block] (input) {Input};\n  \\node [block, right of=input, node distance=3cm] (process) {Process};\n  \\node [block, right of=process, node distance=3cm] (output) {Output};\n  \\path [line] (input) -- (process);\n  \\path [line] (process) -- (output);\n\\end{tikzpicture}",
+          "renderedPreamble": ""
         },
         {
           "id": "tikz-hint",
@@ -2374,45 +2380,123 @@
           "id": "tbl-title",
           "type": "text",
           "content": "## Table Element",
-          "position": { "x": 60, "y": 30 },
-          "size": { "w": 840, "h": 50 },
-          "style": { "fontSize": 36, "color": "#f8fafc" }
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 36,
+            "color": "#f8fafc"
+          }
         },
         {
           "id": "tbl-desc",
           "type": "text",
           "content": "Structured data with headers, configurable borders, and optional striped rows.",
-          "position": { "x": 60, "y": 80 },
-          "size": { "w": 840, "h": 30 },
-          "style": { "fontSize": 16, "color": "#64748b" }
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 16,
+            "color": "#64748b"
+          }
         },
         {
           "id": "tbl-demo",
           "type": "table",
-          "columns": ["Feature", "Type", "Default"],
-          "rows": [
-            ["fontSize", "number", "14"],
-            ["headerBackground", "string", "#1e293b"],
-            ["striped", "boolean", "false"],
-            ["borderColor", "string", "#334155"],
-            ["borderRadius", "number", "8"]
+          "columns": [
+            "Feature",
+            "Type",
+            "Default"
           ],
-          "position": { "x": 60, "y": 130 },
-          "size": { "w": 440, "h": 220 },
-          "style": { "fontSize": 14, "striped": true, "borderRadius": 8 }
+          "rows": [
+            [
+              "fontSize",
+              "number",
+              "14"
+            ],
+            [
+              "headerBackground",
+              "string",
+              "#1e293b"
+            ],
+            [
+              "striped",
+              "boolean",
+              "false"
+            ],
+            [
+              "borderColor",
+              "string",
+              "#334155"
+            ],
+            [
+              "borderRadius",
+              "number",
+              "8"
+            ]
+          ],
+          "position": {
+            "x": 60,
+            "y": 130
+          },
+          "size": {
+            "w": 440,
+            "h": 220
+          },
+          "style": {
+            "fontSize": 14,
+            "striped": true,
+            "borderRadius": 8
+          }
         },
         {
           "id": "tbl-demo2",
           "type": "table",
-          "columns": ["Quarter", "Revenue", "Growth"],
-          "rows": [
-            ["Q1 2025", "$1.2M", "+12%"],
-            ["Q2 2025", "$1.5M", "+25%"],
-            ["Q3 2025", "$1.8M", "+20%"],
-            ["Q4 2025", "$2.1M", "+17%"]
+          "columns": [
+            "Quarter",
+            "Revenue",
+            "Growth"
           ],
-          "position": { "x": 520, "y": 130 },
-          "size": { "w": 380, "h": 200 },
+          "rows": [
+            [
+              "Q1 2025",
+              "$1.2M",
+              "+12%"
+            ],
+            [
+              "Q2 2025",
+              "$1.5M",
+              "+25%"
+            ],
+            [
+              "Q3 2025",
+              "$1.8M",
+              "+20%"
+            ],
+            [
+              "Q4 2025",
+              "$2.1M",
+              "+17%"
+            ]
+          ],
+          "position": {
+            "x": 520,
+            "y": 130
+          },
+          "size": {
+            "w": 380,
+            "h": 200
+          },
           "style": {
             "fontSize": 14,
             "headerBackground": "#3b82f6",
@@ -2426,17 +2510,36 @@
           "type": "code",
           "language": "json",
           "content": "{ \"type\": \"table\", \"columns\": [\"A\", \"B\"],\n  \"rows\": [[\"1\", \"2\"], [\"3\", \"4\"]], \"style\": { \"striped\": true } }",
-          "position": { "x": 140, "y": 400 },
-          "size": { "w": 680, "h": 60 },
-          "style": { "fontSize": 13, "borderRadius": 8 }
+          "position": {
+            "x": 140,
+            "y": 400
+          },
+          "size": {
+            "w": 680,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 13,
+            "borderRadius": 8
+          }
         },
         {
           "id": "tbl-hint",
           "type": "text",
           "content": "Add/remove rows and columns in the **Property Panel**. PPTX export is supported.",
-          "position": { "x": 60, "y": 480 },
-          "size": { "w": 840, "h": 25 },
-          "style": { "fontSize": 14, "color": "#475569", "textAlign": "center" }
+          "position": {
+            "x": 60,
+            "y": 480
+          },
+          "size": {
+            "w": 840,
+            "h": 25
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#475569",
+            "textAlign": "center"
+          }
         }
       ]
     },
