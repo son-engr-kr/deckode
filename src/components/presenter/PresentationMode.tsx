@@ -339,6 +339,7 @@ function PresenterConsole({
   const slideAreaRef = useRef<HTMLDivElement>(null);
   const [currentScale, setCurrentScale] = useState(0.5);
   const [nextScale, setNextScale] = useState(0.2);
+  const [notesFontSize, setNotesFontSize] = useState(18);
 
   useEffect(() => {
     const update = () => {
@@ -451,10 +452,29 @@ function PresenterConsole({
 
           {/* Speaker notes with animation-aware highlighting */}
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
-            <div className="text-xs font-semibold text-zinc-500 mb-2 uppercase tracking-wider">
-              Notes
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                Notes
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setNotesFontSize((s) => Math.max(10, s - 2))}
+                  className="w-5 h-5 flex items-center justify-center rounded text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-800 hover:bg-zinc-700 transition-colors"
+                  title="Decrease font size"
+                >
+                  -
+                </button>
+                <span className="text-[10px] text-zinc-500 w-6 text-center">{notesFontSize}</span>
+                <button
+                  onClick={() => setNotesFontSize((s) => Math.min(40, s + 2))}
+                  className="w-5 h-5 flex items-center justify-center rounded text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-800 hover:bg-zinc-700 transition-colors"
+                  title="Increase font size"
+                >
+                  +
+                </button>
+              </div>
             </div>
-            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="leading-relaxed whitespace-pre-wrap" style={{ fontSize: notesFontSize }}>
               {noteSegments.length === 0 ? (
                 <span className="text-zinc-600 italic">
                   No notes for this slide
