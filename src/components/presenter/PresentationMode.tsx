@@ -340,6 +340,32 @@ function PresenterConsole({
   const [currentScale, setCurrentScale] = useState(0.5);
   const [nextScale, setNextScale] = useState(0.2);
   const [notesFontSize, setNotesFontSize] = useState(18);
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
+  const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleEditNotes = useCallback(() => {
+    setNoteDraft(slide.notes ?? "");
+    setEditingNotes(true);
+    requestAnimationFrame(() => noteTextareaRef.current?.focus());
+  }, [slide.notes]);
+
+  const handleSaveNotes = useCallback(() => {
+    useDeckStore.getState().updateSlide(slide.id, { notes: noteDraft });
+    setEditingNotes(false);
+  }, [slide.id, noteDraft]);
+
+  // Close editor on slide change, saving any pending edits
+  const prevSlideIdRef = useRef(slide.id);
+  useEffect(() => {
+    if (slide.id !== prevSlideIdRef.current) {
+      if (editingNotes) {
+        useDeckStore.getState().updateSlide(prevSlideIdRef.current, { notes: noteDraft });
+        setEditingNotes(false);
+      }
+      prevSlideIdRef.current = slide.id;
+    }
+  }, [slide.id, editingNotes, noteDraft]);
 
   useEffect(() => {
     const update = () => {
@@ -451,12 +477,27 @@ function PresenterConsole({
           </div>
 
           {/* Speaker notes with animation-aware highlighting */}
-          <div className="flex-1 overflow-y-auto p-4 min-h-0">
-            <div className="flex items-center justify-between mb-2">
+          <div className="flex-1 overflow-y-auto p-4 min-h-0 flex flex-col">
+            <div className="flex items-center justify-between mb-2 shrink-0">
               <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                 Notes
               </div>
               <div className="flex items-center gap-1">
+                {editingNotes ? (
+                  <button
+                    onClick={handleSaveNotes}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+                  >
+                    Done
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleEditNotes}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  >
+                    Edit
+                  </button>
+                )}
                 <button
                   onClick={() => setNotesFontSize((s) => Math.max(10, s - 2))}
                   className="w-5 h-5 flex items-center justify-center rounded text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-800 hover:bg-zinc-700 transition-colors"
@@ -474,36 +515,54 @@ function PresenterConsole({
                 </button>
               </div>
             </div>
-            <div className="leading-relaxed whitespace-pre-wrap" style={{ fontSize: notesFontSize }}>
-              {noteSegments.length === 0 ? (
-                <span className="text-zinc-600 italic">
-                  No notes for this slide
-                </span>
-              ) : (
-                noteSegments.map((seg, i) => {
-                  if (seg.step === null) {
+            {editingNotes ? (
+              <textarea
+                ref={noteTextareaRef}
+                className="flex-1 w-full bg-zinc-900 text-zinc-300 rounded px-3 py-2 resize-none border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                style={{ fontSize: notesFontSize }}
+                value={noteDraft}
+                onChange={(e) => setNoteDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") handleSaveNotes();
+                  e.stopPropagation();
+                }}
+              />
+            ) : (
+              <div
+                className="leading-relaxed whitespace-pre-wrap cursor-text"
+                style={{ fontSize: notesFontSize }}
+                onDoubleClick={handleEditNotes}
+              >
+                {noteSegments.length === 0 ? (
+                  <span className="text-zinc-600 italic">
+                    No notes for this slide (double-click to add)
+                  </span>
+                ) : (
+                  noteSegments.map((seg, i) => {
+                    if (seg.step === null) {
+                      return (
+                        <span key={i} className="text-zinc-300">
+                          {seg.text}
+                        </span>
+                      );
+                    }
+                    const isActive = activeStep >= seg.step;
                     return (
-                      <span key={i} className="text-zinc-300">
+                      <span
+                        key={i}
+                        className={
+                          isActive
+                            ? "text-yellow-300 bg-yellow-900/30 rounded px-0.5"
+                            : "text-zinc-500"
+                        }
+                      >
                         {seg.text}
                       </span>
                     );
-                  }
-                  const isActive = activeStep >= seg.step;
-                  return (
-                    <span
-                      key={i}
-                      className={
-                        isActive
-                          ? "text-yellow-300 bg-yellow-900/30 rounded px-0.5"
-                          : "text-zinc-500"
-                      }
-                    >
-                      {seg.text}
-                    </span>
-                  );
-                })
-              )}
-            </div>
+                  })
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
