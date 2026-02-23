@@ -1,22 +1,44 @@
+import { useState, useCallback } from "react";
 import type { TikZElement as TikZElementType, TikZStyle } from "@/types/deck";
 import { useTheme, resolveStyle } from "@/contexts/ThemeContext";
 import { useAssetUrl } from "@/contexts/AdapterContext";
+import { useDeckStore } from "@/stores/deckStore";
 
 interface Props {
   element: TikZElementType;
   thumbnail?: boolean;
 }
 
+function isSvgFresh(element: TikZElementType): boolean {
+  if (!element.svgUrl) return false;
+  if (element.renderedContent === undefined) return false;
+  return (
+    element.content === element.renderedContent &&
+    (element.preamble ?? "") === (element.renderedPreamble ?? "")
+  );
+}
+
 export function TikZElementRenderer({ element, thumbnail }: Props) {
   const deckTheme = useTheme();
   const style = resolveStyle<TikZStyle>(deckTheme.tikz, element.style);
   const resolvedSvgUrl = useAssetUrl(element.svgUrl);
+  const [imgBroken, setImgBroken] = useState(false);
 
-  if (element.svgUrl && resolvedSvgUrl) {
+  const handleImgError = useCallback(() => {
+    setImgBroken(true);
+    useDeckStore.getState().patchElementById(element.id, {
+      svgUrl: undefined,
+      renderedContent: undefined,
+      renderedPreamble: undefined,
+    } as Record<string, unknown>);
+  }, [element.id]);
+
+  if (isSvgFresh(element) && resolvedSvgUrl && !imgBroken) {
     return (
       <img
         src={resolvedSvgUrl}
         alt="TikZ diagram"
+        onError={handleImgError}
         style={{
           width: element.size.w,
           height: element.size.h,

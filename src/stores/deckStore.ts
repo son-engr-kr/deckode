@@ -46,6 +46,7 @@ interface DeckState {
   moveAnimation: (slideId: string, fromIndex: number, toIndex: number) => void;
   updateTheme: (patch: Partial<DeckTheme>) => void;
   highlightElements: (ids: string[]) => void;
+  patchElementById: (elementId: string, patch: Partial<SlideElement>) => void;
 }
 
 let highlightTimer: ReturnType<typeof setTimeout> | null = null;
@@ -168,6 +169,19 @@ export const useDeckStore = create<DeckState>()(
             assert(element !== undefined, `Element ${elementId} not found in slide ${slideId}`);
             Object.assign(element, patch);
             state.isDirty = true;
+          }),
+
+        patchElementById: (elementId, patch) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            for (const slide of state.deck.slides) {
+              const element = slide.elements.find((e) => e.id === elementId);
+              if (element) {
+                Object.assign(element, patch);
+                state.isDirty = true;
+                return;
+              }
+            }
           }),
 
         updateSlide: (slideId, patch) =>

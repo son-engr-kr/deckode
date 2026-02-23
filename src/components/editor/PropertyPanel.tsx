@@ -398,6 +398,13 @@ function TikZEditor({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const renderIdRef = useRef(0);
 
+  // Sync status when svgUrl is cleared externally (e.g. file deleted → onError)
+  useEffect(() => {
+    if (!element.svgUrl && status === "rendered") {
+      setStatus("idle");
+    }
+  }, [element.svgUrl, status]);
+
   const doRender = useCallback(async (content: string, preamble?: string) => {
     const renderId = ++renderIdRef.current;
     setStatus("rendering");
@@ -411,7 +418,11 @@ function TikZEditor({
     if (result.ok) {
       setStatus("rendered");
       setError(null);
-      updateElement(slideId, element.id, { svgUrl: result.svgUrl } as Partial<SlideElement>);
+      updateElement(slideId, element.id, {
+        svgUrl: result.svgUrl,
+        renderedContent: content,
+        renderedPreamble: preamble ?? "",
+      } as Partial<SlideElement>);
     } else {
       setStatus("error");
       setError(result.error);

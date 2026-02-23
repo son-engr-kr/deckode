@@ -12,6 +12,7 @@ import { ThemePanel } from "./ThemePanel";
 import { PresentationMode } from "@/components/presenter/PresentationMode";
 import { PrintExport } from "@/components/export/PrintExport";
 import { exportToPptx } from "@/components/export/pptxExport";
+import { useTikzAutoRender } from "@/hooks/useTikzAutoRender";
 
 function performUndoRedo(direction: "undo" | "redo") {
   const temporal = useDeckStore.temporal.getState();
@@ -37,6 +38,7 @@ type BottomPanel = "code" | null;
 type RightPanel = "properties" | "theme";
 
 export function EditorLayout() {
+  useTikzAutoRender();
   const [bottomPanel, setBottomPanel] = useState<BottomPanel>(null);
   const [rightPanel, setRightPanel] = useState<RightPanel>("properties");
   const [presenting, setPresenting] = useState(false);

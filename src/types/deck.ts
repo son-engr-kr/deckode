@@ -131,6 +131,8 @@ export interface TikZElement extends BaseElement {
   content: string;
   svgUrl?: string;
   preamble?: string;
+  renderedContent?: string;
+  renderedPreamble?: string;
   style?: TikZStyle;
 }
 
