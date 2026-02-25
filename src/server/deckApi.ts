@@ -387,6 +387,12 @@ export function deckApiPlugin(): Plugin {
 
         saveDeck(deckPath(name), deck);
 
+        // Create assets directory for the project
+        const projectAssetsDir = path.resolve(dir, "assets");
+        if (!fs.existsSync(projectAssetsDir)) {
+          fs.mkdirSync(projectAssetsDir, { recursive: true });
+        }
+
         // Copy layouts into the project
         const builtinLayoutDir = path.resolve(process.cwd(), TEMPLATES_DIR, "default", "layouts");
         const projectLayoutDir = path.resolve(dir, "layouts");
