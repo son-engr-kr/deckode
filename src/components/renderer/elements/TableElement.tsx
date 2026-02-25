@@ -30,6 +30,7 @@ export function TableElementRenderer({ element }: Props) {
       <table
         style={{
           width: "100%",
+          height: "100%",
           borderCollapse: "collapse",
           fontSize,
           color,
@@ -56,27 +57,30 @@ export function TableElementRenderer({ element }: Props) {
           </tr>
         </thead>
         <tbody>
-          {element.rows.map((row, ri) => (
-            <tr
-              key={ri}
-              style={{
-                backgroundColor:
-                  striped && ri % 2 === 1 ? `${headerBg}80` : "transparent",
-              }}
-            >
-              {element.columns.map((_, ci) => (
-                <td
-                  key={ci}
-                  style={{
-                    padding: "5px 10px",
-                    borderBottom: `1px solid ${borderColor}`,
-                  }}
-                >
-                  {row[ci] ?? ""}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {element.rows.map((row, ri) => {
+            const isLastRow = ri === element.rows.length - 1;
+            return (
+              <tr
+                key={ri}
+                style={{
+                  backgroundColor:
+                    striped && ri % 2 === 1 ? `${headerBg}80` : "transparent",
+                }}
+              >
+                {element.columns.map((_, ci) => (
+                  <td
+                    key={ci}
+                    style={{
+                      padding: "5px 10px",
+                      borderBottom: isLastRow ? "none" : `1px solid ${borderColor}`,
+                    }}
+                  >
+                    {row[ci] ?? ""}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
