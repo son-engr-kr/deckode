@@ -422,10 +422,14 @@ function TikZEditor({
         svgUrl: result.svgUrl,
         renderedContent: content,
         renderedPreamble: preamble ?? "",
+        renderError: undefined,
       } as Partial<SlideElement>);
     } else {
       setStatus("error");
       setError(result.error);
+      updateElement(slideId, element.id, {
+        renderError: result.error,
+      } as Partial<SlideElement>);
     }
   }, [adapter, element.id, slideId, updateElement]);
 

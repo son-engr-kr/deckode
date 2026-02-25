@@ -4,7 +4,16 @@ import { useDeckStore } from "@/stores/deckStore";
 import type { Deck, TikZElement } from "@/types/deck";
 
 function needsRender(el: TikZElement): boolean {
-  if (!el.svgUrl) return true;
+  if (!el.svgUrl) {
+    // Already failed with the same content — don't retry until user edits
+    if (
+      el.renderError &&
+      el.content === el.renderedContent &&
+      (el.preamble ?? "") === (el.renderedPreamble ?? "")
+    )
+      return false;
+    return true;
+  }
   if (el.content !== el.renderedContent) return true;
   if ((el.preamble ?? "") !== (el.renderedPreamble ?? "")) return true;
   return false;
@@ -68,13 +77,24 @@ export function useTikzAutoRender() {
                 svgUrl: result.svgUrl,
                 renderedContent: element.content,
                 renderedPreamble: element.preamble ?? "",
+                renderError: undefined,
               });
             } else {
               console.warn(`[TikzAutoRender] Failed to render ${element.id}:`, result.error);
+              useDeckStore.getState().updateElement(slideId, element.id, {
+                renderedContent: element.content,
+                renderedPreamble: element.preamble ?? "",
+                renderError: result.error,
+              });
             }
           } catch (err) {
             rendering.delete(element.id);
             console.warn(`[TikzAutoRender] Error rendering ${element.id}:`, err);
+            useDeckStore.getState().updateElement(slideId, element.id, {
+              renderedContent: element.content,
+              renderedPreamble: element.preamble ?? "",
+              renderError: String(err),
+            });
           }
         }
       } finally {

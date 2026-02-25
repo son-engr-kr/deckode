@@ -50,6 +50,46 @@ export function TikZElementRenderer({ element, thumbnail }: Props) {
     );
   }
 
+  // Error state: auto-render failed
+  if (element.renderError) {
+    return (
+      <div
+        style={{
+          width: element.size.w,
+          height: element.size.h,
+          backgroundColor: "#2a1215",
+          borderRadius: style.borderRadius ?? 4,
+          border: "1px solid #7f1d1d",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          padding: 8,
+        }}
+      >
+        <div style={{ color: "#f87171", fontSize: thumbnail ? 7 : 11, fontWeight: 600, marginBottom: 4 }}>
+          TikZ render error
+        </div>
+        {!thumbnail && (
+          <pre
+            style={{
+              color: "#fca5a5",
+              fontSize: 9,
+              fontFamily: "monospace",
+              whiteSpace: "pre-wrap",
+              overflow: "auto",
+              maxHeight: element.size.h - 30,
+              textAlign: "left",
+              width: "100%",
+              margin: 0,
+            }}
+          >
+            {element.renderError}
+          </pre>
+        )}
+      </div>
+    );
+  }
+
   // Placeholder: show TikZ source preview
   return (
     <div

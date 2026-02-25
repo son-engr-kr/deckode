@@ -133,6 +133,7 @@ export interface TikZElement extends BaseElement {
   preamble?: string;
   renderedContent?: string;
   renderedPreamble?: string;
+  renderError?: string;
   style?: TikZStyle;
 }
 
