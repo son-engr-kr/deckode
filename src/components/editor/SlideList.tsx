@@ -18,6 +18,7 @@ import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { nextSlideId } from "@/utils/id";
 import { useAdapter } from "@/contexts/AdapterContext";
 import type { Slide, DeckTheme } from "@/types/deck";
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { LayoutInfo } from "@/adapters/types";
 
 interface SlideContextMenuState {
@@ -26,9 +27,6 @@ interface SlideContextMenuState {
   slideId: string;
   slideIndex: number;
 }
-
-const CANVAS_W = 960;
-const CANVAS_H = 540;
 // Chrome around each thumbnail: button border-2 (4px) + p-0.5 (4px)
 const THUMB_CHROME = 8;
 const DEFAULT_THUMB_SCALE = 0.15;
@@ -72,14 +70,14 @@ export function SlideList() {
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width ?? 0;
       if (w > 0) {
-        setThumbScale(Math.max(MIN_THUMB_SCALE, (w - THUMB_CHROME) / CANVAS_W));
+        setThumbScale(Math.max(MIN_THUMB_SCALE, (w - THUMB_CHROME) / CANVAS_WIDTH));
       }
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  const thumbH = Math.round(CANVAS_H * thumbScale);
+  const thumbH = Math.round(CANVAS_HEIGHT * thumbScale);
 
   // Load layouts when picker opens
   useEffect(() => {
