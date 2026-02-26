@@ -19,6 +19,7 @@ import {
   OBJECT_FIT_OPTIONS,
   TEXT_ALIGN_OPTIONS,
   VERTICAL_ALIGN_OPTIONS,
+  TEXT_SIZING_OPTIONS,
 } from "./fields";
 
 // -- Accordion section --
@@ -113,6 +114,12 @@ export function ThemePanel() {
           value={theme.text?.textAlign}
           options={TEXT_ALIGN_OPTIONS}
           onChange={(v) => patchText({ textAlign: v })}
+        />
+        <SelectField
+          label="Text Sizing"
+          value={theme.text?.textSizing}
+          options={TEXT_SIZING_OPTIONS}
+          onChange={(v) => patchText({ textSizing: v })}
         />
         <NumberField
           label="Line Height"

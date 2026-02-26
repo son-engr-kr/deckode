@@ -28,9 +28,12 @@ export interface SlideTransition {
 
 // ----- Element Styles -----
 
+export type TextSizing = "flexible" | "fixed";
+
 export interface TextStyle {
   fontFamily?: string;
   fontSize?: number;
+  textSizing?: TextSizing;
   color?: string;
   textAlign?: "left" | "center" | "right";
   lineHeight?: number;

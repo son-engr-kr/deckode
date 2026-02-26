@@ -16,12 +16,21 @@ export function TextElementRenderer({ element }: Props) {
   const alignItems = { top: "flex-start", middle: "center", bottom: "flex-end" }[verticalAlign];
 
   const baseFontSize = style.fontSize ?? 24;
+  const textSizing = style.textSizing ?? "flexible";
+  const isFixed = textSizing === "fixed";
+
   const [fontSize, setFontSize] = useState(baseFontSize);
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
 
   // Auto-shrink: binary-search the largest fontSize that fits the box
+  // Only runs in "flexible" mode
   useLayoutEffect(() => {
+    if (isFixed) {
+      setFontSize(baseFontSize);
+      return;
+    }
+
     const outer = outerRef.current;
     const inner = innerRef.current;
     if (!outer || !inner) return;
@@ -44,7 +53,7 @@ export function TextElementRenderer({ element }: Props) {
       }
     }
     setFontSize(Math.floor(lo));
-  }, [baseFontSize, element.content, element.size.w, element.size.h]);
+  }, [baseFontSize, isFixed, element.content, element.size.w, element.size.h]);
 
   return (
     <div

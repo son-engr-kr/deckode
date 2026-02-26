@@ -176,3 +176,4 @@ export const CODE_THEMES = [
 export const OBJECT_FIT_OPTIONS = ["contain", "cover", "fill"] as const;
 export const TEXT_ALIGN_OPTIONS = ["left", "center", "right"] as const;
 export const VERTICAL_ALIGN_OPTIONS = ["top", "middle", "bottom"] as const;
+export const TEXT_SIZING_OPTIONS = ["flexible", "fixed"] as const;

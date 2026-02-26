@@ -12,6 +12,7 @@ import {
   OBJECT_FIT_OPTIONS,
   TEXT_ALIGN_OPTIONS,
   VERTICAL_ALIGN_OPTIONS,
+  TEXT_SIZING_OPTIONS,
 } from "./fields";
 
 export function PropertyPanel() {
@@ -301,6 +302,7 @@ function ElementStyleEditor({
             <ColorField label="Color" value={element.style?.color} onChange={(v) => patchStyle("color", v)} />
             <TextField label="Font Family" value={element.style?.fontFamily} onChange={(v) => patchStyle("fontFamily", v)} placeholder="sans-serif" />
             <NumberField label="Font Size" value={element.style?.fontSize} onChange={(v) => patchStyle("fontSize", v)} min={8} max={200} />
+            <SelectField label="Text Sizing" value={element.style?.textSizing} options={TEXT_SIZING_OPTIONS} onChange={(v) => patchStyle("textSizing", v)} />
             <SelectField label="Text Align" value={element.style?.textAlign} options={TEXT_ALIGN_OPTIONS} onChange={(v) => patchStyle("textAlign", v)} />
             <NumberField label="Line Height" value={element.style?.lineHeight} onChange={(v) => patchStyle("lineHeight", v)} min={0.5} max={4} step={0.1} />
             <SelectField label="Vertical Align" value={element.style?.verticalAlign} options={VERTICAL_ALIGN_OPTIONS} onChange={(v) => patchStyle("verticalAlign", v)} />
