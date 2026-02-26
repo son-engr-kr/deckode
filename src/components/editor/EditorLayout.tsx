@@ -12,6 +12,7 @@ import { ThemePanel } from "./ThemePanel";
 import { PresentationMode } from "@/components/presenter/PresentationMode";
 import { exportToPdf } from "@/components/export/pdfExport";
 import { exportToPptx } from "@/components/export/pptxExport";
+import { useAdapter } from "@/contexts/AdapterContext";
 import { useTikzAutoRender } from "@/hooks/useTikzAutoRender";
 
 function performUndoRedo(direction: "undo" | "redo") {
@@ -39,6 +40,7 @@ type RightPanel = "properties" | "theme";
 
 export function EditorLayout() {
   useTikzAutoRender();
+  const adapter = useAdapter();
   const [bottomPanel, setBottomPanel] = useState<BottomPanel>(null);
   const [rightPanel, setRightPanel] = useState<RightPanel>("properties");
   const [presenting, setPresenting] = useState(false);
@@ -227,7 +229,7 @@ export function EditorLayout() {
         <button
           onClick={() => {
             const deck = useDeckStore.getState().deck;
-            if (deck) exportToPdf(deck);
+            if (deck) exportToPdf(deck, adapter);
           }}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
         >

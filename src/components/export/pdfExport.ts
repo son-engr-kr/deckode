@@ -20,8 +20,8 @@ import type {
   TikZElement,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
+import type { FileSystemAdapter } from "@/adapters/types";
 import { fetchImageAsBase64 } from "@/utils/exportUtils";
-import { useDeckStore } from "@/stores/deckStore";
 
 // ---- Defaults (matching React renderers exactly) ----
 
@@ -50,14 +50,14 @@ function resolveStyle<T extends object>(
   return { ...theme, ...element };
 }
 
-// ---- Asset URL resolution (mirrors ViteApiAdapter.resolveAssetUrl) ----
+// ---- Asset URL resolution (delegates to the active adapter) ----
 
-function resolveAssetSrc(src: string): string {
-  if (src.startsWith("./assets/")) {
-    const project = useDeckStore.getState().currentProject;
-    if (project) return `/assets/${project}/${src.slice(9)}`;
-  }
-  return src;
+async function resolveAssetSrc(
+  src: string,
+  adapter: FileSystemAdapter,
+): Promise<string> {
+  const result = adapter.resolveAssetUrl(src);
+  return typeof result === "string" ? result : await result;
 }
 
 // ---- HTML escape ----
@@ -178,7 +178,10 @@ function inlineHtml(text: string): string {
 // Main export
 // ========================================================================
 
-export async function exportToPdf(deck: Deck): Promise<void> {
+export async function exportToPdf(
+  deck: Deck,
+  adapter: FileSystemAdapter,
+): Promise<void> {
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "px",
@@ -190,7 +193,7 @@ export async function exportToPdf(deck: Deck): Promise<void> {
 
   for (let i = 0; i < slides.length; i++) {
     if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "landscape");
-    await renderSlide(doc, slides[i]!, deck);
+    await renderSlide(doc, slides[i]!, deck, adapter);
   }
 
   const name = (deck.meta.title || "presentation").replace(
@@ -214,6 +217,7 @@ async function renderSlide(
   doc: jsPDF,
   slide: Slide,
   deck: Deck,
+  adapter: FileSystemAdapter,
 ): Promise<void> {
   // Wrapper: positioned at (0,0) behind everything (lowest z-index).
   // This is NOT the captured node — its styles don't get cloned.
@@ -238,7 +242,7 @@ async function renderSlide(
   // Build each element as a positioned child of the slide container
   for (const el of slide.elements) {
     try {
-      const node = await buildElement(el, deck);
+      const node = await buildElement(el, deck, adapter);
       if (!node) continue;
       node.style.position = "absolute";
       node.style.left = `${el.position.x}px`;
@@ -322,6 +326,7 @@ function fitFont(outer: HTMLElement, base: number): void {
 async function buildElement(
   el: SlideElement,
   deck: Deck,
+  adapter: FileSystemAdapter,
 ): Promise<HTMLElement | null> {
   switch (el.type) {
     case "text":
@@ -329,13 +334,13 @@ async function buildElement(
     case "code":
       return await buildCode(el, deck);
     case "image":
-      return await buildImage(el, deck);
+      return await buildImage(el, deck, adapter);
     case "shape":
       return buildShape(el, deck);
     case "table":
       return buildTable(el, deck);
     case "tikz":
-      return await buildTikZ(el);
+      return await buildTikZ(el, adapter);
     case "video":
       return buildVideo();
     default:
@@ -405,6 +410,7 @@ async function buildCode(el: CodeElement, deck: Deck): Promise<HTMLElement> {
 async function buildImage(
   el: ImageElement,
   deck: Deck,
+  adapter: FileSystemAdapter,
 ): Promise<HTMLElement | null> {
   const s = resolveStyle<ImageStyle>(deck.theme?.image, el.style);
 
@@ -423,8 +429,9 @@ async function buildImage(
     .filter(Boolean)
     .join(";");
 
-  // Resolve ./assets/ paths and pre-fetch as base64 to avoid CORS issues
-  const resolved = resolveAssetSrc(el.src);
+  // Resolve via the active adapter (blob URL on FsAccess, server path on Vite)
+  // then pre-fetch as base64 to avoid CORS issues in html-to-image capture
+  const resolved = await resolveAssetSrc(el.src, adapter);
   const b64 = await fetchImageAsBase64(resolved);
   img.src = b64 ?? resolved;
 
@@ -577,9 +584,12 @@ function buildTable(el: TableElement, deck: Deck): HTMLElement {
 
 // ---- TikZ ----
 
-async function buildTikZ(el: TikZElement): Promise<HTMLElement | null> {
+async function buildTikZ(
+  el: TikZElement,
+  adapter: FileSystemAdapter,
+): Promise<HTMLElement | null> {
   if (!el.svgUrl) return null;
-  const resolved = resolveAssetSrc(el.svgUrl);
+  const resolved = await resolveAssetSrc(el.svgUrl, adapter);
 
   // SVGs inside html-to-image's foreignObject are problematic (cross-origin,
   // namespace issues). Rasterize the SVG to a PNG data URL via an offscreen
