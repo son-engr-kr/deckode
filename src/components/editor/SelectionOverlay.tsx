@@ -17,13 +17,15 @@ interface ContextMenuState {
 }
 
 export function SelectionOverlay({ slide, scale }: Props) {
-  const selectedElementId = useDeckStore((s) => s.selectedElementId);
+  const selectedElementIds = useDeckStore((s) => s.selectedElementIds);
   const highlightedElementIds = useDeckStore((s) => s.highlightedElementIds);
   const selectElement = useDeckStore((s) => s.selectElement);
   const updateElement = useDeckStore((s) => s.updateElement);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
+
+  const singleSelectedId = selectedElementIds.length === 1 ? selectedElementIds[0] : null;
 
   return (
     <div
@@ -36,15 +38,29 @@ export function SelectionOverlay({ slide, scale }: Props) {
           isHighlighted={highlightedElementIds.includes(element.id)}
           element={element}
           slideId={slide.id}
-          isSelected={element.id === selectedElementId}
-          onSelect={() => selectElement(element.id)}
+          isSelected={selectedElementIds.includes(element.id)}
+          showResizeHandles={element.id === singleSelectedId}
+          onSelect={(e: React.MouseEvent) => {
+            if (e.shiftKey) selectElement(element.id, "add");
+            else if (e.ctrlKey || e.metaKey) selectElement(element.id, "toggle");
+            else if (!selectedElementIds.includes(element.id)) selectElement(element.id);
+            // If already selected with no modifier, keep current selection (enables multi-drag)
+          }}
           onMove={(dx, dy) => {
-            updateElement(slide.id, element.id, {
-              position: {
-                x: element.position.x + dx,
-                y: element.position.y + dy,
-              },
-            } as Partial<SlideElement>);
+            const idsToMove = selectedElementIds.includes(element.id)
+              ? selectedElementIds
+              : [element.id];
+            for (const elId of idsToMove) {
+              const el = slide.elements.find((e) => e.id === elId);
+              if (el) {
+                updateElement(slide.id, elId, {
+                  position: {
+                    x: el.position.x + dx,
+                    y: el.position.y + dy,
+                  },
+                } as Partial<SlideElement>);
+              }
+            }
           }}
           onResize={(dx, dy, dw, dh) => {
             updateElement(slide.id, element.id, {
@@ -59,7 +75,9 @@ export function SelectionOverlay({ slide, scale }: Props) {
             } as Partial<SlideElement>);
           }}
           onContextMenu={(x, y) => {
-            selectElement(element.id);
+            if (!selectedElementIds.includes(element.id)) {
+              selectElement(element.id);
+            }
             setContextMenu({ x, y, slideId: slide.id, elementId: element.id });
           }}
           scale={scale}
@@ -81,21 +99,23 @@ interface InteractiveProps {
   element: SlideElement;
   slideId: string;
   isSelected: boolean;
+  showResizeHandles: boolean;
   isHighlighted: boolean;
-  onSelect: () => void;
+  onSelect: (e: React.MouseEvent) => void;
   onMove: (dx: number, dy: number) => void;
   onResize: (dx: number, dy: number, dw: number, dh: number) => void;
   onContextMenu: (x: number, y: number) => void;
   scale: number;
 }
 
-function InteractiveElement({ element, isSelected, isHighlighted, onSelect, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
+function InteractiveElement({ element, isSelected, showResizeHandles, isHighlighted, onSelect, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
   const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      e.preventDefault();
       e.stopPropagation();
-      onSelect();
+      onSelect(e);
       setDeckDragging(true);
       dragStart.current = {
         x: e.clientX,
@@ -104,9 +124,16 @@ function InteractiveElement({ element, isSelected, isHighlighted, onSelect, onMo
         ey: element.position.y,
       };
 
+      // Block native text-selection & HTML drag during the entire gesture
+      const prevent = (ev: Event) => ev.preventDefault();
+      document.addEventListener("selectstart", prevent);
+      document.addEventListener("dragstart", prevent);
+
       const handleMouseUp = () => {
         setDeckDragging(false);
         dragStart.current = null;
+        document.removeEventListener("selectstart", prevent);
+        document.removeEventListener("dragstart", prevent);
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
       };
@@ -206,18 +233,19 @@ function InteractiveElement({ element, isSelected, isHighlighted, onSelect, onMo
 
   return (
     <motion.div
-      className={`absolute cursor-move ${
-        isSelected ? "ring-2 ring-blue-500 ring-offset-0" : "hover:ring-1 hover:ring-blue-400/50"
-      }`}
+      className="absolute cursor-move select-none"
       style={{
         left: element.position.x,
         top: element.position.y,
         width: element.size.w,
         height: element.size.h,
+        // outline instead of ring: framer-motion's boxShadow animate overrides Tailwind ring (both use box-shadow)
+        outline: isSelected ? "2px solid rgb(59,130,246)" : "none",
         // auto: re-enable events (parent is pointer-events:none)
         // Selected video: let clicks pass through to native <video> controls
         pointerEvents: element.type === "video" && isSelected ? "none" : "auto",
       }}
+      draggable={false}
       initial={isHighlighted ? { boxShadow: "0 0 0 3px rgba(34,197,94,0.7)" } : false}
       animate={{ boxShadow: "0 0 0 0px rgba(34,197,94,0)" }}
       transition={{ duration: 0.8 }}
@@ -232,8 +260,8 @@ function InteractiveElement({ element, isSelected, isHighlighted, onSelect, onMo
         <VideoDragHandle element={element} onMouseDown={handleMouseDown} />
       )}
 
-      {/* Resize handles (when selected) */}
-      {isSelected && (
+      {/* Resize handles (only for single selection) */}
+      {showResizeHandles && (
         <>
           <ResizeHandle corner="nw" onMouseDown={handleResizeMouseDown} />
           <ResizeHandle corner="ne" onMouseDown={handleResizeMouseDown} />

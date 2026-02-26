@@ -144,22 +144,37 @@ export function EditorLayout() {
         performUndoRedo("redo");
         return;
       }
-      // Duplicate element: Ctrl+D
+      // Duplicate element(s): Ctrl+D
       if ((e.ctrlKey || e.metaKey) && e.key === "d") {
         e.preventDefault();
-        const { deck, currentSlideIndex, selectedElementId, duplicateElement } = useDeckStore.getState();
-        if (deck && selectedElementId) {
+        const { deck, currentSlideIndex, selectedElementIds, duplicateElement, selectElement } = useDeckStore.getState();
+        if (deck && selectedElementIds.length > 0) {
           const slide = deck.slides[currentSlideIndex];
-          if (slide) duplicateElement(slide.id, selectedElementId);
+          if (slide) {
+            const cloneIds: string[] = [];
+            for (const elId of selectedElementIds) {
+              duplicateElement(slide.id, elId);
+              const lastIds = useDeckStore.getState().selectedElementIds;
+              cloneIds.push(lastIds[lastIds.length - 1]!);
+            }
+            selectElement(cloneIds[0]!);
+            for (let i = 1; i < cloneIds.length; i++) {
+              selectElement(cloneIds[i]!, "add");
+            }
+          }
         }
         return;
       }
-      // Delete selected element
+      // Delete selected element(s)
       if (e.key === "Delete" || e.key === "Backspace") {
-        const { deck, currentSlideIndex, selectedElementId, deleteElement } = useDeckStore.getState();
-        if (deck && selectedElementId) {
+        const { deck, currentSlideIndex, selectedElementIds, deleteElement } = useDeckStore.getState();
+        if (deck && selectedElementIds.length > 0) {
           const slide = deck.slides[currentSlideIndex];
-          if (slide) deleteElement(slide.id, selectedElementId);
+          if (slide) {
+            for (const elId of [...selectedElementIds]) {
+              deleteElement(slide.id, elId);
+            }
+          }
         }
         return;
       }

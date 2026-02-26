@@ -123,10 +123,13 @@ export function EditorCanvas() {
   const slide = deck.slides[currentSlideIndex];
   assert(slide !== undefined, `Slide index ${currentSlideIndex} out of bounds`);
 
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      selectElement(null);
-    }
+  // Deselect all elements when clicking empty canvas space.
+  // This fires on the wrapper (slide area + gray surround). InteractiveElement's
+  // handleMouseDown calls stopPropagation, so element clicks never reach here.
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    // Only primary button (left click)
+    if (e.button !== 0) return;
+    selectElement(null);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -184,7 +187,7 @@ export function EditorCanvas() {
     <div
       ref={containerRef}
       className="flex-1 flex items-center justify-center bg-zinc-900 overflow-hidden"
-      onClick={handleCanvasClick}
+      onMouseDown={handleCanvasMouseDown}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

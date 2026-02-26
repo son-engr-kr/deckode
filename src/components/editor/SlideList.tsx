@@ -163,14 +163,14 @@ export function SlideList() {
                     ? selectedSlideIds.filter((id) => id !== slide.id)
                     : [...selectedSlideIds, slide.id];
                   setSelectedSlides(newIds.length > 0 ? newIds : [slide.id]);
-                  useDeckStore.setState({ currentSlideIndex: index, selectedElementId: null });
+                  useDeckStore.setState({ currentSlideIndex: index, selectedElementIds: [] });
                 } else if (e.shiftKey) {
                   // Range select from currentSlideIndex to clicked index
                   const start = Math.min(currentSlideIndex, index);
                   const end = Math.max(currentSlideIndex, index);
                   const rangeIds = deck.slides.slice(start, end + 1).map((s) => s.id);
                   setSelectedSlides(rangeIds);
-                  useDeckStore.setState({ currentSlideIndex: index, selectedElementId: null });
+                  useDeckStore.setState({ currentSlideIndex: index, selectedElementIds: [] });
                 } else {
                   setCurrentSlide(index);
                 }

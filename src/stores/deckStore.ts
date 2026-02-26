@@ -18,7 +18,7 @@ interface DeckState {
   deck: Deck | null;
   currentSlideIndex: number;
   selectedSlideIds: string[];
-  selectedElementId: string | null;
+  selectedElementIds: string[];
   highlightedElementIds: string[];
   isDirty: boolean;
   isSaving: boolean;
@@ -32,7 +32,7 @@ interface DeckState {
   setSelectedSlides: (ids: string[]) => void;
   nextSlide: () => void;
   prevSlide: () => void;
-  selectElement: (id: string | null) => void;
+  selectElement: (id: string | null, mode?: "replace" | "add" | "toggle") => void;
   updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
   updateSlide: (slideId: string, patch: Partial<Slide>) => void;
   addSlide: (slide: Slide, afterIndex?: number) => void;
@@ -79,7 +79,7 @@ export const useDeckStore = create<DeckState>()(
         deck: null,
         currentSlideIndex: 0,
         selectedSlideIds: [],
-        selectedElementId: null,
+        selectedElementIds: [],
         highlightedElementIds: [],
         isDirty: false,
         isSaving: false,
@@ -90,7 +90,7 @@ export const useDeckStore = create<DeckState>()(
             state.deck = deck;
             state.currentSlideIndex = 0;
             state.selectedSlideIds = deck.slides.length > 0 ? [deck.slides[0]!.id] : [];
-            state.selectedElementId = null;
+            state.selectedElementIds = [];
             state.isDirty = false;
           }),
 
@@ -100,7 +100,7 @@ export const useDeckStore = create<DeckState>()(
             state.deck = null;
             state.currentSlideIndex = 0;
             state.selectedSlideIds = [];
-            state.selectedElementId = null;
+            state.selectedElementIds = [];
             state.isDirty = false;
           }),
 
@@ -109,7 +109,7 @@ export const useDeckStore = create<DeckState>()(
             state.deck = deck;
             state.currentSlideIndex = 0;
             state.selectedSlideIds = deck.slides.length > 0 ? [deck.slides[0]!.id] : [];
-            state.selectedElementId = null;
+            state.selectedElementIds = [];
             state.isDirty = false;
           }),
 
@@ -137,7 +137,7 @@ export const useDeckStore = create<DeckState>()(
             assert(index >= 0 && index < state.deck.slides.length, `Slide index ${index} out of bounds`);
             state.currentSlideIndex = index;
             state.selectedSlideIds = [state.deck.slides[index]!.id];
-            state.selectedElementId = null;
+            state.selectedElementIds = [];
           }),
 
         setSelectedSlides: (ids) =>
@@ -151,7 +151,7 @@ export const useDeckStore = create<DeckState>()(
             if (state.currentSlideIndex < state.deck.slides.length - 1) {
               state.currentSlideIndex += 1;
               state.selectedSlideIds = [state.deck.slides[state.currentSlideIndex]!.id];
-              state.selectedElementId = null;
+              state.selectedElementIds = [];
             }
           }),
 
@@ -161,13 +161,28 @@ export const useDeckStore = create<DeckState>()(
             if (state.currentSlideIndex > 0) {
               state.currentSlideIndex -= 1;
               state.selectedSlideIds = [state.deck.slides[state.currentSlideIndex]!.id];
-              state.selectedElementId = null;
+              state.selectedElementIds = [];
             }
           }),
 
-        selectElement: (id) =>
+        selectElement: (id, mode = "replace") =>
           set((state) => {
-            state.selectedElementId = id;
+            if (mode === "replace") {
+              state.selectedElementIds = id ? [id] : [];
+            } else if (mode === "add") {
+              if (id && !state.selectedElementIds.includes(id)) {
+                state.selectedElementIds.push(id);
+              }
+            } else {
+              // toggle
+              if (!id) return;
+              const idx = state.selectedElementIds.indexOf(id);
+              if (idx === -1) {
+                state.selectedElementIds.push(id);
+              } else {
+                state.selectedElementIds.splice(idx, 1);
+              }
+            }
           }),
 
         updateElement: (slideId, elementId, patch) =>
@@ -259,9 +274,7 @@ export const useDeckStore = create<DeckState>()(
             if (slide.animations) {
               slide.animations = slide.animations.filter(a => a.target !== elementId);
             }
-            if (state.selectedElementId === elementId) {
-              state.selectedElementId = null;
-            }
+            state.selectedElementIds = state.selectedElementIds.filter(id => id !== elementId);
             state.isDirty = true;
           }),
 
@@ -275,7 +288,7 @@ export const useDeckStore = create<DeckState>()(
             clone.id = nextElementId();
             clone.position = { x: element.position.x + 20, y: element.position.y + 20 };
             slide.elements.push(clone);
-            state.selectedElementId = clone.id;
+            state.selectedElementIds = [clone.id];
             state.isDirty = true;
           }),
 

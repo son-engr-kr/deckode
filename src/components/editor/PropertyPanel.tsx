@@ -20,13 +20,13 @@ export function PropertyPanel() {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
-  const selectedElementId = useDeckStore((s) => s.selectedElementId);
+  const selectedElementIds = useDeckStore((s) => s.selectedElementIds);
   const updateElement = useDeckStore((s) => s.updateElement);
   const updateSlide = useDeckStore((s) => s.updateSlide);
 
   if (!deck) return null;
 
-  if (selectedElementId === null) {
+  if (selectedElementIds.length === 0) {
     return (
       <SlidePropertiesPanel
         deck={deck}
@@ -36,8 +36,16 @@ export function PropertyPanel() {
     );
   }
 
+  if (selectedElementIds.length > 1) {
+    return (
+      <div className="p-4 text-zinc-400 text-sm">
+        {selectedElementIds.length} elements selected
+      </div>
+    );
+  }
+
   const slide = deck.slides[currentSlideIndex]!;
-  const element = slide.elements.find((e) => e.id === selectedElementId);
+  const element = slide.elements.find((e) => e.id === selectedElementIds[0]);
   if (!element) return null;
 
   const handleNumberChange = (

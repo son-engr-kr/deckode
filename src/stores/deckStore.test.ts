@@ -35,7 +35,7 @@ beforeEach(() => {
     currentProject: null,
     deck: null,
     currentSlideIndex: 0,
-    selectedElementId: null,
+    selectedElementIds: [],
     isDirty: false,
     isSaving: false,
   });
@@ -55,7 +55,7 @@ describe("deckStore - openProject / closeProject", () => {
     assert(state.deck !== null, "deck should be loaded");
     expect(state.deck.slides).toHaveLength(3);
     expect(state.currentSlideIndex).toBe(0);
-    expect(state.selectedElementId).toBeNull();
+    expect(state.selectedElementIds).toEqual([]);
     expect(state.isDirty).toBe(false);
   });
 
@@ -70,7 +70,7 @@ describe("deckStore - openProject / closeProject", () => {
     expect(state.currentProject).toBeNull();
     expect(state.deck).toBeNull();
     expect(state.currentSlideIndex).toBe(0);
-    expect(state.selectedElementId).toBeNull();
+    expect(state.selectedElementIds).toEqual([]);
     expect(state.isDirty).toBe(false);
   });
 });
@@ -88,7 +88,7 @@ describe("deckStore - basic actions", () => {
     assert(state.deck !== null, "deck should be loaded");
     expect(state.deck.slides).toHaveLength(3);
     expect(state.currentSlideIndex).toBe(0);
-    expect(state.selectedElementId).toBeNull();
+    expect(state.selectedElementIds).toEqual([]);
     expect(state.isDirty).toBe(false);
   });
 
@@ -98,7 +98,7 @@ describe("deckStore - basic actions", () => {
     useDeckStore.getState().setCurrentSlide(2);
 
     expect(useDeckStore.getState().currentSlideIndex).toBe(2);
-    expect(useDeckStore.getState().selectedElementId).toBeNull();
+    expect(useDeckStore.getState().selectedElementIds).toEqual([]);
   });
 
   it("setCurrentSlide throws on out-of-bounds index", () => {
@@ -164,13 +164,13 @@ describe("deckStore - basic actions", () => {
     expect(useDeckStore.getState().deck!.slides[0]!.elements).toHaveLength(1);
   });
 
-  it("deleteElement clears selectedElementId if the deleted element was selected", () => {
+  it("deleteElement removes deleted element from selectedElementIds", () => {
     useDeckStore.getState().loadDeck(makeDeck(1));
     useDeckStore.getState().selectElement("e0-0");
-    expect(useDeckStore.getState().selectedElementId).toBe("e0-0");
+    expect(useDeckStore.getState().selectedElementIds).toEqual(["e0-0"]);
 
     useDeckStore.getState().deleteElement("s0", "e0-0");
-    expect(useDeckStore.getState().selectedElementId).toBeNull();
+    expect(useDeckStore.getState().selectedElementIds).toEqual([]);
   });
 });
 
@@ -194,7 +194,7 @@ describe("deckStore - BUG: drag element must not reset slide index", () => {
     expect(useDeckStore.getState().currentSlideIndex).toBe(2);
   });
 
-  it("updateElement preserves selectedElementId", () => {
+  it("updateElement preserves selectedElementIds", () => {
     useDeckStore.getState().loadDeck(makeDeck(3));
     useDeckStore.getState().setCurrentSlide(1);
     useDeckStore.getState().selectElement("e1-0");
@@ -203,7 +203,7 @@ describe("deckStore - BUG: drag element must not reset slide index", () => {
       position: { x: 500, y: 300 },
     });
 
-    expect(useDeckStore.getState().selectedElementId).toBe("e1-0");
+    expect(useDeckStore.getState().selectedElementIds).toEqual(["e1-0"]);
     expect(useDeckStore.getState().currentSlideIndex).toBe(1);
   });
 
@@ -337,7 +337,7 @@ describe("deckStore - duplicateElement", () => {
     useDeckStore.getState().duplicateElement("s0", "e0-0");
 
     const elements = useDeckStore.getState().deck!.slides[0]!.elements;
-    expect(useDeckStore.getState().selectedElementId).toBe(elements[1]!.id);
+    expect(useDeckStore.getState().selectedElementIds).toEqual([elements[1]!.id]);
   });
 });
 
