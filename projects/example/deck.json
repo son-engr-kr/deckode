@@ -2554,19 +2554,20 @@
         {
           "id": "e100",
           "type": "text",
-          "content": "It's ",
+          "content": "Native 3D rendering supports **transparency** — you can see this text through the scene above.",
           "position": {
-            "x": 132,
-            "y": 212
+            "x": 82,
+            "y": 221
           },
           "size": {
-            "w": 350,
-            "h": 180
+            "w": 400,
+            "h": 60
           },
           "style": {
-            "fontSize": 14,
-            "color": "#cbd5e1",
-            "lineHeight": 1.6
+            "fontSize": 15,
+            "color": "#94a3b8",
+            "lineHeight": 1.5,
+            "textAlign": "center"
           }
         },
         {
@@ -2608,8 +2609,8 @@
           "id": "s3d-main",
           "type": "scene3d",
           "position": {
-            "x": 22,
-            "y": 386
+            "x": 19,
+            "y": 137
           },
           "size": {
             "w": 520,
