@@ -87,7 +87,7 @@ export interface TableStyle {
 
 // ----- Scene3D -----
 
-export type Scene3DGeometry = "box" | "sphere" | "cylinder" | "cone" | "torus" | "plane";
+export type Scene3DGeometry = "box" | "sphere" | "cylinder" | "cone" | "torus" | "plane" | "line";
 
 export interface Scene3DMaterial {
   color?: string;
@@ -95,6 +95,7 @@ export interface Scene3DMaterial {
   wireframe?: boolean;
   metalness?: number;
   roughness?: number;
+  lineWidth?: number;
 }
 
 export interface Scene3DObject {
@@ -106,6 +107,7 @@ export interface Scene3DObject {
   material?: Scene3DMaterial;
   label?: string;
   visible?: boolean;
+  points?: [number, number, number][];
 }
 
 export interface Scene3DCamera {
@@ -124,6 +126,7 @@ export interface Scene3DKeyframe {
     scale?: [number, number, number];
     material?: Partial<Scene3DMaterial>;
     visible?: boolean;
+    points?: [number, number, number][];
   }[];
 }
 

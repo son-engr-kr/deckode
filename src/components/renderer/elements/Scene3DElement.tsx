@@ -1,6 +1,6 @@
 import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text, Grid } from "@react-three/drei";
+import { OrbitControls, Text, Grid, Line } from "@react-three/drei";
 import * as THREE from "three";
 import type {
   Scene3DElement,
@@ -30,12 +30,14 @@ function resolveObjectState(
   scale: [number, number, number];
   material: Scene3DMaterial;
   visible: boolean;
+  points?: [number, number, number][];
 } {
   let position: [number, number, number] = baseObj.position ?? [0, 0, 0];
   let rotation: [number, number, number] = baseObj.rotation ?? [0, 0, 0];
   let scale: [number, number, number] = baseObj.scale ?? [1, 1, 1];
   let material: Scene3DMaterial = { ...baseObj.material };
   let visible = baseObj.visible ?? true;
+  let points = baseObj.points;
 
   for (let i = 0; i < sceneStep && i < keyframes.length; i++) {
     const kf = keyframes[i]!;
@@ -46,10 +48,11 @@ function resolveObjectState(
       if (change.scale) scale = change.scale;
       if (change.material) material = { ...material, ...change.material };
       if (change.visible !== undefined) visible = change.visible;
+      if (change.points) points = change.points;
     }
   }
 
-  return { position, rotation, scale, material, visible };
+  return { position, rotation, scale, material, visible, points };
 }
 
 // Compute camera state at a given keyframe step.
@@ -163,6 +166,52 @@ function SceneObject({
           ]}
           fontSize={0.2}
           color="white"
+          anchorX="center"
+          anchorY="bottom"
+        >
+          {baseObj.label}
+        </Text>
+      )}
+    </group>
+  );
+}
+
+// Line object component using drei's Line (fat lines via Line2)
+function SceneLineObject({
+  baseObj,
+  keyframes,
+  sceneStep,
+}: {
+  baseObj: Scene3DObject;
+  keyframes: Scene3DKeyframe[];
+  sceneStep: number;
+}) {
+  const state = useMemo(
+    () => resolveObjectState(baseObj, keyframes, sceneStep),
+    [baseObj, keyframes, sceneStep],
+  );
+
+  const pts = state.points ?? baseObj.points ?? [];
+  if (pts.length < 2) return null;
+
+  const color = state.material.color ?? "#888888";
+  const lineWidth = state.material.lineWidth ?? 2;
+  const opacity = state.material.opacity ?? 1;
+
+  return (
+    <group position={state.position} rotation={state.rotation} scale={state.scale} visible={state.visible}>
+      <Line
+        points={pts}
+        color={color}
+        lineWidth={lineWidth}
+        opacity={opacity}
+        transparent={opacity < 1}
+      />
+      {baseObj.label && state.visible && (
+        <Text
+          position={[0, (state.scale[1] ?? 1) * 0.5, 0]}
+          fontSize={0.2}
+          color={color}
           anchorX="center"
           anchorY="bottom"
         >
@@ -308,15 +357,24 @@ export function Scene3DElementRenderer({ element, sceneStep, thumbnail }: Props)
         />
 
         {/* Objects */}
-        {scene.objects.map((obj) => (
-          <SceneObject
-            key={obj.id}
-            baseObj={obj}
-            keyframes={keyframes}
-            sceneStep={sceneStep}
-            transitionDuration={transitionDuration}
-          />
-        ))}
+        {scene.objects.map((obj) =>
+          obj.geometry === "line" ? (
+            <SceneLineObject
+              key={obj.id}
+              baseObj={obj}
+              keyframes={keyframes}
+              sceneStep={sceneStep}
+            />
+          ) : (
+            <SceneObject
+              key={obj.id}
+              baseObj={obj}
+              keyframes={keyframes}
+              sceneStep={sceneStep}
+              transitionDuration={transitionDuration}
+            />
+          ),
+        )}
 
         {/* Helpers */}
         {scene.helpers?.grid && (
@@ -325,7 +383,7 @@ export function Scene3DElementRenderer({ element, sceneStep, thumbnail }: Props)
             fadeDistance={20}
             cellSize={1}
             sectionSize={5}
-            cellColor="#444444"
+            cellColor="#aaaaaa"
             sectionColor="#888888"
           />
         )}

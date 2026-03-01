@@ -200,11 +200,23 @@ Run `npm run dev`, see a rendered slide from `deck.json`.
 - [X] WASM TeX caching optimization (IndexedDB SVG cache, compilation result memoization for repeated renders)
 - [ ] Text-to-TikZ PoC: AI generates/modifies TikZ code from user feedback, rendered as slide element (client-side AI API call + WASM rendering)
 
+- [X] 3D scene element (`scene3d`): interactive Three.js scenes via React Three Fiber + @react-three/drei
+  - [X] 7 geometry types: box, sphere, cylinder, cone, torus, plane, line (3D curves/graphs)
+  - [X] Standard material system (color, metalness, roughness, wireframe, opacity, lineWidth)
+  - [X] Orbit controls for mouse interaction (drag to rotate, scroll to zoom)
+  - [X] Keyframe animation system: `scene3dStep` animation effect advances keyframes on click
+  - [X] Camera transitions (position, target, FOV interpolation)
+  - [X] Object property transitions (position, rotation, scale, material, visibility, line points)
+  - [X] Lazy-loaded via `React.lazy()` — zero bundle cost for slides without 3D (~288KB gzipped)
+  - [X] Thumbnail mode: static SVG placeholder (avoids WebGL context in CSS-transform-scaled containers)
+  - [X] `resize={{ offsetSize: true }}` for correct sizing under CSS transforms
+
 ### Key Decisions
 
 - Simple math: KaTeX (client-side, already implemented in Phase 1).
 - Complex diagrams (TikZ/PGFPlots): WASM-based TeX engine (TikZJax) running entirely in the browser. No server dependency.
 - TikZ output is embedded as SVG in a new `tikz` element type in `deck.json`.
+- 3D scenes use React Three Fiber (R3F) + @react-three/drei. R3F is the de facto React wrapper for Three.js; drei provides helpers (OrbitControls, Text, Grid, Line). Bundle impact mitigated by dynamic import so non-3D slides pay zero cost.
 
 ---
 
