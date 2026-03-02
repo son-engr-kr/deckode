@@ -3190,6 +3190,188 @@
       ]
     },
     {
+      "id": "scene3d-surface",
+      "notes": "Parametric Surface — click to morph between math functions. Demonstrates surface geometry with height-based coloring.",
+      "transition": {
+        "type": "fade",
+        "duration": 400
+      },
+      "elements": [
+        {
+          "id": "surface-title",
+          "type": "text",
+          "content": "## Parametric Surfaces",
+          "position": {
+            "x": 30,
+            "y": 15
+          },
+          "size": {
+            "w": 400,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0f172a"
+          }
+        },
+        {
+          "id": "surface-desc",
+          "type": "text",
+          "content": "Mathematical surfaces rendered as triangulated meshes with height-based vertex coloring. Click to morph between functions.",
+          "position": {
+            "x": 30,
+            "y": 60
+          },
+          "size": {
+            "w": 450,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#64748b",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "surface-scene",
+          "type": "scene3d",
+          "position": {
+            "x": 30,
+            "y": 120
+          },
+          "size": {
+            "w": 900,
+            "h": 380
+          },
+          "scene": {
+            "background": "#0f172a",
+            "camera": {
+              "position": [5, 4, 5],
+              "target": [0, 0, 0],
+              "fov": 50
+            },
+            "ambientLight": 0.5,
+            "directionalLight": {
+              "position": [5, 10, 5],
+              "intensity": 0.9
+            },
+            "objects": [
+              {
+                "id": "surf1",
+                "geometry": "surface",
+                "surface": {
+                  "fn": "sin(x) * cos(z)",
+                  "xRange": [-3, 3],
+                  "zRange": [-3, 3],
+                  "resolution": 48,
+                  "colorRange": ["#0ea5e9", "#f97316"]
+                },
+                "material": {
+                  "roughness": 0.6,
+                  "metalness": 0.2
+                }
+              }
+            ],
+            "orbitControls": true
+          },
+          "keyframes": [
+            {
+              "duration": 1000,
+              "camera": {
+                "position": [6, 5, 3]
+              },
+              "changes": [
+                {
+                  "target": "surf1",
+                  "surface": {
+                    "fn": "exp(-(x*x + z*z) * 0.3) * 2",
+                    "colorRange": ["#6366f1", "#ec4899"]
+                  }
+                }
+              ]
+            },
+            {
+              "duration": 1000,
+              "camera": {
+                "position": [4, 3, 6]
+              },
+              "changes": [
+                {
+                  "target": "surf1",
+                  "surface": {
+                    "fn": "sin(sqrt(x*x + z*z) * 2) / (sqrt(x*x + z*z) + 0.5)",
+                    "colorRange": ["#10b981", "#fbbf24"]
+                  }
+                }
+              ]
+            }
+          ],
+          "style": {
+            "borderRadius": 12
+          }
+        },
+        {
+          "id": "surface-fn-label",
+          "type": "text",
+          "content": "**fn:** `sin(x) * cos(z)` → `gaussian` → `ripple`\n\nClick **Next** to morph the surface function",
+          "position": {
+            "x": 30,
+            "y": 500
+          },
+          "size": {
+            "w": 900,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#64748b",
+            "lineHeight": 1.4
+          }
+        }
+      ],
+      "animations": [
+        {
+          "target": "surface-title",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "surface-desc",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "surface-scene",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "surface-fn-label",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 500
+        },
+        {
+          "target": "surface-scene",
+          "trigger": "onClick",
+          "effect": "scene3dStep",
+          "order": 1
+        },
+        {
+          "target": "surface-scene",
+          "trigger": "onClick",
+          "effect": "scene3dStep",
+          "order": 2
+        }
+      ]
+    },
+    {
       "id": "end",
       "transition": {
         "type": "fade",

@@ -599,7 +599,7 @@ Renders an interactive 3D scene using Three.js (React Three Fiber). Supports mul
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `id` | string | yes | Unique object ID (used by keyframe `target`) |
-| `geometry` | string | yes | `"box"` \| `"sphere"` \| `"cylinder"` \| `"cone"` \| `"torus"` \| `"plane"` \| `"line"` |
+| `geometry` | string | yes | `"box"` \| `"sphere"` \| `"cylinder"` \| `"cone"` \| `"torus"` \| `"plane"` \| `"line"` \| `"surface"` |
 | `position` | `[x, y, z]` | no | 3D position. Default: `[0, 0, 0]` |
 | `rotation` | `[x, y, z]` | no | Euler rotation in radians. Default: `[0, 0, 0]` |
 | `scale` | `[x, y, z]` | no | Scale factors. Default: `[1, 1, 1]` |
@@ -607,6 +607,7 @@ Renders an interactive 3D scene using Three.js (React Three Fiber). Supports mul
 | `label` | string | no | Text label displayed near the object |
 | `visible` | boolean | no | Initial visibility. Default: `true` |
 | `points` | `[x, y, z][]` | no | For `"line"` geometry only: array of 3D points defining the curve |
+| `surface` | object | no | For `"surface"` geometry only: parametric surface config (see below) |
 
 **Material (Scene3DMaterial)**:
 
@@ -650,6 +651,7 @@ Array of keyframe objects. Each keyframe defines a set of changes applied cumula
 | `changes[].material` | object | no | Material property changes (merged) |
 | `changes[].visible` | boolean | no | Show/hide the object |
 | `changes[].points` | `[x, y, z][]` | no | New curve points (for `"line"` geometry) |
+| `changes[].surface` | object | no | Partial surface config update (for `"surface"` geometry). Fields are merged. |
 
 Keyframes are **cumulative**: step 2 applies on top of step 1's changes.
 
@@ -739,6 +741,55 @@ The number of `scene3dStep` animations should match the number of keyframes. The
   "style": { "borderRadius": 12 }
 }
 ```
+
+#### Surface geometry (parametric math surfaces)
+
+Renders a mathematical surface `y = f(x, z)` as a filled triangulated mesh with optional height-based vertex coloring.
+
+**Surface config (`Scene3DSurface`)**:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `fn` | string | *(required)* | Math expression in `x` and `z`. Example: `"sin(x) * cos(z)"` |
+| `xRange` | `[min, max]` | `[-3, 3]` | X-axis domain |
+| `zRange` | `[min, max]` | `[-3, 3]` | Z-axis domain |
+| `resolution` | number | `48` | Grid subdivisions (higher = smoother, more triangles) |
+| `colorRange` | `[low, high]` | — | Height gradient as two hex colors. When set, vertex colors are applied. |
+
+**Available math functions**: `sin`, `cos`, `tan`, `abs`, `sqrt`, `exp`, `log`, `pow`, `floor`, `ceil`, `round`, `min`, `max`, `PI`, `E`
+
+```json
+{
+  "id": "wave",
+  "geometry": "surface",
+  "surface": {
+    "fn": "sin(x) * cos(z)",
+    "xRange": [-3, 3],
+    "zRange": [-3, 3],
+    "resolution": 48,
+    "colorRange": ["#0ea5e9", "#f97316"]
+  },
+  "material": { "roughness": 0.6, "metalness": 0.2 }
+}
+```
+
+To morph between functions in keyframes, use partial `surface` updates in `changes[]`:
+
+```json
+{
+  "changes": [
+    {
+      "target": "wave",
+      "surface": {
+        "fn": "exp(-(x*x + z*z) * 0.3) * 2",
+        "colorRange": ["#6366f1", "#ec4899"]
+      }
+    }
+  ]
+}
+```
+
+The mesh renders double-sided so the surface is visible from below when using orbit controls.
 
 #### Complete scene3d example (interactive with keyframes)
 

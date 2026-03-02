@@ -8,6 +8,7 @@ import type {
   Scene3DConfig,
   Scene3DKeyframe,
   Scene3DMaterial,
+  Scene3DSurface,
 } from "@/types/deck";
 import { useElementStyle } from "@/contexts/ThemeContext";
 import type { Scene3DStyle } from "@/types/deck";
@@ -31,6 +32,7 @@ function resolveObjectState(
   material: Scene3DMaterial;
   visible: boolean;
   points?: [number, number, number][];
+  surface?: Scene3DSurface;
 } {
   let position: [number, number, number] = baseObj.position ?? [0, 0, 0];
   let rotation: [number, number, number] = baseObj.rotation ?? [0, 0, 0];
@@ -38,6 +40,7 @@ function resolveObjectState(
   let material: Scene3DMaterial = { ...baseObj.material };
   let visible = baseObj.visible ?? true;
   let points = baseObj.points;
+  let surface = baseObj.surface ? { ...baseObj.surface } : undefined;
 
   for (let i = 0; i < sceneStep && i < keyframes.length; i++) {
     const kf = keyframes[i]!;
@@ -49,10 +52,11 @@ function resolveObjectState(
       if (change.material) material = { ...material, ...change.material };
       if (change.visible !== undefined) visible = change.visible;
       if (change.points) points = change.points;
+      if (change.surface && surface) surface = { ...surface, ...change.surface };
     }
   }
 
-  return { position, rotation, scale, material, visible, points };
+  return { position, rotation, scale, material, visible, points, surface };
 }
 
 // Compute camera state at a given keyframe step.
@@ -222,6 +226,196 @@ function SceneLineObject({
   );
 }
 
+// Create a safe math evaluator for surface expressions
+function createSurfaceFn(expr: string): (x: number, z: number) => number {
+  const fn = new Function(
+    "x", "z",
+    "sin", "cos", "tan", "abs", "sqrt", "exp", "log", "pow",
+    "floor", "ceil", "round", "min", "max", "PI", "E",
+    `"use strict"; try { const y = ${expr}; return Number.isFinite(y) ? y : 0; } catch { return 0; }`,
+  );
+  return (x: number, z: number) =>
+    fn(
+      x, z,
+      Math.sin, Math.cos, Math.tan, Math.abs, Math.sqrt, Math.exp, Math.log, Math.pow,
+      Math.floor, Math.ceil, Math.round, Math.min, Math.max, Math.PI, Math.E,
+    ) as number;
+}
+
+// Build BufferGeometry for a parametric surface y = f(x, z)
+function buildSurfaceGeometry(config: Scene3DSurface): THREE.BufferGeometry {
+  const [xMin, xMax] = config.xRange ?? [-3, 3];
+  const [zMin, zMax] = config.zRange ?? [-3, 3];
+  const res = config.resolution ?? 48;
+  const f = createSurfaceFn(config.fn);
+
+  const vertices: number[] = [];
+  const indices: number[] = [];
+  const normals: number[] = [];
+  const colors: number[] = [];
+
+  const dx = (xMax - xMin) / res;
+  const dz = (zMax - zMin) / res;
+
+  // Generate vertices
+  let yMin = Infinity;
+  let yMax = -Infinity;
+  const yValues: number[] = [];
+
+  for (let iz = 0; iz <= res; iz++) {
+    for (let ix = 0; ix <= res; ix++) {
+      const x = xMin + ix * dx;
+      const z = zMin + iz * dz;
+      const y = f(x, z);
+      vertices.push(x, y, z);
+      yValues.push(y);
+      if (y < yMin) yMin = y;
+      if (y > yMax) yMax = y;
+    }
+  }
+
+  // Generate indices (two triangles per grid cell)
+  for (let iz = 0; iz < res; iz++) {
+    for (let ix = 0; ix < res; ix++) {
+      const a = iz * (res + 1) + ix;
+      const b = a + 1;
+      const c = a + (res + 1);
+      const d = c + 1;
+      indices.push(a, c, b);
+      indices.push(b, c, d);
+    }
+  }
+
+  // Compute normals via central difference
+  const eps = Math.max(dx, dz) * 0.5;
+  for (let iz = 0; iz <= res; iz++) {
+    for (let ix = 0; ix <= res; ix++) {
+      const x = xMin + ix * dx;
+      const z = zMin + iz * dz;
+      const dydx = (f(x + eps, z) - f(x - eps, z)) / (2 * eps);
+      const dydz = (f(x, z + eps) - f(x, z - eps)) / (2 * eps);
+      // Normal = (-dydx, 1, -dydz) normalized
+      const nx = -dydx;
+      const ny = 1;
+      const nz = -dydz;
+      const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+      normals.push(nx / len, ny / len, nz / len);
+    }
+  }
+
+  // Optional vertex colors from height gradient
+  if (config.colorRange) {
+    const lowColor = new THREE.Color(config.colorRange[0]);
+    const highColor = new THREE.Color(config.colorRange[1]);
+    const range = yMax - yMin || 1;
+    for (let i = 0; i < yValues.length; i++) {
+      const t = (yValues[i]! - yMin) / range;
+      const c = lowColor.clone().lerp(highColor, t);
+      colors.push(c.r, c.g, c.b);
+    }
+  }
+
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+  geom.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+  geom.setIndex(indices);
+  if (colors.length > 0) {
+    geom.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  }
+  return geom;
+}
+
+// Surface object component for parametric surfaces
+function SceneSurfaceObject({
+  baseObj,
+  keyframes,
+  sceneStep,
+  transitionDuration,
+}: {
+  baseObj: Scene3DObject;
+  keyframes: Scene3DKeyframe[];
+  sceneStep: number;
+  transitionDuration: number;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const state = useMemo(
+    () => resolveObjectState(baseObj, keyframes, sceneStep),
+    [baseObj, keyframes, sceneStep],
+  );
+
+  const surfaceConfig = state.surface!;
+  const hasVertexColors = !!surfaceConfig.colorRange;
+
+  const geometry = useMemo(
+    () => buildSurfaceGeometry(surfaceConfig),
+    [surfaceConfig.fn, surfaceConfig.xRange, surfaceConfig.zRange, surfaceConfig.resolution, surfaceConfig.colorRange],
+  );
+
+  useFrame((_frameState, delta) => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+
+    const speed = 1 / Math.max(transitionDuration / 1000, 0.1);
+    const t = Math.min(delta * speed * 3, 1);
+
+    mesh.position.lerp(new THREE.Vector3(...state.position), t);
+    const targetQuat = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(...state.rotation),
+    );
+    mesh.quaternion.slerp(targetQuat, t);
+    mesh.scale.lerp(new THREE.Vector3(...state.scale), t);
+    mesh.visible = state.visible;
+
+    const mat = mesh.material as THREE.MeshStandardMaterial;
+    if (state.material.opacity !== undefined) {
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, state.material.opacity, t);
+      mat.transparent = mat.opacity < 1;
+    }
+  });
+
+  const color = state.material.color ?? "#888888";
+  const opacity = state.material.opacity ?? 1;
+
+  return (
+    <group>
+      <mesh
+        ref={meshRef}
+        position={state.position}
+        rotation={state.rotation}
+        scale={state.scale}
+        visible={state.visible}
+      >
+        <primitive object={geometry} attach="geometry" />
+        <meshStandardMaterial
+          color={hasVertexColors ? "#ffffff" : color}
+          vertexColors={hasVertexColors}
+          wireframe={state.material.wireframe ?? false}
+          metalness={state.material.metalness ?? 0.1}
+          roughness={state.material.roughness ?? 0.7}
+          opacity={opacity}
+          transparent={opacity < 1}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      {baseObj.label && state.visible && (
+        <Text
+          position={[
+            state.position[0],
+            state.position[1] + (state.scale[1] ?? 1) * 0.7,
+            state.position[2],
+          ]}
+          fontSize={0.2}
+          color="white"
+          anchorX="center"
+          anchorY="bottom"
+        >
+          {baseObj.label}
+        </Text>
+      )}
+    </group>
+  );
+}
+
 // Camera controller that animates to target position
 function CameraController({
   position,
@@ -358,6 +552,14 @@ export function Scene3DElementRenderer({ element, sceneStep, thumbnail }: Props)
               baseObj={obj}
               keyframes={keyframes}
               sceneStep={sceneStep}
+            />
+          ) : obj.geometry === "surface" ? (
+            <SceneSurfaceObject
+              key={obj.id}
+              baseObj={obj}
+              keyframes={keyframes}
+              sceneStep={sceneStep}
+              transitionDuration={transitionDuration}
             />
           ) : (
             <SceneObject
