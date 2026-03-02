@@ -118,15 +118,58 @@ export class FsAccessAdapter implements FileSystemAdapter {
     const fileHandle = await this.dirHandle.getFileHandle("deck.json");
     const file = await fileHandle.getFile();
     const text = await file.text();
-    return JSON.parse(text) as Deck;
+    const deck = JSON.parse(text) as Deck;
+    await this.resolveSlideRefs(deck);
+    return deck;
+  }
+
+  /** Resolve `{ "$ref": "./slides/foo.json" }` entries by reading from the directory handle. */
+  private async resolveSlideRefs(deck: Deck): Promise<void> {
+    for (let i = 0; i < deck.slides.length; i++) {
+      const entry = deck.slides[i] as any;
+      if (entry.$ref && typeof entry.$ref === "string") {
+        const refParts = entry.$ref.replace(/^\.\//, "").split("/");
+        let dir = this.dirHandle;
+        for (let j = 0; j < refParts.length - 1; j++) {
+          dir = await dir.getDirectoryHandle(refParts[j]!);
+        }
+        const fh = await dir.getFileHandle(refParts[refParts.length - 1]!);
+        const f = await fh.getFile();
+        const slide = JSON.parse(await f.text());
+        slide._ref = entry.$ref;
+        deck.slides[i] = slide;
+      }
+    }
   }
 
   async saveDeck(deck: Deck): Promise<void> {
+    await this.splitSlideRefs(deck);
     const fileHandle = await this.dirHandle.getFileHandle("deck.json", { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(JSON.stringify(deck, null, 2));
     await writable.close();
     this._lastSaveTs = Date.now();
+  }
+
+  /** Write slides with `_ref` to their external files and replace them with `{ "$ref": "..." }`. */
+  private async splitSlideRefs(deck: Deck): Promise<void> {
+    for (let i = 0; i < deck.slides.length; i++) {
+      const slide = deck.slides[i]!;
+      if (slide._ref) {
+        const refParts = slide._ref.replace(/^\.\//, "").split("/");
+        let dir = this.dirHandle;
+        for (let j = 0; j < refParts.length - 1; j++) {
+          dir = await dir.getDirectoryHandle(refParts[j]!, { create: true });
+        }
+        const { _ref, ...slideData } = slide;
+        const fh = await dir.getFileHandle(refParts[refParts.length - 1]!, { create: true });
+        const writable = await fh.createWritable();
+        await writable.write(JSON.stringify(slideData, null, 2));
+        await writable.close();
+        // Replace in-array with $ref pointer
+        deck.slides[i] = { $ref: _ref } as any;
+      }
+    }
   }
 
   async listProjects(): Promise<ProjectInfo[]> {

@@ -17,6 +17,28 @@ import { assert } from "@/utils/assert";
 
 const IS_DEV = import.meta.env.DEV;
 
+// Eagerly bundle external slide files for the ?demo mode
+const exampleSlideFiles: Record<string, unknown> = import.meta.glob(
+  "../projects/example/slides/*.json",
+  { eager: true, import: "default" },
+);
+
+/** Resolve $ref entries in a deck using a lookup map keyed by ref path. */
+function resolveSlideRefsFromMap(deck: Deck, basePath: string, fileMap: Record<string, unknown>): Deck {
+  const resolved = structuredClone(deck);
+  for (let i = 0; i < resolved.slides.length; i++) {
+    const entry = resolved.slides[i] as any;
+    if (entry.$ref && typeof entry.$ref === "string") {
+      const key = basePath + entry.$ref.replace("./", "");
+      const data = fileMap[key];
+      if (data) {
+        resolved.slides[i] = data as any;
+      }
+    }
+  }
+  return resolved;
+}
+
 export function App() {
   const currentProject = useDeckStore((s) => s.currentProject);
   const [adapter, setAdapter] = useState<FileSystemAdapter | null>(null);
@@ -51,7 +73,8 @@ export function App() {
     if (params.has("demo")) {
       setLoading(true);
       import("../projects/example/deck.json").then((mod) => {
-        const deck = mod.default as unknown as Deck;
+        const rawDeck = mod.default as unknown as Deck;
+        const deck = resolveSlideRefsFromMap(rawDeck, "../projects/example/", exampleSlideFiles);
         const assetBaseUrl = import.meta.env.BASE_URL + "demo-assets";
         const readOnlyAdapter = ReadOnlyAdapter.fromBundled(deck, assetBaseUrl);
         openReadOnly(readOnlyAdapter);

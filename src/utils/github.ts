@@ -111,5 +111,19 @@ export async function fetchGitHubDeck(source: GitHubSource): Promise<Deck> {
   const deck = (await res.json()) as Deck;
   assert(deck.slides !== undefined && Array.isArray(deck.slides), "Fetched JSON is not a valid Deck (missing slides array)");
 
+  // Resolve $ref entries by fetching referenced files from the same repo
+  for (let i = 0; i < deck.slides.length; i++) {
+    const entry = deck.slides[i] as any;
+    if (entry.$ref && typeof entry.$ref === "string") {
+      const refUrl = `${rawBase}/${entry.$ref.replace("./", "")}`;
+      const refRes = await fetch(refUrl);
+      if (refRes.ok) {
+        const slide = await refRes.json();
+        slide._ref = entry.$ref;
+        deck.slides[i] = slide;
+      }
+    }
+  }
+
   return deck;
 }

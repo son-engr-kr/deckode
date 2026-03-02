@@ -268,6 +268,8 @@ export interface Slide {
   notes?: string;
   elements: SlideElement[];
   animations?: Animation[];
+  /** Tracks external file origin when loaded from a $ref pointer */
+  _ref?: string;
 }
 
 // ----- Theme -----

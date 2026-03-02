@@ -11,6 +11,9 @@ A Deckode project is a folder with this layout:
 ```
 my-project/
   deck.json            # The presentation (source of truth)
+  slides/              # External slide files (optional, referenced via $ref)
+    intro.json
+    demo.json
   layouts/             # Layout templates (pre-positioned element sets)
     blank.json
     title.json
@@ -29,9 +32,49 @@ Your primary task is to read and write `deck.json`. Assets go in `assets/` with 
 
 ---
 
+## Slide File Splitting (`$ref`)
+
+When a deck grows large, individual slides can be split into separate files under `slides/`. A slide entry in the `slides` array can be either an inline slide object or a `$ref` pointer to an external file:
+
+```json
+{
+  "slides": [
+    { "id": "slide-1", "elements": [...] },
+    { "$ref": "./slides/intro.json" },
+    { "id": "slide-3", "elements": [...] }
+  ]
+}
+```
+
+The external file is a plain Slide JSON object (same schema as inline):
+
+```json
+{
+  "id": "intro",
+  "elements": [...],
+  "animations": [...]
+}
+```
+
+**How it works:**
+
+- On load, `$ref` entries are resolved by reading the referenced file. The resolved slide receives a `_ref` field tracking its origin path.
+- On save, slides with `_ref` are written back to their external file and replaced with `{ "$ref": "..." }` in deck.json.
+- The editor, store, and renderers are unaware of the split — they see a flat array of resolved slides.
+- New slides added via the editor stay inline in deck.json (no `_ref`).
+
+**AI tools:**
+
+- `extract-slide` — moves an inline slide to `./slides/{slideId}.json` and replaces it with a `$ref` pointer.
+- `inline-slide` — brings an external `$ref` slide back inline into deck.json and deletes the external file.
+
+**Convention:** use `./slides/` as the directory for external slide files. Use the slide `id` as the filename (e.g., `./slides/intro.json`).
+
+---
+
 ## Core Concept
 
-A Deckode presentation is a single `deck.json` file. It is a JSON scene graph: a tree of slides, each containing positioned elements. You produce this JSON. Deckode renders it.
+A Deckode presentation is a single `deck.json` file (with optional `$ref` splits). It is a JSON scene graph: a tree of slides, each containing positioned elements. You produce this JSON. Deckode renders it.
 
 ---
 

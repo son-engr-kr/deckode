@@ -108,6 +108,8 @@ function jsonResponse(res: ServerResponse, status: number, data: unknown) {
  *   POST /api/ai/update-element  — Update an element within a slide
  *   POST /api/ai/delete-element  — Delete an element from a slide
  *   GET  /api/ai/read-deck       — Read the current deck state
+ *   POST /api/ai/extract-slide   — Extract an inline slide to an external file
+ *   POST /api/ai/inline-slide    — Bring an external slide back inline
  *   GET  /api/ai/tools           — List available AI tools with schemas
  */
 export function deckApiPlugin(): Plugin {
@@ -117,7 +119,7 @@ export function deckApiPlugin(): Plugin {
   /** Timestamp of the most recent save-deck write per project */
   const lastSaveTs = new Map<string, number>();
   /** Active fs.watch handles per project */
-  const watchers = new Map<string, fs.FSWatcher>();
+  const watchers = new Map<string, fs.FSWatcher[]>();
 
   /** Notify the browser that deck.json was modified by an AI tool */
   function notifyDeckChanged(project: string) {
@@ -133,22 +135,39 @@ export function deckApiPlugin(): Plugin {
     const dp = deckPath(project);
     if (!fs.existsSync(dp)) return;
 
+    const allWatchers: fs.FSWatcher[] = [];
     let debounce: ReturnType<typeof setTimeout> | null = null;
-    const watcher = fs.watch(dp, () => {
+    const onChange = () => {
       if (debounce) clearTimeout(debounce);
       debounce = setTimeout(() => {
         const lastSave = lastSaveTs.get(project) ?? 0;
         if (Date.now() - lastSave < 2000) return; // our own save
         notifyDeckChanged(project);
       }, 300);
-    });
-    watcher.on("error", () => unwatchProject(project));
-    watchers.set(project, watcher);
+    };
+
+    // Watch deck.json
+    const deckWatcher = fs.watch(dp, onChange);
+    deckWatcher.on("error", () => unwatchProject(project));
+    allWatchers.push(deckWatcher);
+
+    // Watch slides/ directory for external slide file changes
+    const slidesDir = path.resolve(projectDir(project), "slides");
+    if (fs.existsSync(slidesDir)) {
+      const slidesWatcher = fs.watch(slidesDir, onChange);
+      slidesWatcher.on("error", () => { /* slides dir may be deleted */ });
+      allWatchers.push(slidesWatcher);
+    }
+
+    watchers.set(project, allWatchers);
   }
 
   function unwatchProject(project: string) {
     const w = watchers.get(project);
-    if (w) { w.close(); watchers.delete(project); }
+    if (w) {
+      for (const watcher of w) watcher.close();
+      watchers.delete(project);
+    }
   }
 
   return {
@@ -435,10 +454,10 @@ export function deckApiPlugin(): Plugin {
         }
         // Migrate legacy absolute asset paths → relative ./assets/... on first load
         rewriteAssetUrls(filePath, project);
-        const content = fs.readFileSync(filePath, "utf-8");
+        const deck = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        resolveSlideRefs(deck, path.dirname(filePath));
         watchProject(project);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(content);
+        jsonResponse(res, 200, deck);
       });
 
       server.middlewares.use("/api/save-deck", async (req, res) => {
@@ -448,12 +467,13 @@ export function deckApiPlugin(): Plugin {
         }
         const project = getProjectParam(req);
         const body = await readBody(req);
-        JSON.parse(body); // crash on invalid JSON (fail-fast)
+        const deck = JSON.parse(body);
         const dp = deckPath(project);
         const dir = path.dirname(dp);
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         lastSaveTs.set(project, Date.now());
-        fs.writeFileSync(dp, body, "utf-8");
+        splitSlideRefs(deck, path.dirname(dp));
+        fs.writeFileSync(dp, JSON.stringify(deck, null, 2), "utf-8");
         jsonResponse(res, 200, { ok: true });
       });
 
@@ -605,6 +625,48 @@ export function deckApiPlugin(): Plugin {
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId, remaining: slide.elements.length });
       });
+
+      // -- AI tool: extract-slide --
+
+      server.middlewares.use("/api/ai/extract-slide", async (req, res) => {
+        if (req.method !== "POST") { jsonResponse(res, 405, { error: "POST only" }); return; }
+        const project = getProjectParam(req);
+        const deck = loadDeck(deckPath(project));
+        if (!deck) { jsonResponse(res, 404, { error: "No deck.json found" }); return; }
+        const { slideId } = JSON.parse(await readBody(req));
+        assert(typeof slideId === "string", "Missing slideId");
+        const slide = deck.slides.find((s: any) => s.id === slideId);
+        assert(slide, `Slide ${slideId} not found`);
+        assert(!slide._ref, `Slide ${slideId} is already external (${slide._ref})`);
+
+        const refPath = `./slides/${slideId}.json`;
+        slide._ref = refPath;
+        saveDeck(deckPath(project), deck);
+        notifyDeckChanged(project);
+        jsonResponse(res, 200, { ok: true, slideId, ref: refPath });
+      });
+
+      // -- AI tool: inline-slide --
+
+      server.middlewares.use("/api/ai/inline-slide", async (req, res) => {
+        if (req.method !== "POST") { jsonResponse(res, 405, { error: "POST only" }); return; }
+        const project = getProjectParam(req);
+        const deck = loadDeck(deckPath(project));
+        if (!deck) { jsonResponse(res, 404, { error: "No deck.json found" }); return; }
+        const { slideId } = JSON.parse(await readBody(req));
+        assert(typeof slideId === "string", "Missing slideId");
+        const slide = deck.slides.find((s: any) => s.id === slideId);
+        assert(slide, `Slide ${slideId} not found`);
+        assert(slide._ref, `Slide ${slideId} is already inline`);
+
+        const refPath = path.resolve(projectDir(project), slide._ref);
+        delete slide._ref;
+        saveDeck(deckPath(project), deck);
+        // Remove the external file
+        if (fs.existsSync(refPath)) fs.unlinkSync(refPath);
+        notifyDeckChanged(project);
+        jsonResponse(res, 200, { ok: true, slideId });
+      });
     },
   };
 }
@@ -613,15 +675,58 @@ export function deckApiPlugin(): Plugin {
 
 function loadDeck(filePath: string): any | null {
   if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  const deck = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  resolveSlideRefs(deck, path.dirname(filePath));
+  return deck;
 }
 
 function saveDeck(filePath: string, deck: any) {
+  const projectRoot = path.dirname(filePath);
+  splitSlideRefs(deck, projectRoot);
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
   fs.writeFileSync(filePath, JSON.stringify(deck, null, 2), "utf-8");
+}
+
+/**
+ * Resolve `{ "$ref": "./slides/foo.json" }` entries in deck.slides
+ * by reading the referenced file and injecting `_ref` to track origin.
+ */
+function resolveSlideRefs(deck: any, projectRoot: string): void {
+  if (!Array.isArray(deck.slides)) return;
+  for (let i = 0; i < deck.slides.length; i++) {
+    const entry = deck.slides[i];
+    if (entry.$ref && typeof entry.$ref === "string") {
+      const refPath = path.resolve(projectRoot, entry.$ref);
+      assert(fs.existsSync(refPath), `Slide $ref file not found: ${entry.$ref}`);
+      const slide = JSON.parse(fs.readFileSync(refPath, "utf-8"));
+      slide._ref = entry.$ref;
+      deck.slides[i] = slide;
+    }
+  }
+}
+
+/**
+ * For each slide with `_ref`, write it to its external file and replace
+ * the slide in-array with `{ "$ref": "..." }`. Mutates the deck object.
+ */
+function splitSlideRefs(deck: any, projectRoot: string): void {
+  if (!Array.isArray(deck.slides)) return;
+  for (let i = 0; i < deck.slides.length; i++) {
+    const slide = deck.slides[i];
+    if (slide._ref && typeof slide._ref === "string") {
+      const refPath = path.resolve(projectRoot, slide._ref);
+      const refDir = path.dirname(refPath);
+      if (!fs.existsSync(refDir)) fs.mkdirSync(refDir, { recursive: true });
+      // Write the slide without _ref to the external file
+      const { _ref, ...slideData } = slide;
+      fs.writeFileSync(refPath, JSON.stringify(slideData, null, 2), "utf-8");
+      // Replace in-array with a $ref pointer
+      deck.slides[i] = { $ref: _ref };
+    }
+  }
 }
 
 function assert(condition: any, message: string): asserts condition {
@@ -901,6 +1006,20 @@ const AI_TOOLS_MANIFEST = {
       endpoint: "/api/ai/read-deck?project={name}",
       description: "Read the current deck state. Returns the full deck.json object.",
       body: null,
+    },
+    {
+      name: "extract-slide",
+      method: "POST",
+      endpoint: "/api/ai/extract-slide?project={name}",
+      description: "Extract an inline slide to an external file (./slides/{slideId}.json) and replace it with a $ref pointer in deck.json.",
+      body: '{ "slideId": string }',
+    },
+    {
+      name: "inline-slide",
+      method: "POST",
+      endpoint: "/api/ai/inline-slide?project={name}",
+      description: "Bring an external $ref slide back inline into deck.json and delete the external file.",
+      body: '{ "slideId": string }',
     },
   ],
 };

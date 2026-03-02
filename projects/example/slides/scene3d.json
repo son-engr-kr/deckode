@@ -1,0 +1,392 @@
+{
+  "id": "scene3d",
+  "notes": "3D Scene showcase — interactive 3D elements with orbit controls. Click 'Next' animations to advance keyframes: rotate camera, then reveal a second object.",
+  "transition": {
+    "type": "fade",
+    "duration": 400
+  },
+  "elements": [
+    {
+      "id": "e100",
+      "type": "text",
+      "content": "Native 3D rendering supports **transparency** — you can see this text through the scene above.",
+      "position": {
+        "x": 82,
+        "y": 221
+      },
+      "size": {
+        "w": 400,
+        "h": 60
+      },
+      "style": {
+        "fontSize": 15,
+        "color": "#64748b",
+        "lineHeight": 1.5,
+        "textAlign": "center"
+      }
+    },
+    {
+      "id": "s3d-title",
+      "type": "text",
+      "content": "## 3D Scenes",
+      "position": {
+        "x": 30,
+        "y": 15
+      },
+      "size": {
+        "w": 300,
+        "h": 40
+      },
+      "style": {
+        "fontSize": 28,
+        "color": "#0f172a"
+      }
+    },
+    {
+      "id": "s3d-desc",
+      "type": "text",
+      "content": "Interactive Three.js scenes with orbit controls, lighting, and keyframe animations. Drag to rotate the scene.",
+      "position": {
+        "x": 30,
+        "y": 60
+      },
+      "size": {
+        "w": 350,
+        "h": 60
+      },
+      "style": {
+        "fontSize": 14,
+        "color": "#64748b",
+        "lineHeight": 1.5
+      }
+    },
+    {
+      "id": "s3d-main",
+      "type": "scene3d",
+      "position": {
+        "x": 19,
+        "y": 137
+      },
+      "size": {
+        "w": 520,
+        "h": 380
+      },
+      "scene": {
+        "camera": {
+          "position": [
+            4,
+            3,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 50
+        },
+        "ambientLight": 0.4,
+        "directionalLight": {
+          "position": [
+            5,
+            10,
+            5
+          ],
+          "intensity": 0.9
+        },
+        "objects": [
+          {
+            "id": "cube",
+            "geometry": "box",
+            "position": [
+              0,
+              0.5,
+              0
+            ],
+            "material": {
+              "color": "#60a5fa",
+              "metalness": 0.3,
+              "roughness": 0.5
+            }
+          },
+          {
+            "id": "sphere",
+            "geometry": "sphere",
+            "position": [
+              2,
+              0.5,
+              0
+            ],
+            "scale": [
+              0.8,
+              0.8,
+              0.8
+            ],
+            "material": {
+              "color": "#fbbf24",
+              "metalness": 0.5,
+              "roughness": 0.3
+            },
+            "visible": false
+          },
+          {
+            "id": "floor",
+            "geometry": "plane",
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotation": [
+              -1.5708,
+              0,
+              0
+            ],
+            "scale": [
+              6,
+              6,
+              1
+            ],
+            "material": {
+              "color": "#e8edf5",
+              "roughness": 0.8
+            }
+          }
+        ],
+        "orbitControls": true,
+        "helpers": {
+          "grid": true,
+          "axes": true
+        }
+      },
+      "keyframes": [
+        {
+          "duration": 800,
+          "camera": {
+            "position": [
+              0,
+              5,
+              6
+            ]
+          },
+          "changes": [
+            {
+              "target": "cube",
+              "rotation": [
+                0,
+                0.785,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "duration": 600,
+          "changes": [
+            {
+              "target": "sphere",
+              "visible": true
+            },
+            {
+              "target": "cube",
+              "material": {
+                "color": "#a78bfa"
+              }
+            }
+          ]
+        },
+        {
+          "duration": 700,
+          "camera": {
+            "position": [
+              5,
+              2,
+              5
+            ]
+          },
+          "changes": [
+            {
+              "target": "sphere",
+              "position": [
+                2,
+                1.5,
+                0
+              ],
+              "material": {
+                "color": "#f87171"
+              }
+            },
+            {
+              "target": "cube",
+              "scale": [
+                1.3,
+                1.3,
+                1.3
+              ]
+            }
+          ]
+        }
+      ],
+      "style": {
+        "borderRadius": 12
+      }
+    },
+    {
+      "id": "s3d-features",
+      "type": "text",
+      "content": "**Features**\n- 6 geometry types (box, sphere, cylinder, cone, torus, plane)\n- Standard material (color, metalness, roughness, wireframe)\n- Orbit controls for mouse interaction\n- Keyframe animations triggered by onClick\n- Camera transitions",
+      "position": {
+        "x": 580,
+        "y": 130
+      },
+      "size": {
+        "w": 350,
+        "h": 180
+      },
+      "style": {
+        "fontSize": 14,
+        "color": "#475569",
+        "lineHeight": 1.6
+      }
+    },
+    {
+      "id": "s3d-mini",
+      "type": "scene3d",
+      "position": {
+        "x": 580,
+        "y": 330
+      },
+      "size": {
+        "w": 350,
+        "h": 180
+      },
+      "scene": {
+        "background": "#f0f4ff",
+        "camera": {
+          "position": [
+            3,
+            2,
+            3
+          ],
+          "fov": 45
+        },
+        "ambientLight": 0.5,
+        "directionalLight": {
+          "position": [
+            3,
+            5,
+            3
+          ],
+          "intensity": 0.7
+        },
+        "objects": [
+          {
+            "id": "torus1",
+            "geometry": "torus",
+            "position": [
+              -1,
+              0.5,
+              0
+            ],
+            "material": {
+              "color": "#f472b6",
+              "wireframe": true
+            }
+          },
+          {
+            "id": "cone1",
+            "geometry": "cone",
+            "position": [
+              1,
+              0.5,
+              0
+            ],
+            "material": {
+              "color": "#34d399",
+              "metalness": 0.6,
+              "roughness": 0.2
+            }
+          }
+        ],
+        "orbitControls": true,
+        "helpers": {
+          "grid": true,
+          "axes": false
+        }
+      },
+      "style": {
+        "borderRadius": 8
+      }
+    },
+    {
+      "id": "s3d-badge",
+      "type": "shape",
+      "shape": "rectangle",
+      "position": {
+        "x": 580,
+        "y": 520
+      },
+      "size": {
+        "w": 350,
+        "h": 3
+      },
+      "style": {
+        "fill": "#6366f1"
+      }
+    }
+  ],
+  "animations": [
+    {
+      "target": "s3d-title",
+      "trigger": "onEnter",
+      "effect": "fadeIn",
+      "duration": 400
+    },
+    {
+      "target": "s3d-desc",
+      "trigger": "onEnter",
+      "effect": "fadeIn",
+      "duration": 400,
+      "delay": 200
+    },
+    {
+      "target": "s3d-main",
+      "trigger": "onEnter",
+      "effect": "scaleIn",
+      "duration": 500,
+      "delay": 300
+    },
+    {
+      "target": "s3d-features",
+      "trigger": "onEnter",
+      "effect": "slideInRight",
+      "duration": 400,
+      "delay": 400
+    },
+    {
+      "target": "s3d-mini",
+      "trigger": "onEnter",
+      "effect": "fadeIn",
+      "duration": 400,
+      "delay": 500
+    },
+    {
+      "target": "s3d-main",
+      "trigger": "onClick",
+      "effect": "scene3dStep",
+      "order": 1
+    },
+    {
+      "target": "s3d-main",
+      "trigger": "onClick",
+      "effect": "scene3dStep",
+      "order": 2
+    },
+    {
+      "target": "s3d-main",
+      "trigger": "onClick",
+      "effect": "scene3dStep",
+      "order": 3
+    }
+  ]
+}

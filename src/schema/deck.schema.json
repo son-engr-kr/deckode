@@ -22,7 +22,12 @@
     "theme": { "$ref": "#/$defs/DeckTheme" },
     "slides": {
       "type": "array",
-      "items": { "$ref": "#/$defs/Slide" }
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/Slide" },
+          { "$ref": "#/$defs/SlideRef" }
+        ]
+      }
     }
   },
   "$defs": {
@@ -129,6 +134,14 @@
         "w": { "type": "number", "minimum": 0 },
         "h": { "type": "number", "minimum": 0 }
       }
+    },
+    "SlideRef": {
+      "type": "object",
+      "required": ["$ref"],
+      "properties": {
+        "$ref": { "type": "string", "description": "Relative path to an external slide JSON file (e.g. ./slides/intro.json)" }
+      },
+      "additionalProperties": false
     },
     "Slide": {
       "type": "object",
