@@ -10,10 +10,10 @@ export function TableElementRenderer({ element }: Props) {
   const style = useElementStyle<TableStyle>("table", element.style);
 
   const fontSize = style.fontSize ?? 14;
-  const color = style.color ?? "#e2e8f0";
-  const headerBg = style.headerBackground ?? "#1e293b";
-  const headerColor = style.headerColor ?? "#f8fafc";
-  const borderColor = style.borderColor ?? "#334155";
+  const color = style.color ?? "#1e293b";
+  const headerBg = style.headerBackground ?? "#f1f5f9";
+  const headerColor = style.headerColor ?? "#0f172a";
+  const borderColor = style.borderColor ?? "#e2e8f0";
   const striped = style.striped ?? false;
   const borderRadius = style.borderRadius ?? 8;
 

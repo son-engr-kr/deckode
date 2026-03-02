@@ -35,7 +35,7 @@ const MIN_THUMB_SCALE = 0.1;
 function createBlankSlide(): Slide {
   return {
     id: nextSlideId(),
-    background: { color: "#0f172a" },
+    background: { color: "#ffffff" },
     elements: [],
   };
 }

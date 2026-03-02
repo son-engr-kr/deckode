@@ -521,10 +521,10 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
 function buildTable(el: TableElement, deck: Deck): HTMLElement {
   const s = resolveStyle<TableStyle>(deck.theme?.table, el.style);
   const size = s.fontSize ?? DEFAULT_TABLE_SIZE;
-  const color = s.color ?? "#e2e8f0";
-  const hBg = s.headerBackground ?? "#1e293b";
-  const hColor = s.headerColor ?? "#f8fafc";
-  const bColor = s.borderColor ?? "#334155";
+  const color = s.color ?? "#1e293b";
+  const hBg = s.headerBackground ?? "#f1f5f9";
+  const hColor = s.headerColor ?? "#0f172a";
+  const bColor = s.borderColor ?? "#e2e8f0";
   const striped = s.striped ?? false;
   const radius = s.borderRadius ?? 8;
 

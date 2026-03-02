@@ -2,16 +2,16 @@ import type { FileSystemAdapter } from "@/adapters/types";
 
 // ---- Defaults (matching React renderers exactly) ----
 
-export const DEFAULT_BG = "#0f172a";
-export const DEFAULT_TEXT_COLOR = "#ffffff";
+export const DEFAULT_BG = "#ffffff";
+export const DEFAULT_TEXT_COLOR = "#1e293b";
 export const DEFAULT_TEXT_SIZE = 24;
 export const DEFAULT_TEXT_FONT = "Inter, system-ui, sans-serif";
 export const DEFAULT_LINE_HEIGHT = 1.5;
 export const DEFAULT_CODE_SIZE = 16;
-export const DEFAULT_CODE_BG = "#1e1e2e";
-export const DEFAULT_CODE_FG = "#cdd6f4";
+export const DEFAULT_CODE_BG = "#f8f8f8";
+export const DEFAULT_CODE_FG = "#1e293b";
 export const DEFAULT_CODE_RADIUS = 8;
-export const DEFAULT_CODE_THEME = "github-dark";
+export const DEFAULT_CODE_THEME = "github-light";
 export const DEFAULT_TABLE_SIZE = 14;
 
 // ---- Style resolution (mirrors ThemeContext.resolveStyle) ----

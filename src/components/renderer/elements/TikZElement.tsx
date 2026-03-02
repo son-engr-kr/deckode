@@ -95,7 +95,7 @@ export function TikZElementRenderer({ element, thumbnail }: Props) {
       style={{
         width: element.size.w,
         height: element.size.h,
-        backgroundColor: style.backgroundColor ?? "#1e1e2e",
+        backgroundColor: style.backgroundColor ?? "#f8fafc",
         borderRadius: style.borderRadius ?? 4,
         overflow: "hidden",
         display: "flex",

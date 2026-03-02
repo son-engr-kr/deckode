@@ -50,11 +50,11 @@ export function generateBlankDeck(title?: string): Deck {
       title: title || "Untitled Presentation",
       aspectRatio: "16:9",
     },
-    theme: { ...DARK_THEME },
+    theme: { ...LIGHT_THEME },
     slides: [
       {
         id: "s1",
-        background: { color: "#0f172a" },
+        background: { color: "#ffffff" },
         elements: [],
       },
     ],
@@ -63,7 +63,7 @@ export function generateBlankDeck(title?: string): Deck {
 
 export function generateWizardDeck(config: WizardConfig): Deck {
   const theme = config.theme === "light" ? LIGHT_THEME : DARK_THEME;
-  const bgColor = theme.slide?.background?.color ?? "#0f172a";
+  const bgColor = theme.slide?.background?.color ?? "#ffffff";
   const titleColor = config.theme === "light" ? "#0f172a" : "#f8fafc";
   const subtitleColor = config.theme === "light" ? "#64748b" : "#94a3b8";
 

@@ -5,18 +5,18 @@
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#0f172a" } },
-    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 24, "color": "#ffffff" },
-    "code": { "theme": "github-dark", "fontSize": 16 },
-    "shape": { "stroke": "#ffffff", "strokeWidth": 1 },
+    "slide": { "background": { "color": "#ffffff" } },
+    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 24, "color": "#1e293b" },
+    "code": { "theme": "github-light", "fontSize": 16 },
+    "shape": { "stroke": "#334155", "strokeWidth": 1 },
     "image": { "objectFit": "contain" },
     "video": { "objectFit": "contain" },
-    "tikz": { "backgroundColor": "#1e1e2e" }
+    "tikz": { "backgroundColor": "#f8fafc" }
   },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#0f172a" },
+      "background": { "color": "#ffffff" },
       "elements": []
     }
   ]

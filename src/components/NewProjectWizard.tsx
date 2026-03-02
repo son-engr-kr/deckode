@@ -292,18 +292,18 @@ function ToggleButton({ active, onClick, children }: { active: boolean; onClick:
 // ----- Template Preview Thumbnails -----
 
 function BlankPreview() {
-  return <div className="w-full h-full bg-[#0f172a]" />;
+  return <div className="w-full h-full bg-white border border-zinc-200" />;
 }
 
 function ExamplePreview() {
   return (
-    <div className="w-full h-full bg-[#0f172a] flex flex-col items-center justify-center gap-1 p-2">
-      <div className="w-10 h-1 bg-zinc-500 rounded" />
-      <div className="w-16 h-0.5 bg-zinc-600 rounded" />
+    <div className="w-full h-full bg-white border border-zinc-200 flex flex-col items-center justify-center gap-1 p-2">
+      <div className="w-10 h-1 bg-zinc-300 rounded" />
+      <div className="w-16 h-0.5 bg-zinc-400 rounded" />
       <div className="flex gap-1 mt-1">
-        <div className="w-3 h-3 rounded bg-zinc-700" />
-        <div className="w-3 h-3 rounded bg-zinc-700" />
-        <div className="w-3 h-3 rounded bg-zinc-700" />
+        <div className="w-3 h-3 rounded bg-zinc-200" />
+        <div className="w-3 h-3 rounded bg-zinc-200" />
+        <div className="w-3 h-3 rounded bg-zinc-200" />
       </div>
     </div>
   );
@@ -311,11 +311,11 @@ function ExamplePreview() {
 
 function WizardPreview() {
   return (
-    <div className="w-full h-full bg-[#0f172a] flex flex-col items-center justify-center gap-1 p-2">
-      <svg className="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <div className="w-full h-full bg-white border border-zinc-200 flex flex-col items-center justify-center gap-1 p-2">
+      <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
       </svg>
-      <div className="w-8 h-0.5 bg-zinc-600 rounded" />
+      <div className="w-8 h-0.5 bg-zinc-400 rounded" />
     </div>
   );
 }

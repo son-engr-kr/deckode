@@ -9,7 +9,7 @@ interface Props {
 
 export function CodeElementRenderer({ element }: Props) {
   const style = useElementStyle<CodeStyle>("code", element.style);
-  const theme = style.theme ?? "github-dark";
+  const theme = style.theme ?? "github-light";
   const [html, setHtml] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function CodeElementRenderer({ element }: Props) {
       ) : (
         <pre
           className="h-full w-full p-4"
-          style={{ backgroundColor: "#1e1e2e", color: "#cdd6f4", margin: 0 }}
+          style={{ backgroundColor: "#f8f8f8", color: "#1e293b", margin: 0 }}
         >
           <code>{element.content}</code>
         </pre>

@@ -8,12 +8,12 @@
   "theme": {
     "slide": {
       "background": {
-        "color": "#0f172a"
+        "color": "#ffffff"
       }
     },
     "text": {
       "fontSize": 18,
-      "color": "#e2e8f0",
+      "color": "#1e293b",
       "lineHeight": 1.6
     },
     "code": {
@@ -43,7 +43,7 @@
           },
           "style": {
             "fontSize": 48,
-            "color": "#f8fafc",
+            "color": "#0f172a",
             "textAlign": "center",
             "verticalAlign": "middle"
           }
@@ -190,7 +190,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -476,7 +476,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -527,7 +527,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "lineHeight": 1.4
           }
         },
@@ -545,7 +545,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "lineHeight": 1.4
           }
         },
@@ -563,7 +563,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "lineHeight": 1.4
           }
         }
@@ -591,7 +591,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -702,7 +702,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -805,7 +805,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -948,7 +948,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -1334,7 +1334,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -1590,7 +1590,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -1940,7 +1940,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -1993,7 +1993,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "textAlign": "center",
             "lineHeight": 1.6
           }
@@ -2031,7 +2031,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "textAlign": "center",
             "lineHeight": 1.6
           }
@@ -2069,7 +2069,7 @@
           },
           "style": {
             "fontSize": 16,
-            "color": "#e2e8f0",
+            "color": "#1e293b",
             "textAlign": "center",
             "lineHeight": 1.6
           }
@@ -2118,7 +2118,7 @@
           },
           "style": {
             "fontSize": 36,
-            "color": "#f8fafc"
+            "color": "#0f172a"
           }
         },
         {
@@ -2169,7 +2169,7 @@
           },
           "style": {
             "fontSize": 15,
-            "color": "#cbd5e1",
+            "color": "#475569",
             "lineHeight": 1.7
           }
         },
@@ -2204,7 +2204,7 @@
           },
           "style": {
             "fontSize": 15,
-            "color": "#cbd5e1",
+            "color": "#475569",
             "lineHeight": 1.7
           }
         },
@@ -2376,7 +2376,7 @@
           "content": "## Table Element",
           "position": { "x": 60, "y": 30 },
           "size": { "w": 840, "h": 50 },
-          "style": { "fontSize": 36, "color": "#f8fafc" }
+          "style": { "fontSize": 36, "color": "#0f172a" }
         },
         {
           "id": "tbl-desc",
@@ -2461,7 +2461,7 @@
           },
           "style": {
             "fontSize": 42,
-            "color": "#f8fafc",
+            "color": "#0f172a",
             "textAlign": "center",
             "verticalAlign": "middle"
           }

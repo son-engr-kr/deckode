@@ -92,7 +92,7 @@ export function SlideRenderer({ slide, scale, animate, thumbnail, activeStep, st
           height: CANVAS_HEIGHT,
           transform: `scale(${scale})`,
           transformOrigin: "top left",
-          backgroundColor: bg?.color ?? themeBgColor ?? "#0f172a",
+          backgroundColor: bg?.color ?? themeBgColor ?? "#ffffff",
           backgroundImage: resolvedBgImage ? `url(${resolvedBgImage})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",

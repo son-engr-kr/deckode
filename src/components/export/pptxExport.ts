@@ -579,10 +579,10 @@ function addTable(
   _rotate: number,
 ) {
   const s = resolveStyle<TableStyle>(deck.theme?.table, el.style);
-  const headerBg = toHex(s.headerBackground ?? "#1e293b");
-  const headerColor = toHex(s.headerColor ?? "#f8fafc");
-  const textColor = toHex(s.color ?? "#e2e8f0");
-  const borderColor = toHex(s.borderColor ?? "#334155");
+  const headerBg = toHex(s.headerBackground ?? "#f1f5f9");
+  const headerColor = toHex(s.headerColor ?? "#0f172a");
+  const textColor = toHex(s.color ?? "#1e293b");
+  const borderColor = toHex(s.borderColor ?? "#e2e8f0");
   const fontSize = s.fontSize
     ? Math.round(s.fontSize * PX_TO_PT)
     : Math.round(DEFAULT_TABLE_SIZE * PX_TO_PT);

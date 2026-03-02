@@ -816,10 +816,10 @@ async function drawImage(
 function drawTable(doc: jsPDF, el: TableElement, deck: Deck): void {
   const s = resolveStyle<TableStyle>(deck.theme?.table, el.style);
   const fontSize = s.fontSize ?? DEFAULT_TABLE_SIZE;
-  const color = s.color ?? "#e2e8f0";
-  const hBg = s.headerBackground ?? "#1e293b";
-  const hColor = s.headerColor ?? "#f8fafc";
-  const bColor = s.borderColor ?? "#334155";
+  const color = s.color ?? "#1e293b";
+  const hBg = s.headerBackground ?? "#f1f5f9";
+  const hColor = s.headerColor ?? "#0f172a";
+  const bColor = s.borderColor ?? "#e2e8f0";
 
   const { x, y } = el.position;
   const { w, h } = el.size;
