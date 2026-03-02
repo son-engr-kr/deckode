@@ -570,6 +570,72 @@
       ]
     },
     {
+      "id": "math-matrix",
+      "transition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "notes": "KaTeX matrix examples — various delimiters, operations, and linear systems.",
+      "elements": [
+        {
+          "id": "mat-title",
+          "type": "text",
+          "content": "## Matrices & Linear Algebra",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#0f172a" }
+        },
+        {
+          "id": "mat-desc",
+          "type": "text",
+          "content": "Block math with `$$...$$` — matrices, determinants, and linear systems.",
+          "position": { "x": 60, "y": 80 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 16, "color": "#94a3b8" }
+        },
+        {
+          "id": "mat-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 40, "y": 120 },
+          "size": { "w": 880, "h": 400 },
+          "style": { "fill": "#f1f5f9", "borderRadius": 16 }
+        },
+        {
+          "id": "mat-multiply",
+          "type": "text",
+          "content": "**Matrix Multiplication**\n\n$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} \\begin{pmatrix} e & f \\\\ g & h \\end{pmatrix} = \\begin{pmatrix} ae+bg & af+bh \\\\ ce+dg & cf+dh \\end{pmatrix}$$",
+          "position": { "x": 60, "y": 135 },
+          "size": { "w": 430, "h": 140 },
+          "style": { "fontSize": 15, "color": "#334155", "lineHeight": 1.4 }
+        },
+        {
+          "id": "mat-eigen",
+          "type": "text",
+          "content": "**Eigenvalue Problem**\n\n$$A\\mathbf{v} = \\lambda\\mathbf{v} \\implies \\det(A - \\lambda I) = 0$$\n\n$$\\det\\begin{vmatrix} a-\\lambda & b \\\\ c & d-\\lambda \\end{vmatrix} = 0$$",
+          "position": { "x": 510, "y": 135 },
+          "size": { "w": 390, "h": 140 },
+          "style": { "fontSize": 15, "color": "#334155", "lineHeight": 1.4 }
+        },
+        {
+          "id": "mat-system",
+          "type": "text",
+          "content": "**Linear System (Augmented Matrix)**\n\n$$\\left[\\begin{array}{ccc|c} 1 & 2 & -1 & 8 \\\\ 0 & 1 & 3 & 5 \\\\ 2 & -1 & 1 & 3 \\end{array}\\right] \\xrightarrow{\\text{RREF}} \\left[\\begin{array}{ccc|c} 1 & 0 & 0 & 3 \\\\ 0 & 1 & 0 & -1 \\\\ 0 & 0 & 1 & 2 \\end{array}\\right]$$",
+          "position": { "x": 60, "y": 290 },
+          "size": { "w": 540, "h": 120 },
+          "style": { "fontSize": 15, "color": "#334155", "lineHeight": 1.4 }
+        },
+        {
+          "id": "mat-svd",
+          "type": "text",
+          "content": "**SVD Decomposition**\n\n$$A = U\\Sigma V^T = \\begin{bmatrix} u_1 & \\cdots & u_m \\end{bmatrix} \\begin{bmatrix} \\sigma_1 & & \\\\ & \\ddots & \\\\ & & \\sigma_r \\end{bmatrix} \\begin{bmatrix} v_1^T \\\\ \\vdots \\\\ v_n^T \\end{bmatrix}$$",
+          "position": { "x": 60, "y": 410 },
+          "size": { "w": 840, "h": 100 },
+          "style": { "fontSize": 15, "color": "#334155", "lineHeight": 1.4 }
+        }
+      ]
+    },
+    {
       "id": "code",
       "transition": {
         "type": "fade",
@@ -786,6 +852,88 @@
             "fontSize": 14,
             "color": "#94a3b8"
           }
+        }
+      ]
+    },
+    {
+      "id": "tikz-diagrams",
+      "transition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "notes": "TikZ advanced diagrams — neural network, finite automaton, and commutative diagram.",
+      "elements": [
+        {
+          "id": "tikzd-title",
+          "type": "text",
+          "content": "## TikZ Diagrams",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#0f172a" }
+        },
+        {
+          "id": "tikzd-desc",
+          "type": "text",
+          "content": "Neural networks, automata, and commutative diagrams — all rendered client-side.",
+          "position": { "x": 60, "y": 80 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 16, "color": "#94a3b8" }
+        },
+        {
+          "id": "tikzd-nn",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}[x=1.8cm, y=1.2cm,\n    node/.style={circle, draw, minimum size=6mm, inner sep=0pt, fill=blue!15},\n    >=latex]\n  \\foreach \\i in {1,...,3}\n    \\node[node] (I-\\i) at (0,-\\i) {};\n  \\foreach \\j in {1,...,4}\n    \\node[node, fill=orange!20] (H-\\j) at (1.5,-\\j+0.5) {};\n  \\foreach \\k in {1,...,2}\n    \\node[node, fill=green!20] (O-\\k) at (3,-\\k-0.5) {};\n  \\foreach \\i in {1,...,3}\n    \\foreach \\j in {1,...,4}\n      \\draw[->] (I-\\i) -- (H-\\j);\n  \\foreach \\j in {1,...,4}\n    \\foreach \\k in {1,...,2}\n      \\draw[->] (H-\\j) -- (O-\\k);\n  \\node[above] at (0,-0.5) {\\small Input};\n  \\node[above] at (1.5,0) {\\small Hidden};\n  \\node[above] at (3,-0.5) {\\small Output};\n\\end{tikzpicture}",
+          "position": { "x": 30, "y": 120 },
+          "size": { "w": 300, "h": 280 },
+          "style": { "backgroundColor": "#f8fafc", "borderRadius": 8 }
+        },
+        {
+          "id": "tikzd-nn-label",
+          "type": "text",
+          "content": "**Neural Network**",
+          "position": { "x": 30, "y": 410 },
+          "size": { "w": 300, "h": 25 },
+          "style": { "fontSize": 13, "color": "#64748b", "textAlign": "center" }
+        },
+        {
+          "id": "tikzd-auto",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, auto,\n    state/.style={circle, draw, minimum size=7mm, inner sep=0pt},\n    accepting/.style={state, double}]\n  \\node[state, initial] (q0) {$q_0$};\n  \\node[state] (q1) [right of=q0] {$q_1$};\n  \\node[accepting] (q2) [right of=q1] {$q_2$};\n  \\path[->] (q0) edge node {a} (q1)\n                  edge [loop above] node {b} ()\n            (q1) edge node {a,b} (q2)\n                  edge [loop above] node {a} ()\n            (q2) edge [loop above] node {b} ();\n\\end{tikzpicture}",
+          "position": { "x": 340, "y": 120 },
+          "size": { "w": 300, "h": 280 },
+          "style": { "backgroundColor": "#f8fafc", "borderRadius": 8 }
+        },
+        {
+          "id": "tikzd-auto-label",
+          "type": "text",
+          "content": "**Finite Automaton (DFA)**",
+          "position": { "x": 340, "y": 410 },
+          "size": { "w": 300, "h": 25 },
+          "style": { "fontSize": 13, "color": "#64748b", "textAlign": "center" }
+        },
+        {
+          "id": "tikzd-cd",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}[node distance=2.5cm, >=latex]\n  \\node (A) {$A$};\n  \\node (B) [right of=A] {$B$};\n  \\node (C) [below of=A] {$C$};\n  \\node (D) [right of=C] {$D$};\n  \\draw[->] (A) -- node[above] {$f$} (B);\n  \\draw[->] (A) -- node[left] {$g$} (C);\n  \\draw[->] (B) -- node[right] {$h$} (D);\n  \\draw[->] (C) -- node[below] {$k$} (D);\n  \\draw[->, dashed] (A) -- node[above left=-2pt] {$\\exists!\\, \\varphi$} (D);\n\\end{tikzpicture}",
+          "position": { "x": 650, "y": 120 },
+          "size": { "w": 280, "h": 280 },
+          "style": { "backgroundColor": "#f8fafc", "borderRadius": 8 }
+        },
+        {
+          "id": "tikzd-cd-label",
+          "type": "text",
+          "content": "**Commutative Diagram**",
+          "position": { "x": 650, "y": 410 },
+          "size": { "w": 280, "h": 25 },
+          "style": { "fontSize": 13, "color": "#64748b", "textAlign": "center" }
+        },
+        {
+          "id": "tikzd-hint",
+          "type": "text",
+          "content": "Select each TikZ element and click **Render** in the property panel to compile.",
+          "position": { "x": 60, "y": 460 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 14, "color": "#94a3b8", "textAlign": "center" }
         }
       ]
     },
