@@ -100,7 +100,7 @@ export function renderMarkdown(source: string): ReactNode {
   return createElement(Fragment, null, ...blocks);
 }
 
-function renderInline(text: string): ReactNode {
+export function renderInline(text: string): ReactNode {
   const parts: ReactNode[] = [];
   // Combined regex: bold(**), italic(*), inline code(`), inline math($)
   const regex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(`(.+?)`)|(\$(.+?)\$)/g;

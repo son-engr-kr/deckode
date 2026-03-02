@@ -1,5 +1,6 @@
 import type { TableElement as TableElementType, TableStyle } from "@/types/deck";
 import { useElementStyle } from "@/contexts/ThemeContext";
+import { renderInline } from "@/utils/markdown";
 
 interface Props {
   element: TableElementType;
@@ -50,7 +51,7 @@ export function TableElementRenderer({ element }: Props) {
                   whiteSpace: "nowrap",
                 }}
               >
-                {col}
+                {renderInline(col)}
               </th>
             ))}
           </tr>
@@ -74,7 +75,7 @@ export function TableElementRenderer({ element }: Props) {
                       borderBottom: isLastRow ? "none" : `1px solid ${borderColor}`,
                     }}
                   >
-                    {row[ci] ?? ""}
+                    {renderInline(row[ci] ?? "")}
                   </td>
                 ))}
               </tr>

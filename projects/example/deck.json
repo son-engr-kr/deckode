@@ -2455,6 +2455,7 @@
           },
           "style": {
             "fontSize": 14,
+            "color": "#1e293b",
             "striped": true,
             "borderRadius": 8
           }
@@ -2499,6 +2500,7 @@
           },
           "style": {
             "fontSize": 14,
+            "color": "#1e293b",
             "headerBackground": "#2563eb",
             "headerColor": "#ffffff",
             "striped": true,
@@ -2540,6 +2542,80 @@
             "color": "#94a3b8",
             "textAlign": "center"
           }
+        }
+      ]
+    },
+    {
+      "id": "table-latex",
+      "transition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "notes": "Table with inline LaTeX — math expressions rendered via KaTeX inside table cells.",
+      "elements": [
+        {
+          "id": "tbl-latex-title",
+          "type": "text",
+          "content": "## Table with $\\LaTeX$",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 50 },
+          "style": { "fontSize": 36, "color": "#0f172a" }
+        },
+        {
+          "id": "tbl-latex-desc",
+          "type": "text",
+          "content": "Inline math expressions are rendered inside table cells using `$...$` syntax.",
+          "position": { "x": 60, "y": 80 },
+          "size": { "w": 840, "h": 30 },
+          "style": { "fontSize": 16, "color": "#94a3b8" }
+        },
+        {
+          "id": "tbl-latex-demo",
+          "type": "table",
+          "columns": ["Name", "Formula", "Domain"],
+          "rows": [
+            ["Quadratic formula", "$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$", "$a \\neq 0$"],
+            ["Euler's identity", "$e^{i\\pi} + 1 = 0$", "$\\mathbb{C}$"],
+            ["Gaussian integral", "$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$", "$\\mathbb{R}$"],
+            ["Bayes' theorem", "$P(A|B) = \\frac{P(B|A)\\,P(A)}{P(B)}$", "$P(B) > 0$"]
+          ],
+          "position": { "x": 60, "y": 130 },
+          "size": { "w": 840, "h": 200 },
+          "style": {
+            "fontSize": 16,
+            "color": "#1e293b",
+            "striped": true,
+            "borderRadius": 8,
+            "headerBackground": "#7c3aed",
+            "headerColor": "#ffffff",
+            "borderColor": "#a78bfa"
+          }
+        },
+        {
+          "id": "tbl-latex-demo2",
+          "type": "table",
+          "columns": ["Property", "Symbol", "SI Unit"],
+          "rows": [
+            ["Force", "$\\vec{F} = m\\vec{a}$", "$\\text{kg}\\cdot\\text{m/s}^2$"],
+            ["Energy", "$E = mc^2$", "$\\text{J}$"],
+            ["Entropy", "$S = k_B \\ln \\Omega$", "$\\text{J/K}$"]
+          ],
+          "position": { "x": 60, "y": 360 },
+          "size": { "w": 540, "h": 160 },
+          "style": {
+            "fontSize": 15,
+            "color": "#1e293b",
+            "striped": true,
+            "borderRadius": 8
+          }
+        },
+        {
+          "id": "tbl-latex-hint",
+          "type": "text",
+          "content": "Use `$...$` inside any cell — supports **bold**, *italic*, and `code` too.",
+          "position": { "x": 620, "y": 440 },
+          "size": { "w": 300, "h": 25 },
+          "style": { "fontSize": 13, "color": "#94a3b8" }
         }
       ]
     },
