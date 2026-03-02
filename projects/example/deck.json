@@ -1019,9 +1019,9 @@
             "backgroundColor": "#f8fafc",
             "borderRadius": 8
           },
-          "renderedContent": "\\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, auto,\n    state/.style={circle, draw, minimum size=7mm, inner sep=0pt},\n    accepting/.style={state, double}]\n  \\node[state, initial] (q0) {$q_0$};\n  \\node[state] (q1) [right of=q0] {$q_1$};\n  \\node[accepting] (q2) [right of=q1] {$q_2$};\n  \\path[->] (q0) edge node {a} (q1)\n                  edge [loop above] node {b} ()\n            (q1) edge node {a,b} (q2)\n                  edge [loop above] node {a} ()\n            (q2) edge [loop above] node {b} ();\n\\end{tikzpicture}",
-          "renderedPreamble": "",
-          "renderError": "! Package pgfkeys Error: I do not know the key '/tikz/initial' and I am going t\no ignore it. Perhaps you misspelled it.\n\nSee the pgfkeys package documentation for explanation.\nType  H <return>  for immediate help.\n ...                                              "
+          "renderedContent": "\\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, auto,\n    every state/.style={minimum size=7mm, inner sep=0pt}]\n  \\node[state, initial] (q0) {$q_0$};\n  \\node[state] (q1) [right of=q0] {$q_1$};\n  \\node[state, accepting] (q2) [right of=q1] {$q_2$};\n  \\path[->] (q0) edge node {a} (q1)\n                  edge [loop above] node {b} ()\n            (q1) edge node {a,b} (q2)\n                  edge [loop above] node {a} ()\n            (q2) edge [loop above] node {b} ();\n\\end{tikzpicture}",
+          "renderedPreamble": "\\usetikzlibrary{automata,positioning}",
+          "svgUrl": "./assets/tikz/tikzd-auto.svg?v=1772445515558"
         },
         {
           "id": "tikzd-auto-label",
