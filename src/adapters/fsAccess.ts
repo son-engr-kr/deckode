@@ -143,10 +143,12 @@ export class FsAccessAdapter implements FileSystemAdapter {
   }
 
   async saveDeck(deck: Deck): Promise<void> {
-    await this.splitSlideRefs(deck);
+    // Shallow-copy to avoid mutating frozen state (Immer/Zustand)
+    const mutableDeck = { ...deck, slides: [...deck.slides] };
+    await this.splitSlideRefs(mutableDeck);
     const fileHandle = await this.dirHandle.getFileHandle("deck.json", { create: true });
     const writable = await fileHandle.createWritable();
-    await writable.write(JSON.stringify(deck, null, 2));
+    await writable.write(JSON.stringify(mutableDeck, null, 2));
     await writable.close();
     this._lastSaveTs = Date.now();
   }
