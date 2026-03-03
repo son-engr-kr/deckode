@@ -6,6 +6,7 @@ import { SlideList } from "./SlideList";
 import { EditorCanvas } from "./EditorCanvas";
 import { PropertyPanel } from "./PropertyPanel";
 import { CodePanel } from "./CodePanel";
+import { NotesEditor } from "./NotesEditor";
 import { ElementPalette } from "./ElementPalette";
 import { SlideAnimationList } from "./SlideAnimationList";
 import { ThemePanel } from "./ThemePanel";
@@ -369,6 +370,8 @@ export function EditorLayout() {
         {/* Center: canvas + optional bottom panel */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <EditorCanvas />
+
+          <NotesEditor />
 
           {bottomPanel === "code" && (
             <div className="h-[280px] border-t border-zinc-800 shrink-0">
