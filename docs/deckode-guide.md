@@ -443,6 +443,114 @@ This is the single most common cause of clipped TikZ diagrams. **Always include 
 
 **`backgroundColor`**: Must be `#rrggbb` — do NOT use `"transparent"` (causes console error).
 
+### TikZ vs Native Elements for Diagrams
+
+For **flow diagrams, pipeline diagrams, and block-and-arrow layouts**, prefer **native elements** (`shape` + `text`) over TikZ. Native elements give you:
+
+1. **Pixel-perfect coordinate control** — positions are in the 960×540 virtual canvas, no TikZ→SVG→fit scaling ambiguity
+2. **Per-element animations** — each box and arrow can fade in independently on click, enabling step-by-step reveal
+3. **No rendering issues** — no TikZJax engine limitations, no bounding box clipping, no font fallback issues
+4. **Direct text rendering** — Markdown and inline LaTeX math (`$\tau$`) work in `text` elements without escaping gymnastics
+
+**When TikZ is still better:**
+- Complex mathematical plots (PGFPlots bar/line/scatter charts)
+- Diagrams requiring precise curved paths, Bézier curves, or complex node shapes
+- TikZ library features like `calc`, `intersections`, `decorations`
+- Diagrams where the visual density is too high for discrete elements
+
+#### How to Build Flow Diagrams with Native Elements
+
+**Step 1: Plan the layout.** Sketch box positions on the 960×540 canvas. Typical box sizes:
+- Standard box: `w: 110–160, h: 38–45`
+- Wide box (with subtitle): `w: 150–200, h: 55–70`
+- Arrow gap between boxes: `40–65px`
+
+**Step 2: Build each box as a shape + text pair.**
+
+```json
+{
+  "id": "my-box",
+  "type": "shape", "shape": "rectangle",
+  "position": { "x": 200, "y": 140 },
+  "size": { "w": 140, "h": 42 },
+  "style": {
+    "fill": "rgba(124,58,237,0.08)",
+    "stroke": "#7c3aed",
+    "strokeWidth": 2,
+    "borderRadius": 8
+  }
+},
+{
+  "id": "my-box-text",
+  "type": "text",
+  "content": "**SAC Policy**",
+  "position": { "x": 205, "y": 148 },
+  "size": { "w": 130, "h": 26 },
+  "style": { "fontSize": 14, "color": "#7c3aed", "textAlign": "center" }
+}
+```
+
+The text element is inset ~5px from the shape border on each side to avoid clipping.
+
+**Step 3: Connect boxes with arrows.** Use thin rectangles for lines and Unicode triangles for arrowheads:
+
+```json
+{
+  "id": "line-a-b",
+  "type": "shape", "shape": "rectangle",
+  "position": { "x": 340, "y": 160 },
+  "size": { "w": 50, "h": 2 },
+  "style": { "fill": "#7c3aed" }
+},
+{
+  "id": "arrow-a-b",
+  "type": "text",
+  "content": "▶",
+  "position": { "x": 382, "y": 154 },
+  "size": { "w": 14, "h": 14 },
+  "style": { "fontSize": 10, "color": "#7c3aed" }
+}
+```
+
+**Arrow coordinate formula:**
+- Horizontal arrow: line starts at `box_A.x + box_A.w`, ends at `box_B.x`. Line `y` = `box.y + box.h/2`. Arrowhead at `line.x + line.w - 8`.
+- Vertical arrow: use a thin rectangle with `w: 2` and computed `h`. Use `▼` or `▲` for the arrowhead.
+
+**Step 4: Build feedback loops.** Use 3 thin rectangles (right vertical → horizontal → left vertical) to form an L-shaped or U-shaped path:
+
+```json
+{ "id": "fb-right", "type": "shape", "shape": "rectangle",
+  "position": { "x": 804, "y": 100 }, "size": { "w": 2, "h": 40 },
+  "style": { "fill": "#7c3aed" } },
+{ "id": "fb-horiz", "type": "shape", "shape": "rectangle",
+  "position": { "x": 270, "y": 100 }, "size": { "w": 536, "h": 2 },
+  "style": { "fill": "#7c3aed" } },
+{ "id": "fb-left", "type": "shape", "shape": "rectangle",
+  "position": { "x": 269, "y": 100 }, "size": { "w": 2, "h": 40 },
+  "style": { "fill": "#7c3aed" } }
+```
+
+**Step 5: Add step-by-step animation.** Each click reveals one logical group:
+
+```json
+{ "target": "box-bg",   "trigger": "onClick",      "effect": "fadeIn", "duration": 300 },
+{ "target": "box-text", "trigger": "withPrevious",  "effect": "fadeIn", "duration": 300 },
+{ "target": "line-ab",  "trigger": "withPrevious",  "effect": "fadeIn", "duration": 300 },
+{ "target": "arrow-ab", "trigger": "withPrevious",  "effect": "fadeIn", "duration": 300 }
+```
+
+Use `"onClick"` for the first element in each group, `"withPrevious"` for siblings.
+
+**Color convention for pipeline diagrams:**
+- 🟢 Green (`#16a34a`): Data sources (MoCap, datasets)
+- 🟣 Purple (`#7c3aed`): RL-trained components
+- 🟠 Orange (`#ea580c`): Supervised / unsupervised learning
+- ⬜ Gray (`#94a3b8`): Frozen / fixed components
+- 🔴 Red (`#dc2626`): Simulators
+- 🔵 Blue (`#3b82f6`): Math / computation
+
+Use `rgba()` fills at 6–8% opacity with the matching stroke color for a cohesive look.
+
 ### `"table"`
 
 Renders a data table with column headers and rows.
