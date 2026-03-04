@@ -107,7 +107,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
             onClick={handlePlayAll}
             title="Play all animations in order"
           >
-            ▶ All
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" className="inline -mt-px"><polygon points="0,0 8,4 0,8" /></svg> All
           </button>
         )}
       </div>
@@ -153,7 +153,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
                   onClick={() => startPreview([anim])}
                   title="Preview animation"
                 >
-                  ▶
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><polygon points="0,0 8,4 0,8" /></svg>
                 </button>
                 <button
                   className="text-zinc-500 hover:text-red-400 text-xs px-1"
