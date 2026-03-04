@@ -221,7 +221,7 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
       document.addEventListener("selectstart", prevent);
       document.addEventListener("dragstart", prevent);
 
-      const DRAG_THRESHOLD = 3; // px in screen space
+      const DRAG_THRESHOLD = 8; // px in screen space
       let dragStarted = false;
 
       const handleMouseUp = () => {
