@@ -239,8 +239,9 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
       audienceWindowRef.current.focus();
       return;
     }
-    const project = useDeckStore.getState().currentProject;
-    const url = `?project=${encodeURIComponent(project!)}&mode=audience`;
+    const params = new URLSearchParams(window.location.search);
+    params.set("mode", "audience");
+    const url = `?${params.toString()}`;
     audienceWindowRef.current = window.open(
       url,
       "deckode-audience",

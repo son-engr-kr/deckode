@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import type { VideoElement as VideoElementType, VideoStyle } from "@/types/deck";
 import { useElementStyle } from "@/contexts/ThemeContext";
 import { useAssetUrl } from "@/contexts/AdapterContext";
@@ -6,9 +7,23 @@ import { parseVideoUrl } from "@/utils/videoParser";
 interface Props {
   element: VideoElementType;
   thumbnail?: boolean;
+  videoStep?: number;
 }
 
-export function VideoElementRenderer({ element, thumbnail }: Props) {
+export function VideoElementRenderer({ element, thumbnail, videoStep }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || videoStep === undefined) return;
+
+    if (videoStep >= 1) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }, [videoStep]);
   const style = useElementStyle<VideoStyle>("video", element.style);
   const resolvedSrc = useAssetUrl(element.src);
 
@@ -52,10 +67,13 @@ export function VideoElementRenderer({ element, thumbnail }: Props) {
     );
   }
 
+  const hasPlayVideoEffect = videoStep !== undefined;
+
   return (
     <video
+      ref={videoRef}
       src={embedUrl}
-      autoPlay={element.autoplay}
+      autoPlay={hasPlayVideoEffect ? false : element.autoplay}
       loop={element.loop}
       muted={element.muted}
       controls={element.controls}

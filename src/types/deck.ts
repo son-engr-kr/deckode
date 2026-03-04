@@ -246,7 +246,8 @@ export type AnimationEffect =
   | "scaleIn"
   | "scaleOut"
   | "typewriter"
-  | "scene3dStep";
+  | "scene3dStep"
+  | "playVideo";
 
 export interface Animation {
   target: string;

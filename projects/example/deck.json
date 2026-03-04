@@ -1170,7 +1170,8 @@
             "h": 236
           },
           "controls": true,
-          "muted": true
+          "muted": true,
+          "loop": true
         },
         {
           "id": "video-local-label",
@@ -1239,6 +1240,11 @@
           "trigger": "onClick",
           "effect": "fadeIn",
           "duration": 500
+        },
+        {
+          "target": "video-local",
+          "trigger": "onClick",
+          "effect": "playVideo"
         }
       ]
     },

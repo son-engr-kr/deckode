@@ -140,6 +140,23 @@ function computeSceneStep(
   return step;
 }
 
+function computeVideoStep(
+  animations?: Animation[],
+  activeAnimations?: Set<Animation>,
+): number | undefined {
+  if (!animations) return undefined;
+  const hasPlayVideo = animations.some((a) => a.effect === "playVideo");
+  if (!hasPlayVideo) return undefined;
+  if (!activeAnimations) return 0;
+  let step = 0;
+  for (const anim of animations) {
+    if (anim.effect === "playVideo" && activeAnimations.has(anim)) {
+      step++;
+    }
+  }
+  return step;
+}
+
 function renderByType(
   element: SlideElement,
   thumbnail?: boolean,
@@ -155,8 +172,10 @@ function renderByType(
       return <CodeElementRenderer element={element} />;
     case "shape":
       return <ShapeElementRenderer element={element} />;
-    case "video":
-      return <VideoElementRenderer element={element} thumbnail={thumbnail} />;
+    case "video": {
+      const videoStep = computeVideoStep(animations, activeAnimations);
+      return <VideoElementRenderer element={element} thumbnail={thumbnail} videoStep={videoStep} />;
+    }
     case "tikz":
       return <TikZElementRenderer element={element} thumbnail={thumbnail} />;
     case "table":

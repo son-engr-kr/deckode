@@ -46,6 +46,10 @@ const effects: Record<AnimationEffect, AnimationConfig> = {
     initial: {},
     animate: {},
   },
+  playVideo: {
+    initial: {},
+    animate: {},
+  },
 };
 
 export function getAnimationConfig(effect: AnimationEffect): AnimationConfig {

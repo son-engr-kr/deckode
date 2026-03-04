@@ -8,6 +8,7 @@ const EFFECTS: AnimationEffect[] = [
   "scaleIn", "scaleOut",
   "typewriter",
   "scene3dStep",
+  "playVideo",
 ];
 
 const TRIGGERS: AnimationTrigger[] = ["onEnter", "onClick", "onKey", "afterPrevious", "withPrevious"];
