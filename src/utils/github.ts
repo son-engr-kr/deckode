@@ -105,7 +105,7 @@ export async function fetchGitHubDeck(source: GitHubSource): Promise<Deck> {
   const rawBase = buildGitHubRawBase(source);
   const url = `${rawBase}/deck.json`;
 
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: "no-store" });
   assert(res.ok, `Failed to fetch deck.json from GitHub: ${res.status} ${res.statusText} (${url})`);
 
   const deck = (await res.json()) as Deck;
@@ -116,7 +116,7 @@ export async function fetchGitHubDeck(source: GitHubSource): Promise<Deck> {
     const entry = deck.slides[i] as any;
     if (entry.$ref && typeof entry.$ref === "string") {
       const refUrl = `${rawBase}/${entry.$ref.replace("./", "")}`;
-      const refRes = await fetch(refUrl);
+      const refRes = await fetch(refUrl, { cache: "no-store" });
       if (refRes.ok) {
         const slide = await refRes.json();
         slide._ref = entry.$ref;
