@@ -72,7 +72,7 @@ export function PropertyPanel() {
   };
 
   return (
-    <div className="p-3 space-y-4 text-sm overflow-y-auto">
+    <div className="p-3 space-y-4 text-sm overflow-y-auto overflow-x-hidden">
       {/* Element info */}
       <div>
         <FieldLabel>Element</FieldLabel>
@@ -236,7 +236,7 @@ function SlidePropertiesPanel({
   const allInherited = !isMixed && commonBgColor === undefined && themeBgColor !== undefined;
 
   return (
-    <div className="p-3 space-y-4 text-sm overflow-y-auto">
+    <div className="p-3 space-y-4 text-sm overflow-y-auto overflow-x-hidden">
       <div>
         <FieldLabel>Slide</FieldLabel>
         <div className="text-zinc-300 font-mono">

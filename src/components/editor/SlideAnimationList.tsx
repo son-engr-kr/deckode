@@ -166,9 +166,9 @@ export function SlideAnimationList({ onSelectElement }: Props) {
             </div>
 
             {/* Details row */}
-            <div className="flex items-center gap-2 text-xs text-zinc-500">
+            <div className="flex flex-wrap items-center gap-1 text-xs text-zinc-500">
               <select
-                className="bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                className="min-w-0 flex-1 bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
                 value={anim.target}
                 onChange={(e) => updateAnimation(slide.id, index, { target: e.target.value })}
               >
@@ -180,7 +180,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
               </select>
 
               <select
-                className="bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                className="min-w-0 bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
                 value={anim.trigger}
                 onChange={(e) => updateAnimation(slide.id, index, { trigger: e.target.value as AnimationTrigger })}
               >
@@ -190,7 +190,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
               </select>
 
               <select
-                className="bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                className="min-w-0 bg-zinc-800 text-zinc-300 rounded px-1 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
                 value={anim.effect}
                 onChange={(e) => updateAnimation(slide.id, index, { effect: e.target.value as AnimationEffect })}
               >
@@ -201,7 +201,7 @@ export function SlideAnimationList({ onSelectElement }: Props) {
             </div>
 
             {/* Timing + order + key row */}
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-1 text-xs">
               {anim.trigger === "onClick" && (
                 <label className="flex items-center gap-1">
                   <span className="text-zinc-500">ord</span>

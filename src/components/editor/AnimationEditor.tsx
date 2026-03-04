@@ -106,7 +106,7 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
             <label className="flex items-center gap-2">
               <span className="text-zinc-500 text-xs w-14">Effect</span>
               <select
-                className="flex-1 bg-zinc-800 text-zinc-200 rounded px-1.5 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                className="flex-1 min-w-0 bg-zinc-800 text-zinc-200 rounded px-1.5 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
                 value={animation.effect}
                 onChange={(e) => updateAnimation(slideId, globalIndex, { effect: e.target.value as AnimationEffect })}
               >
@@ -120,7 +120,7 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
             <label className="flex items-center gap-2">
               <span className="text-zinc-500 text-xs w-14">Trigger</span>
               <select
-                className="flex-1 bg-zinc-800 text-zinc-200 rounded px-1.5 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+                className="flex-1 min-w-0 bg-zinc-800 text-zinc-200 rounded px-1.5 py-0.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
                 value={animation.trigger}
                 onChange={(e) => updateAnimation(slideId, globalIndex, { trigger: e.target.value as AnimationTrigger })}
               >
