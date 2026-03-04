@@ -201,7 +201,10 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (e.button !== 0) return; // Only left-click initiates drag
+      if (e.button !== 0) {
+        e.stopPropagation(); // Prevent canvas handler from firing
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       onSelect(e);
@@ -218,6 +221,9 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
       document.addEventListener("selectstart", prevent);
       document.addEventListener("dragstart", prevent);
 
+      const DRAG_THRESHOLD = 3; // px in screen space
+      let dragStarted = false;
+
       const handleMouseUp = () => {
         setDeckDragging(false);
         dragStart.current = null;
@@ -231,6 +237,13 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
         if (!dragStart.current) return;
         // Safety: button already released but mouseup was swallowed (e.g. by <video> controls)
         if (me.buttons === 0) { handleMouseUp(); return; }
+        // Threshold: ignore movement until exceeding minimum distance
+        if (!dragStarted) {
+          const rawDx = me.clientX - dragStart.current.x;
+          const rawDy = me.clientY - dragStart.current.y;
+          if (rawDx * rawDx + rawDy * rawDy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
+          dragStarted = true;
+        }
         const dx = (me.clientX - dragStart.current.x) / scale;
         const dy = (me.clientY - dragStart.current.y) / scale;
         onMove(
@@ -428,7 +441,11 @@ function ElementContextMenu({
           <ContextMenuItem
             label="Group"
             shortcut="Ctrl+G"
-            onClick={() => handleAction(() => groupElements(slideId, selectedElementIds))}
+            onClick={() => handleAction(() => {
+              // Read latest selection from store (not stale closure)
+              const ids = useDeckStore.getState().selectedElementIds;
+              groupElements(slideId, ids);
+            })}
           />
         )}
         {clickedGroupId && (
