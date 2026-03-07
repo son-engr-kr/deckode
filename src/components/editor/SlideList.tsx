@@ -6,6 +6,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type Modifier,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -27,6 +28,12 @@ interface SlideContextMenuState {
   slideId: string;
   slideIndex: number;
 }
+// Restrict drag movement to vertical axis only (prevents horizontal viewport scroll)
+const restrictToVerticalAxis: Modifier = ({ transform }) => ({
+  ...transform,
+  x: 0,
+});
+
 // Chrome around each thumbnail: button border-2 (4px) + p-0.5 (4px)
 const THUMB_CHROME = 8;
 const DEFAULT_THUMB_SCALE = 0.15;
@@ -145,6 +152,7 @@ export function SlideList() {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext items={slideIds} strategy={verticalListSortingStrategy}>
           {deck.slides.map((slide, index) => (
