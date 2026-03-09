@@ -1,7 +1,7 @@
 import { useRef, useCallback, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
-import type { Slide, SlideElement } from "@/types/deck";
+import type { Slide, SlideElement, CropRect } from "@/types/deck";
 import { CANVAS_HEIGHT } from "@/types/deck";
 import { getElementPositionStyle } from "@/utils/elementStyle";
 import { CropOverlay } from "./CropOverlay";
@@ -188,6 +188,15 @@ export function SelectionOverlay({ slide, scale }: Props) {
           updateElement={updateElement}
         />
       ))}
+      {/* Persistent crop boundary for video elements (clip-path not applied in editor) */}
+      {!cropElementId && slide.elements.map((el) => {
+        if (el.type !== "video") return null;
+        const crop = (el as { style?: { crop?: CropRect } }).style?.crop;
+        if (!crop) return null;
+        return (
+          <VideoCropBoundary key={el.id + "-crop"} element={el} crop={crop} />
+        );
+      })}
       {/* Crop overlay — rendered at canvas level for full-canvas dimming */}
       {cropElementId && (() => {
         const cropEl = slide.elements.find((e) => e.id === cropElementId);
@@ -754,5 +763,53 @@ function ResizeHandle({
       style={{ pointerEvents: "auto" }}
       onMouseDown={(e) => onMouseDown(e, corner)}
     />
+  );
+}
+
+// ── Video crop boundary (persistent indicator when not in crop mode) ──
+
+function VideoCropBoundary({
+  element,
+  crop,
+}: {
+  element: SlideElement;
+  crop: CropRect;
+}) {
+  const { w, h } = element.size;
+  const visX = element.position.x + crop.left * w;
+  const visY = element.position.y + crop.top * h;
+  const visW = w * (1 - crop.left - crop.right);
+  const visH = h * (1 - crop.top - crop.bottom);
+
+  return (
+    <>
+      {/* Dim cropped-out regions within the element bounds */}
+      {/* Top */}
+      <div className="absolute bg-black/40" style={{
+        left: element.position.x, top: element.position.y,
+        width: w, height: crop.top * h, pointerEvents: "none",
+      }} />
+      {/* Bottom */}
+      <div className="absolute bg-black/40" style={{
+        left: element.position.x, top: visY + visH,
+        width: w, height: crop.bottom * h, pointerEvents: "none",
+      }} />
+      {/* Left */}
+      <div className="absolute bg-black/40" style={{
+        left: element.position.x, top: visY,
+        width: crop.left * w, height: visH, pointerEvents: "none",
+      }} />
+      {/* Right */}
+      <div className="absolute bg-black/40" style={{
+        left: visX + visW, top: visY,
+        width: crop.right * w, height: visH, pointerEvents: "none",
+      }} />
+      {/* Crop boundary line */}
+      <div className="absolute" style={{
+        left: visX, top: visY, width: visW, height: visH,
+        border: "1px dashed rgba(59,130,246,0.5)",
+        pointerEvents: "none",
+      }} />
+    </>
   );
 }
