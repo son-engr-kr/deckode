@@ -1,7 +1,7 @@
-import { useRef, useCallback, useState, useMemo } from "react";
+import { useRef, useCallback, useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
-import type { Slide, SlideElement } from "@/types/deck";
+import type { Slide, SlideElement, VideoElement as VideoElementType } from "@/types/deck";
 import { CANVAS_HEIGHT } from "@/types/deck";
 import { getElementPositionStyle } from "@/utils/elementStyle";
 import { CropOverlay } from "./CropOverlay";
@@ -126,7 +126,6 @@ export function SelectionOverlay({ slide, scale }: Props) {
           element={element}
           slideId={slide.id}
           isSelected={selectedElementIds.includes(element.id) || moveTargetIds.has(element.id)}
-          isPassthrough={element.type === "video" && selectedElementIds.includes(element.id) && !isCropping}
           showResizeHandles={element.id === singleSelectedId && !element.groupId && !isCropping}
           onSelect={(e: React.MouseEvent) => handleSelect(element, e)}
           onDoubleClick={() => {
@@ -178,6 +177,13 @@ export function SelectionOverlay({ slide, scale }: Props) {
           scale={scale}
         />
       ))}
+      {/* Play/pause button for selected videos */}
+      {slide.elements.map((element) => {
+        if (element.type !== "video") return null;
+        if (!selectedElementIds.includes(element.id)) return null;
+        if (isCropping) return null;
+        return <VideoControls key={`vc-${element.id}`} element={element} />;
+      })}
       {/* Group bounding boxes with resize handles */}
       {activeGroups.map((group) => (
         <GroupBox
@@ -210,9 +216,6 @@ interface InteractiveProps {
   element: SlideElement;
   slideId: string;
   isSelected: boolean;
-  /** Let clicks pass through to the rendered element below (e.g. video controls),
-   *  but render a click shield behind to prevent selecting elements underneath. */
-  isPassthrough: boolean;
   showResizeHandles: boolean;
   isHighlighted: boolean;
   hasComment: boolean;
@@ -224,7 +227,7 @@ interface InteractiveProps {
   scale: number;
 }
 
-function InteractiveElement({ element, isSelected, isPassthrough, showResizeHandles, isHighlighted, hasComment, onSelect, onDoubleClick, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
+function InteractiveElement({ element, isSelected, showResizeHandles, isHighlighted, hasComment, onSelect, onDoubleClick, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
   const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
 
   const handleMouseDown = useCallback(
@@ -382,9 +385,7 @@ function InteractiveElement({ element, isSelected, isPassthrough, showResizeHand
         style={{
           ...getElementPositionStyle(element),
           outline: isSelected ? "2px solid rgb(59,130,246)" : "none",
-          // auto: re-enable events (parent is pointer-events:none)
-          // Passthrough: let clicks reach rendered element below (e.g. video controls)
-          pointerEvents: isPassthrough ? "none" : "auto",
+          pointerEvents: "auto",
         }}
         draggable={false}
         initial={isHighlighted ? { boxShadow: "0 0 0 3px rgba(34,197,94,0.7)" } : false}
@@ -686,6 +687,143 @@ function GroupBox({
 }
 
 // ── Helpers ────────────────────────────────────────────────────────
+
+function VideoControls({ element }: { element: SlideElement }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  const crop = (element as VideoElementType).style?.crop;
+  const { x, y } = element.position;
+  const { w, h } = element.size;
+
+  const cl = crop?.left ?? 0;
+  const cr = crop?.right ?? 0;
+  const cb = crop?.bottom ?? 0;
+
+  const visLeft = x + w * cl;
+  const visW = w * (1 - cl - cr);
+  const visBottom = y + h * (1 - cb);
+
+  const getVideo = useCallback(() => {
+    return document.querySelector(
+      `[data-element-id="${element.id}"] video`,
+    ) as HTMLVideoElement | null;
+  }, [element.id]);
+
+  useEffect(() => {
+    const videoEl = getVideo();
+    if (!videoEl) return;
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onTime = () => setCurrentTime(videoEl.currentTime);
+    const onDur = () => setDuration(videoEl.duration || 0);
+
+    videoEl.addEventListener("play", onPlay);
+    videoEl.addEventListener("pause", onPause);
+    videoEl.addEventListener("timeupdate", onTime);
+    videoEl.addEventListener("loadedmetadata", onDur);
+    videoEl.addEventListener("durationchange", onDur);
+
+    setIsPlaying(!videoEl.paused);
+    setCurrentTime(videoEl.currentTime);
+    if (videoEl.duration) setDuration(videoEl.duration);
+
+    return () => {
+      videoEl.removeEventListener("play", onPlay);
+      videoEl.removeEventListener("pause", onPause);
+      videoEl.removeEventListener("timeupdate", onTime);
+      videoEl.removeEventListener("loadedmetadata", onDur);
+      videoEl.removeEventListener("durationchange", onDur);
+    };
+  }, [getVideo]);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const videoEl = getVideo();
+    if (!videoEl) return;
+    if (videoEl.paused) videoEl.play().catch(() => {});
+    else videoEl.pause();
+  };
+
+  const handleSeekDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const bar = progressRef.current;
+    const videoEl = getVideo();
+    if (!bar || !videoEl || !duration) return;
+
+    const seek = (clientX: number) => {
+      const rect = bar.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      videoEl.currentTime = ratio * duration;
+    };
+    seek(e.clientX);
+
+    const onMove = (me: MouseEvent) => seek(me.clientX);
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
+  const fmt = (s: number) => {
+    if (!isFinite(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    return `${m}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+  };
+
+  const pct = duration > 0 ? currentTime / duration : 0;
+  const barH = 28;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: visLeft,
+        top: visBottom - barH,
+        width: visW,
+        height: barH,
+        backgroundColor: "rgba(0,0,0,0.65)",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "0 8px",
+        pointerEvents: "auto",
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={togglePlay}
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }}
+      >
+        {isPlaying ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+            <rect x="6" y="4" width="4" height="16" />
+            <rect x="14" y="4" width="4" height="16" />
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+            <polygon points="8,5 19,12 8,19" />
+          </svg>
+        )}
+      </button>
+      <div
+        ref={progressRef}
+        onMouseDown={handleSeekDown}
+        style={{ flex: 1, height: 4, backgroundColor: "rgba(255,255,255,0.25)", borderRadius: 2, cursor: "pointer", position: "relative" }}
+      >
+        <div style={{ width: `${pct * 100}%`, height: "100%", backgroundColor: "#3b82f6", borderRadius: 2 }} />
+      </div>
+      <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, fontFamily: "monospace", whiteSpace: "nowrap" }}>
+        {fmt(currentTime)}/{fmt(duration)}
+      </span>
+    </div>
+  );
+}
 
 const HANDLE_POSITIONS: Record<Corner, string> = {
   nw: "-top-1 -left-1 cursor-nw-resize",

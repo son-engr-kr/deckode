@@ -33,24 +33,9 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   const crop = style.crop;
   const hasCrop = crop && (crop.top || crop.right || crop.bottom || crop.left);
 
-  // Presentation/export: use clip-path for pixel-perfect crop
-  const clipPath = hasCrop && !editorMode
+  const clipPath = hasCrop
     ? `inset(${crop.top * 100}% ${crop.right * 100}% ${crop.bottom * 100}% ${crop.left * 100}%)`
     : undefined;
-
-  // Editor with crop: render video at visible crop dimensions
-  const visW = hasCrop && editorMode ? w * (1 - crop.left - crop.right) : w;
-  const visH = hasCrop && editorMode ? h * (1 - crop.top - crop.bottom) : h;
-  const visLeft = hasCrop && editorMode ? crop.left * w : 0;
-  const visTop = hasCrop && editorMode ? crop.top * h : 0;
-
-  const videoStyle: React.CSSProperties = {
-    width: visW,
-    height: visH,
-    objectFit: (style.objectFit ?? "contain") as React.CSSProperties["objectFit"],
-    borderRadius: style.borderRadius ?? 0,
-    clipPath,
-  };
 
   const commonStyle: React.CSSProperties = {
     width: w,
@@ -78,21 +63,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   if (type === "youtube" || type === "vimeo") {
     // Editor mode: show static placeholder instead of loading iframe
     if (editorMode) {
-      const placeholderStyle = hasCrop
-        ? { ...videoStyle, position: "absolute" as const, left: visLeft, top: visTop }
-        : commonStyle;
-      return hasCrop ? (
-        <div style={{ position: "relative", width: w, height: h }}>
-          <div
-            style={{ ...placeholderStyle, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#18181b", flexDirection: "column" as const, gap: 8 }}
-          >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="1.5">
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-            <span style={{ color: "#71717a", fontSize: 11 }}>YouTube</span>
-          </div>
-        </div>
-      ) : (
+      return (
         <div
           style={{ ...commonStyle, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#18181b", flexDirection: "column", gap: 8 }}
         >
@@ -134,28 +105,19 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
     }
   };
 
-  // Editor with crop: position video at visible crop area within element bounds
+  // Editor with crop: clip-path for visual crop, no native controls (they'd be clipped).
+  // Play/pause is provided by VideoPlayButton in SelectionOverlay.
   if (editorMode && hasCrop) {
     return (
-      <div style={{ position: "relative", width: w, height: h }}>
-        <video
-          ref={videoRef}
-          src={embedUrl}
-          autoPlay={false}
-          loop={element.loop ?? true}
-          muted={element.muted ?? true}
-          controls
-          preload="metadata"
-          style={{
-            ...videoStyle,
-            position: "absolute",
-            left: visLeft,
-            top: visTop,
-            cursor: "pointer",
-          }}
-          onClick={handleClick}
-        />
-      </div>
+      <video
+        ref={videoRef}
+        src={embedUrl}
+        autoPlay={false}
+        loop={element.loop ?? true}
+        muted={element.muted ?? true}
+        preload="metadata"
+        style={commonStyle}
+      />
     );
   }
 
@@ -166,7 +128,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
       autoPlay={shouldAutoPlay}
       loop={element.loop ?? true}
       muted={element.muted ?? true}
-      controls={editorMode ? true : element.controls}
+      controls={!editorMode && element.controls}
       preload={editorMode ? "metadata" : undefined}
       style={{ ...commonStyle, cursor: "pointer" }}
       onClick={handleClick}
