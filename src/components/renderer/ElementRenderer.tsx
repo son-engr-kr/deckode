@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, memo } from "react";
 import { motion } from "framer-motion";
 import type { SlideElement, Animation, Scene3DElement } from "@/types/deck";
 import { getAnimationConfig } from "@/utils/animationEffects";
@@ -38,7 +38,7 @@ interface Props {
   editorMode?: boolean;
 }
 
-export function ElementRenderer({ element, animations, activeAnimations, delayOverrides, thumbnail, previewMode, previewKey, noPosition, editorMode }: Props) {
+export const ElementRenderer = memo(function ElementRenderer({ element, animations, activeAnimations, delayOverrides, thumbnail, previewMode, previewKey, noPosition, editorMode }: Props) {
   const positionStyle = noPosition
     ? { width: "100%" as const, height: "100%" as const }
     : getElementPositionStyle(element);
@@ -66,7 +66,7 @@ export function ElementRenderer({ element, animations, activeAnimations, delayOv
       </AnimatedWrapper>
     </div>
   );
-}
+});
 
 function AnimatedWrapper({
   animations,

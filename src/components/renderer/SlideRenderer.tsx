@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import type { Slide, Animation, DeckTheme } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { AnimationStep } from "@/utils/animationSteps";
@@ -29,7 +29,7 @@ interface Props {
   editorMode?: boolean;
 }
 
-export function SlideRenderer({ slide, scale, animate, thumbnail, activeStep, steps, onAdvance, theme, previewAnimations, previewDelayOverrides, previewKey, editorMode }: Props) {
+export const SlideRenderer = memo(function SlideRenderer({ slide, scale, animate, thumbnail, activeStep, steps, onAdvance, theme, previewAnimations, previewDelayOverrides, previewKey, editorMode }: Props) {
   const bg = slide.background;
   const themeBgColor = theme?.slide?.background?.color;
   const resolvedBgImage = useAssetUrl(bg?.image);
@@ -125,4 +125,4 @@ export function SlideRenderer({ slide, scale, animate, thumbnail, activeStep, st
     return <ThemeProvider theme={theme}>{content}</ThemeProvider>;
   }
   return content;
-}
+});

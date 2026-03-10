@@ -16,8 +16,8 @@ interface MarqueeRect {
 }
 
 export function EditorCanvas() {
-  const deck = useDeckStore((s) => s.deck);
-  const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const slide = useDeckStore((s) => s.deck?.slides[s.currentSlideIndex]);
+  const theme = useDeckStore((s) => s.deck?.theme);
   const selectElement = useDeckStore((s) => s.selectElement);
   const selectElements = useDeckStore((s) => s.selectElements);
   const addElement = useDeckStore((s) => s.addElement);
@@ -84,7 +84,7 @@ export function EditorCanvas() {
   // Clipboard paste: add image from Ctrl+V
   useEffect(() => {
     const handlePaste = async (e: ClipboardEvent) => {
-      if (!deck) return;
+      if (!slide) return;
 
       // Don't intercept paste in text inputs
       const active = document.activeElement;
@@ -111,9 +111,6 @@ export function EditorCanvas() {
 
       const url = await adapter.uploadAsset(renamed);
 
-      const slide = deck.slides[currentSlideIndex];
-      assert(slide !== undefined, `Slide index ${currentSlideIndex} out of bounds`);
-
       const isPdf = file.type === "application/pdf";
       const id = crypto.randomUUID();
       const element: ImageElement = {
@@ -129,12 +126,9 @@ export function EditorCanvas() {
 
     document.addEventListener("paste", handlePaste);
     return () => document.removeEventListener("paste", handlePaste);
-  }, [deck, currentSlideIndex, adapter, addElement, selectElement]);
+  }, [slide, adapter, addElement, selectElement]);
 
-  if (!deck) return null;
-
-  const slide = deck.slides[currentSlideIndex];
-  assert(slide !== undefined, `Slide index ${currentSlideIndex} out of bounds`);
+  if (!slide) return null;
 
   // Start marquee selection or deselect when clicking empty canvas space.
   // InteractiveElement's handleMouseDown calls stopPropagation, so element clicks never reach here.
@@ -293,7 +287,7 @@ export function EditorCanvas() {
         <SlideRenderer
           slide={slide}
           scale={scale}
-          theme={deck.theme}
+          theme={theme}
           previewAnimations={previewAnimations ?? undefined}
           previewDelayOverrides={previewDelayOverrides ?? undefined}
           previewKey={previewKey}

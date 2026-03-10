@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect, useMemo } from "react";
+import { useRef, useCallback, useState, useEffect, useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
 import type { Slide, SlideElement, VideoElement as VideoElementType, ImageElement as ImageElementType, CropRect } from "@/types/deck";
@@ -229,7 +229,7 @@ interface InteractiveProps {
   scale: number;
 }
 
-function InteractiveElement({ element, isSelected, showResizeHandles, isHighlighted, hasComment, onSelect, onDoubleClick, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
+const InteractiveElement = memo(function InteractiveElement({ element, isSelected, showResizeHandles, isHighlighted, hasComment, onSelect, onDoubleClick, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
   const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
 
   const handleMouseDown = useCallback(
@@ -271,8 +271,10 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
 
       const DRAG_THRESHOLD = 8; // px in screen space
       let dragStarted = false;
+      let rafId = 0;
 
       const handleMouseUp = () => {
+        cancelAnimationFrame(rafId);
         setDeckDragging(false);
         dragStart.current = null;
         document.removeEventListener("selectstart", prevent);
@@ -292,12 +294,16 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
           if (rawDx * rawDx + rawDy * rawDy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
           dragStarted = true;
         }
-        const dx = (me.clientX - dragStart.current.x) / scale;
-        const dy = (me.clientY - dragStart.current.y) / scale;
-        onMove(
-          Math.round(dragStart.current.ex + dx - element.position.x),
-          Math.round(dragStart.current.ey + dy - element.position.y),
-        );
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          if (!dragStart.current) return;
+          const dx = (me.clientX - dragStart.current.x) / scale;
+          const dy = (me.clientY - dragStart.current.y) / scale;
+          onMove(
+            Math.round(dragStart.current.ex + dx - element.position.x),
+            Math.round(dragStart.current.ey + dy - element.position.y),
+          );
+        });
       };
 
       window.addEventListener("mousemove", handleMouseMove);
@@ -338,8 +344,10 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
       const origY = element.position.y;
       const origW = element.size.w;
       const origH = element.size.h;
+      let rafId = 0;
 
       const handleMouseUp = () => {
+        cancelAnimationFrame(rafId);
         setDeckDragging(false);
         window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("mouseup", handleMouseUp);
@@ -347,47 +355,47 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
 
       const handleMouseMove = (me: MouseEvent) => {
         if (me.buttons === 0) { handleMouseUp(); return; }
-        const rawDx = (me.clientX - startX) / scale;
-        const rawDy = (me.clientY - startY) / scale;
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const rawDx = (me.clientX - startX) / scale;
+          const rawDy = (me.clientY - startY) / scale;
 
-        let dx = 0, dy = 0, dw = 0, dh = 0;
+          let dx = 0, dy = 0, dw = 0, dh = 0;
 
-        // Handles are at crop corners. Mouse delta = visible corner movement.
-        // Convert to element delta, keeping opposite crop corner anchored.
-        const isLeft = corner === "nw" || corner === "sw";
-        const isTop = corner === "nw" || corner === "ne";
+          const isLeft = corner === "nw" || corner === "sw";
+          const isTop = corner === "nw" || corner === "ne";
 
-        if (isLeft) {
-          dw = Math.round(-rawDx / visScaleX);
-          dx = Math.round(-(1 - cr) * dw);
-        } else {
-          dw = Math.round(rawDx / visScaleX);
-          dx = Math.round(-cl * dw);
-        }
-        if (isTop) {
-          dh = Math.round(-rawDy / visScaleY);
-          dy = Math.round(-(1 - cb) * dh);
-        } else {
-          dh = Math.round(rawDy / visScaleY);
-          dy = Math.round(-ct * dh);
-        }
+          if (isLeft) {
+            dw = Math.round(-rawDx / visScaleX);
+            dx = Math.round(-(1 - cr) * dw);
+          } else {
+            dw = Math.round(rawDx / visScaleX);
+            dx = Math.round(-cl * dw);
+          }
+          if (isTop) {
+            dh = Math.round(-rawDy / visScaleY);
+            dy = Math.round(-(1 - cb) * dh);
+          } else {
+            dh = Math.round(rawDy / visScaleY);
+            dy = Math.round(-ct * dh);
+          }
 
-        // Enforce minimum size
-        if (origW + dw < 20) {
-          dw = 20 - origW;
-          dx = isLeft ? Math.round(-(1 - cr) * dw) : Math.round(-cl * dw);
-        }
-        if (origH + dh < 20) {
-          dh = 20 - origH;
-          dy = isTop ? Math.round(-(1 - cb) * dh) : Math.round(-ct * dh);
-        }
+          if (origW + dw < 20) {
+            dw = 20 - origW;
+            dx = isLeft ? Math.round(-(1 - cr) * dw) : Math.round(-cl * dw);
+          }
+          if (origH + dh < 20) {
+            dh = 20 - origH;
+            dy = isTop ? Math.round(-(1 - cb) * dh) : Math.round(-ct * dh);
+          }
 
-        onResize(
-          (origX + dx) - element.position.x,
-          (origY + dy) - element.position.y,
-          (origW + dw) - element.size.w,
-          (origH + dh) - element.size.h,
-        );
+          onResize(
+            (origX + dx) - element.position.x,
+            (origY + dy) - element.position.y,
+            (origW + dw) - element.size.w,
+            (origH + dh) - element.size.h,
+          );
+        });
       };
 
       window.addEventListener("mousemove", handleMouseMove);
@@ -462,7 +470,7 @@ function InteractiveElement({ element, isSelected, showResizeHandles, isHighligh
     </motion.div>
     </>
   );
-}
+});
 
 // ── Context Menu ──────────────────────────────────────────────────
 
@@ -641,53 +649,58 @@ function GroupBox({
 
       const prevent = (ev: Event) => ev.preventDefault();
       document.addEventListener("selectstart", prevent);
+      let rafId = 0;
 
       const handleMouseMove = (me: MouseEvent) => {
         if (me.buttons === 0) { handleMouseUp(); return; }
-        const dx = (me.clientX - startX) / scale;
-        const dy = (me.clientY - startY) / scale;
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const dx = (me.clientX - startX) / scale;
+          const dy = (me.clientY - startY) / scale;
 
-        let anchorX: number, anchorY: number, newW: number, newH: number;
-        switch (corner) {
-          case "se":
-            anchorX = ob.x; anchorY = ob.y;
-            newW = ob.w + dx; newH = ob.h + dy;
-            break;
-          case "sw":
-            anchorX = ob.x + ob.w; anchorY = ob.y;
-            newW = ob.w - dx; newH = ob.h + dy;
-            break;
-          case "ne":
-            anchorX = ob.x; anchorY = ob.y + ob.h;
-            newW = ob.w + dx; newH = ob.h - dy;
-            break;
-          case "nw":
-          default:
-            anchorX = ob.x + ob.w; anchorY = ob.y + ob.h;
-            newW = ob.w - dx; newH = ob.h - dy;
-            break;
-        }
+          let anchorX: number, anchorY: number, newW: number, newH: number;
+          switch (corner) {
+            case "se":
+              anchorX = ob.x; anchorY = ob.y;
+              newW = ob.w + dx; newH = ob.h + dy;
+              break;
+            case "sw":
+              anchorX = ob.x + ob.w; anchorY = ob.y;
+              newW = ob.w - dx; newH = ob.h + dy;
+              break;
+            case "ne":
+              anchorX = ob.x; anchorY = ob.y + ob.h;
+              newW = ob.w + dx; newH = ob.h - dy;
+              break;
+            case "nw":
+            default:
+              anchorX = ob.x + ob.w; anchorY = ob.y + ob.h;
+              newW = ob.w - dx; newH = ob.h - dy;
+              break;
+          }
 
-        newW = Math.max(20, newW);
-        newH = Math.max(20, newH);
-        const sx = newW / ob.w;
-        const sy = newH / ob.h;
+          newW = Math.max(20, newW);
+          newH = Math.max(20, newH);
+          const sx = newW / ob.w;
+          const sy = newH / ob.h;
 
-        for (const orig of origMembers) {
-          updateElement(slideId, orig.id, {
-            position: {
-              x: Math.round(anchorX + (orig.x - anchorX) * sx),
-              y: Math.round(anchorY + (orig.y - anchorY) * sy),
-            },
-            size: {
-              w: Math.max(20, Math.round(orig.w * sx)),
-              h: Math.max(20, Math.round(orig.h * sy)),
-            },
-          } as Partial<SlideElement>);
-        }
+          for (const orig of origMembers) {
+            updateElement(slideId, orig.id, {
+              position: {
+                x: Math.round(anchorX + (orig.x - anchorX) * sx),
+                y: Math.round(anchorY + (orig.y - anchorY) * sy),
+              },
+              size: {
+                w: Math.max(20, Math.round(orig.w * sx)),
+                h: Math.max(20, Math.round(orig.h * sy)),
+              },
+            } as Partial<SlideElement>);
+          }
+        });
       };
 
       const handleMouseUp = () => {
+        cancelAnimationFrame(rafId);
         setDeckDragging(false);
         document.removeEventListener("selectstart", prevent);
         window.removeEventListener("mousemove", handleMouseMove);

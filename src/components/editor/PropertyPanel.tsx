@@ -18,19 +18,21 @@ import {
 } from "./fields";
 
 export function PropertyPanel() {
-  const deck = useDeckStore((s) => s.deck);
-  const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+  const slide = useDeckStore((s) => s.deck?.slides[s.currentSlideIndex]);
+  const slides = useDeckStore((s) => s.deck?.slides);
+  const theme = useDeckStore((s) => s.deck?.theme);
   const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
   const selectedElementIds = useDeckStore((s) => s.selectedElementIds);
   const updateElement = useDeckStore((s) => s.updateElement);
   const updateSlide = useDeckStore((s) => s.updateSlide);
 
-  if (!deck) return null;
+  if (!slides) return null;
 
   if (selectedElementIds.length === 0) {
     return (
       <SlidePropertiesPanel
-        deck={deck}
+        slides={slides}
+        theme={theme}
         selectedSlideIds={selectedSlideIds}
         updateSlide={updateSlide}
       />
@@ -38,8 +40,6 @@ export function PropertyPanel() {
   }
 
   if (selectedElementIds.length > 1) {
-    // Check if selection is a group
-    const slide = deck.slides[currentSlideIndex];
     const selectedElements = slide?.elements.filter((e) => selectedElementIds.includes(e.id)) ?? [];
     const groupIds = new Set(selectedElements.map((e) => e.groupId).filter(Boolean));
     const isGrouped = groupIds.size === 1 && selectedElements.every((e) => e.groupId);
@@ -56,7 +56,7 @@ export function PropertyPanel() {
     );
   }
 
-  const slide = deck.slides[currentSlideIndex]!;
+  if (!slide) return null;
   const element = slide.elements.find((e) => e.id === selectedElementIds[0]);
   if (!element) return null;
 
@@ -223,16 +223,18 @@ export function PropertyPanel() {
 }
 
 function SlidePropertiesPanel({
-  deck,
+  slides,
+  theme,
   selectedSlideIds,
   updateSlide,
 }: {
-  deck: { slides: Slide[]; theme?: import("@/types/deck").DeckTheme };
+  slides: Slide[];
+  theme?: import("@/types/deck").DeckTheme;
   selectedSlideIds: string[];
   updateSlide: (slideId: string, patch: Partial<Slide>) => void;
 }) {
   const selectedSlides = selectedSlideIds
-    .map((id) => deck.slides.find((s) => s.id === id))
+    .map((id) => slides.find((s) => s.id === id))
     .filter((s): s is Slide => s !== undefined);
 
   if (selectedSlides.length === 0) {
@@ -248,7 +250,7 @@ function SlidePropertiesPanel({
   const allSame = bgColors.every((c) => c === bgColors[0]);
   const isMixed = !allSame;
   const commonBgColor = allSame ? bgColors[0] : undefined;
-  const themeBgColor = deck.theme?.slide?.background?.color;
+  const themeBgColor = theme?.slide?.background?.color;
 
   // Check if any selected slide has a per-slide override
   const hasOverride = selectedSlides.some((s) => s.background?.color !== undefined);

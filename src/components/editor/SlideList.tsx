@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, memo } from "react";
 import {
   DndContext,
   closestCenter,
@@ -48,7 +48,8 @@ function createBlankSlide(): Slide {
 }
 
 export function SlideList() {
-  const deck = useDeckStore((s) => s.deck);
+  const slides = useDeckStore((s) => s.deck?.slides);
+  const theme = useDeckStore((s) => s.deck?.theme);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
@@ -100,11 +101,11 @@ export function SlideList() {
     child?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [currentSlideIndex]);
 
-  if (!deck) return null;
+  if (!slides) return null;
 
   const handleAddSlide = () => {
     const slide = createBlankSlide();
-    const lastIndex = deck.slides.length - 1;
+    const lastIndex = slides.length - 1;
     addSlide(slide, lastIndex);
     setCurrentSlide(lastIndex + 1);
   };
@@ -122,14 +123,14 @@ export function SlideList() {
         id: `${slideId}-${el.id}`,
       })),
     };
-    const lastIndex = deck.slides.length - 1;
+    const lastIndex = slides.length - 1;
     addSlide(slide, lastIndex);
     setCurrentSlide(lastIndex + 1);
     setShowLayoutPicker(false);
   };
 
   const handleDeleteSlide = (slideId: string, index: number) => {
-    if (deck.slides.length <= 1) return;
+    if (slides.length <= 1) return;
     deleteSlide(slideId);
     if (index > 0) setCurrentSlide(index - 1);
   };
@@ -137,14 +138,14 @@ export function SlideList() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const fromIndex = deck.slides.findIndex((s) => s.id === active.id);
-    const toIndex = deck.slides.findIndex((s) => s.id === over.id);
+    const fromIndex = slides.findIndex((s) => s.id === active.id);
+    const toIndex = slides.findIndex((s) => s.id === over.id);
     if (fromIndex !== -1 && toIndex !== -1) {
       moveSlide(fromIndex, toIndex);
     }
   };
 
-  const slideIds = deck.slides.map((s) => s.id);
+  const slideIds = slides.map((s) => s.id);
 
   return (
     <div ref={listRef} className="flex flex-col gap-1.5 p-2 overflow-y-auto">
@@ -155,7 +156,7 @@ export function SlideList() {
         modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext items={slideIds} strategy={verticalListSortingStrategy}>
-          {deck.slides.map((slide, index) => (
+          {slides.map((slide, index) => (
             <SortableSlideItem
               key={slide.id}
               slide={slide}
@@ -176,7 +177,7 @@ export function SlideList() {
                   // Range select from currentSlideIndex to clicked index
                   const start = Math.min(currentSlideIndex, index);
                   const end = Math.max(currentSlideIndex, index);
-                  const rangeIds = deck.slides.slice(start, end + 1).map((s) => s.id);
+                  const rangeIds = slides.slice(start, end + 1).map((s) => s.id);
                   setSelectedSlides(rangeIds);
                   useDeckStore.setState({ currentSlideIndex: index, selectedElementIds: [] });
                 } else {
@@ -184,7 +185,7 @@ export function SlideList() {
                 }
               }}
               onContextMenu={(x, y) => setContextMenu({ x, y, slideId: slide.id, slideIndex: index })}
-              theme={deck.theme}
+              theme={theme}
             />
           ))}
         </SortableContext>
@@ -194,8 +195,8 @@ export function SlideList() {
       {contextMenu && (
         <SlideContextMenu
           {...contextMenu}
-          canDelete={deck.slides.length > 1}
-          isHidden={!!deck.slides[contextMenu.slideIndex]?.hidden}
+          canDelete={slides.length > 1}
+          isHidden={!!slides[contextMenu.slideIndex]?.hidden}
           onNewSlide={() => {
             const slide = createBlankSlide();
             addSlide(slide, contextMenu.slideIndex);
@@ -254,7 +255,7 @@ export function SlideList() {
   );
 }
 
-function SortableSlideItem({
+const SortableSlideItem = memo(function SortableSlideItem({
   slide,
   index,
   scale,
@@ -323,7 +324,7 @@ function SortableSlideItem({
       )}
     </div>
   );
-}
+});
 
 // ── Slide Context Menu ────────────────────────────────────────────
 
