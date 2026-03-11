@@ -679,13 +679,15 @@ function drawShape(doc: jsPDF, el: ShapeElement, deck: Deck): void {
   const isLineOrArrow = el.shape === "line" || el.shape === "arrow";
   const strokeWidth = s.strokeWidth ?? (isLineOrArrow ? 2 : 1);
   const opacity = s.opacity ?? 1;
+  const fOp = (s.fillOpacity ?? 1) * opacity;
+  const sOp = (s.strokeOpacity ?? 1) * opacity;
   const { x, y } = el.position;
   const { w, h } = el.size;
 
-  if (opacity < 1) {
+  if (fOp < 1 || sOp < 1) {
     doc.saveGraphicsState();
     // @ts-expect-error GState constructor is available on jsPDF instance
-    doc.setGState(new doc.GState({ opacity, "stroke-opacity": opacity }));
+    doc.setGState(new doc.GState({ opacity: fOp, "stroke-opacity": sOp }));
   }
 
   doc.setLineWidth(strokeWidth);
@@ -727,7 +729,7 @@ function drawShape(doc: jsPDF, el: ShapeElement, deck: Deck): void {
     );
   }
 
-  if (opacity < 1) {
+  if (fOp < 1 || sOp < 1) {
     doc.restoreGraphicsState();
   }
 }

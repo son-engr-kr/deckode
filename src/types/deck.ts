@@ -73,6 +73,8 @@ export interface ShapeStyle {
   strokeWidth?: number;
   borderRadius?: number;
   opacity?: number;
+  fillOpacity?: number;
+  strokeOpacity?: number;
 }
 
 export interface VideoStyle {

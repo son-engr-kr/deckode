@@ -517,17 +517,22 @@ function addShape(
   const s = resolveStyle<ShapeStyle>(deck.theme?.shape, el.style);
   const fillHex = toHex(s.fill);
   const strokeHex = toHex(s.stroke);
-  const opacity = s.opacity ?? 1;
+  const fOp = s.fillOpacity ?? 1;
+  const sOp = s.strokeOpacity ?? 1;
 
   const fill =
     fillHex && fillHex !== "transparent"
       ? {
           color: fillHex,
-          transparency: opacity < 1 ? Math.round((1 - opacity) * 100) : undefined,
+          transparency: fOp < 1 ? Math.round((1 - fOp) * 100) : undefined,
         }
       : undefined;
   const line = strokeHex
-    ? { color: strokeHex, width: s.strokeWidth ?? 1 }
+    ? {
+        color: strokeHex,
+        width: s.strokeWidth ?? 1,
+        transparency: sOp < 1 ? Math.round((1 - sOp) * 100) : undefined,
+      }
     : undefined;
 
   if (el.shape === "rectangle") {

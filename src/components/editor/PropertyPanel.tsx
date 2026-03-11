@@ -388,10 +388,11 @@ function ElementStyleEditor({
         {element.type === "shape" && (
           <>
             <ColorField label="Fill" value={element.style?.fill} onChange={(v) => patchStyle("fill", v)} />
+            <NumberField label="Fill Opacity" value={element.style?.fillOpacity ?? 1} onChange={(v) => patchStyle("fillOpacity", v)} min={0} max={1} step={0.05} />
             <ColorField label="Stroke" value={element.style?.stroke} onChange={(v) => patchStyle("stroke", v)} />
+            <NumberField label="Stroke Opacity" value={element.style?.strokeOpacity ?? 1} onChange={(v) => patchStyle("strokeOpacity", v)} min={0} max={1} step={0.05} />
             <NumberField label="Stroke Width" value={element.style?.strokeWidth} onChange={(v) => patchStyle("strokeWidth", v)} min={0} max={20} />
             <NumberField label="Border Radius" value={element.style?.borderRadius ?? 0} onChange={(v) => patchStyle("borderRadius", v)} min={0} max={100} />
-            <NumberField label="Opacity" value={element.style?.opacity ?? 1} onChange={(v) => patchStyle("opacity", v)} min={0} max={1} step={0.05} />
           </>
         )}
         {element.type === "image" && (

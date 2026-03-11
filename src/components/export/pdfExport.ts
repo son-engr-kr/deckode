@@ -435,11 +435,32 @@ async function buildImage(
 
 // ---- Shape (mirrors ShapeElement.tsx) ----
 
+function withAlpha(color: string, alpha: number): string {
+  if (alpha >= 1) return color;
+  if (color === "transparent") return color;
+  const hex = color.replace("#", "");
+  if (hex.length === 3) {
+    const r = parseInt(hex[0]! + hex[0]!, 16);
+    const g = parseInt(hex[1]! + hex[1]!, 16);
+    const b = parseInt(hex[2]! + hex[2]!, 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  return color;
+}
+
 function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
   const s = resolveStyle<ShapeStyle>(deck.theme?.shape, el.style);
   const fill = s.fill ?? "transparent";
   const stroke = s.stroke ?? "#ffffff";
   const op = s.opacity ?? 1;
+  const fOp = s.fillOpacity ?? 1;
+  const sOp = s.strokeOpacity ?? 1;
   const { w, h } = el.size;
   const ns = "http://www.w3.org/2000/svg";
 
@@ -466,6 +487,7 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
       const poly = document.createElementNS(ns, "polygon");
       poly.setAttribute("points", "0 0, 10 3.5, 0 7");
       poly.setAttribute("fill", stroke);
+      poly.setAttribute("fill-opacity", String(sOp));
       marker.appendChild(poly);
       defs.appendChild(marker);
       svg.appendChild(defs);
@@ -477,6 +499,7 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
     line.setAttribute("x2", String(w));
     line.setAttribute("y2", String(h / 2));
     line.setAttribute("stroke", stroke);
+    line.setAttribute("stroke-opacity", String(sOp));
     line.setAttribute("stroke-width", String(sw));
     if (el.shape === "arrow") {
       line.setAttribute("marker-end", `url(#arrow-${el.id})`);
@@ -504,7 +527,9 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
     ellipse.setAttribute("rx", String(rx));
     ellipse.setAttribute("ry", String(ry));
     ellipse.setAttribute("fill", fill);
+    ellipse.setAttribute("fill-opacity", String(fOp));
     ellipse.setAttribute("stroke", stroke);
+    ellipse.setAttribute("stroke-opacity", String(sOp));
     ellipse.setAttribute("stroke-width", String(sw));
     svg.appendChild(ellipse);
     d.appendChild(svg);
@@ -514,12 +539,14 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
   // Rectangle → CSS div (matches ShapeElementRenderer)
   const sw = s.strokeWidth ?? 1;
   const hasBorder = !!s.stroke || !!s.strokeWidth;
+  const fillColor = fOp < 1 ? withAlpha(fill, fOp) : fill;
+  const strokeColor = sOp < 1 ? withAlpha(stroke, sOp) : stroke;
   const d = document.createElement("div");
   d.style.cssText = [
     "width:100%",
     "height:100%",
-    `background-color:${fill}`,
-    hasBorder ? `border:${sw}px solid ${stroke}` : "",
+    `background-color:${fillColor}`,
+    hasBorder ? `border:${sw}px solid ${strokeColor}` : "",
     `border-radius:${s.borderRadius ?? 0}px`,
     `opacity:${op}`,
     "box-sizing:border-box",

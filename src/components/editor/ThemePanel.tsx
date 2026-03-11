@@ -159,14 +159,30 @@ export function ThemePanel() {
 
       <Section title="Shape">
         <ColorField
+          label="Fill"
+          value={theme.shape?.fill}
+          onChange={(v) => patchShape({ fill: v })}
+        />
+        <NumberField
+          label="Fill Opacity"
+          value={theme.shape?.fillOpacity}
+          onChange={(v) => patchShape({ fillOpacity: v })}
+          min={0}
+          max={1}
+          step={0.05}
+        />
+        <ColorField
           label="Stroke"
           value={theme.shape?.stroke}
           onChange={(v) => patchShape({ stroke: v })}
         />
-        <ColorField
-          label="Fill"
-          value={theme.shape?.fill}
-          onChange={(v) => patchShape({ fill: v })}
+        <NumberField
+          label="Stroke Opacity"
+          value={theme.shape?.strokeOpacity}
+          onChange={(v) => patchShape({ strokeOpacity: v })}
+          min={0}
+          max={1}
+          step={0.05}
         />
         <NumberField
           label="Stroke Width"
@@ -181,14 +197,6 @@ export function ThemePanel() {
           onChange={(v) => patchShape({ borderRadius: v })}
           min={0}
           max={100}
-        />
-        <NumberField
-          label="Opacity"
-          value={theme.shape?.opacity}
-          onChange={(v) => patchShape({ opacity: v })}
-          min={0}
-          max={1}
-          step={0.05}
         />
       </Section>
 

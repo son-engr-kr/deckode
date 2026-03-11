@@ -74,7 +74,9 @@
             "stroke": { "type": "string" },
             "strokeWidth": { "type": "number" },
             "borderRadius": { "type": "number" },
-            "opacity": { "type": "number" }
+            "opacity": { "type": "number" },
+            "fillOpacity": { "type": "number" },
+            "strokeOpacity": { "type": "number" }
           }
         },
         "image": {
