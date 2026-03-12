@@ -243,18 +243,21 @@ interface InteractiveProps {
 const InteractiveElement = memo(function InteractiveElement({ element, isSelected, showResizeHandles, isHighlighted, hasComment, onSelect, onDoubleClick, onMove, onResize, onContextMenu, scale }: InteractiveProps) {
   const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
 
-  // Compute expanded bounds for line/arrow with waypoints
+  // Compute line/arrow hit area — use polyline-based hit test for all lines (with or without waypoints)
   const waypointInfo = useMemo(() => {
     if (element.type !== "shape") return null;
     const shape = element as ShapeElementType;
     if (shape.shape !== "line" && shape.shape !== "arrow") return null;
-    const wps = shape.style?.waypoints;
-    if (!wps || wps.length < 2) return null;
     const sw = shape.style?.strokeWidth ?? 2;
     const pad = Math.max(sw / 2 + 8, 10);
+    const wps = shape.style?.waypoints;
+    // Use waypoints if available, otherwise default straight line
+    const pts = wps && wps.length >= 2
+      ? wps
+      : [{ x: 0, y: shape.size.h / 2 }, { x: shape.size.w, y: shape.size.h / 2 }];
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const p of wps) {
+    for (const p of pts) {
       minX = Math.min(minX, p.x);
       minY = Math.min(minY, p.y);
       maxX = Math.max(maxX, p.x);
@@ -265,7 +268,8 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
       top: element.position.y + minY - pad,
       width: maxX - minX + pad * 2,
       height: maxY - minY + pad * 2,
-      points: wps.map(p => ({ x: p.x - minX + pad, y: p.y - minY + pad })),
+      points: pts.map(p => ({ x: p.x - minX + pad, y: p.y - minY + pad })),
+      hasWaypoints: !!(wps && wps.length >= 2),
     };
   }, [element]);
 
