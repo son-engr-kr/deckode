@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
-import type { Slide, SlideElement, TikZElement, MermaidElement, TableElement, CustomElement, Scene3DElement, ImageElement, VideoElement, ShapeElement, CropRect, DeckTheme } from "@/types/deck";
+import type { Slide, SlideElement, TikZElement, MermaidElement, TableElement, CustomElement, Scene3DElement, ImageElement, VideoElement, ShapeElement, CropRect, DeckTheme, ReferenceElement } from "@/types/deck";
 import { resolveStyle } from "@/contexts/ThemeContext";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { AnimationEditor } from "./AnimationEditor";
@@ -161,6 +161,11 @@ export function PropertyPanel() {
         />
       )}
 
+      {/* Reference (shared component) properties */}
+      {element.type === "reference" && (
+        <ReferenceProperties element={element as ReferenceElement} slides={slides!} />
+      )}
+
       {/* Video properties */}
       {element.type === "video" && (
         <>
@@ -221,6 +226,58 @@ export function PropertyPanel() {
       {/* Comments */}
       <CommentList slideId={slide.id} elementId={element.id} />
     </div>
+  );
+}
+
+function ReferenceProperties({ element, slides }: { element: ReferenceElement; slides: Slide[] }) {
+  const component = useDeckStore((s) => s.deck?.components?.[element.componentId]);
+  const renameComponent = useDeckStore((s) => s.renameComponent);
+  const enterComponentEditMode = useDeckStore((s) => s.enterComponentEditMode);
+
+  // Count how many slides reference this component
+  const refCount = slides.reduce((count, slide) => {
+    return count + slide.elements.filter(
+      (el) => el.type === "reference" && (el as ReferenceElement).componentId === element.componentId,
+    ).length;
+  }, 0);
+
+  if (!component) {
+    return (
+      <div>
+        <FieldLabel>Component</FieldLabel>
+        <div className="text-red-400 text-xs">Missing component: {element.componentId}</div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div>
+        <FieldLabel>Component Name</FieldLabel>
+        <input
+          type="text"
+          className="w-full bg-zinc-800 text-zinc-200 rounded px-2 py-1.5 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+          value={component.name}
+          onChange={(e) => renameComponent(element.componentId, e.target.value)}
+        />
+      </div>
+      <div>
+        <FieldLabel>References</FieldLabel>
+        <div className="text-zinc-300 text-xs">
+          Referenced in {refCount} place{refCount !== 1 ? "s" : ""}
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Component ID</FieldLabel>
+        <div className="text-zinc-500 text-xs font-mono select-all">{element.componentId}</div>
+      </div>
+      <button
+        onClick={() => enterComponentEditMode(element.componentId)}
+        className="w-full text-xs px-2 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+      >
+        Edit Component
+      </button>
+    </>
   );
 }
 
@@ -360,7 +417,7 @@ function ElementStyleEditor({
   updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
   theme?: DeckTheme;
 }) {
-  if (element.type === "custom" || element.type === "scene3d") return null;
+  if (element.type === "custom" || element.type === "scene3d" || element.type === "reference") return null;
 
   const patchStyle = (prop: string, value: unknown) => {
     updateElement(slideId, element.id, {

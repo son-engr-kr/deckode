@@ -267,7 +267,12 @@ export interface Scene3DElement extends BaseElement {
   style?: Scene3DStyle;
 }
 
-export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement | TableElement | CustomElement | Scene3DElement | MermaidElement;
+export interface ReferenceElement extends BaseElement {
+  type: "reference";
+  componentId: string;
+}
+
+export type SlideElement = TextElement | ImageElement | CodeElement | ShapeElement | VideoElement | TikZElement | TableElement | CustomElement | Scene3DElement | MermaidElement | ReferenceElement;
 
 // ----- Animations -----
 
@@ -336,6 +341,15 @@ export interface DeckTheme {
   scene3d?: Partial<Scene3DStyle>;
 }
 
+// ----- Shared Components -----
+
+export interface SharedComponent {
+  id: string;
+  name: string;
+  elements: SlideElement[];
+  size: Size;
+}
+
 // ----- Deck (top-level) -----
 
 export interface DeckMeta {
@@ -348,6 +362,7 @@ export interface Deck {
   deckode: string;
   meta: DeckMeta;
   theme?: DeckTheme;
+  components?: Record<string, SharedComponent>;
   slides: Slide[];
 }
 

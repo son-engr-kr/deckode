@@ -1,0 +1,219 @@
+import { useEffect, useRef, useCallback, memo } from "react";
+import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
+import type { Slide, SlideElement, ReferenceElement } from "@/types/deck";
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
+import { ElementRenderer } from "@/components/renderer/ElementRenderer";
+
+interface Props {
+  componentId: string;
+  slide: Slide;
+  scale: number;
+}
+
+export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
+  const component = useDeckStore((s) => s.deck?.components?.[componentId]);
+  const exitComponentEditMode = useDeckStore((s) => s.exitComponentEditMode);
+  const selectedElementIds = useDeckStore((s) => s.selectedElementIds);
+  const selectElement = useDeckStore((s) => s.selectElement);
+  const updateComponentElement = useDeckStore((s) => s.updateComponentElement);
+
+  // Find the first reference to this component on the current slide for positioning
+  const refEl = slide.elements.find(
+    (el) => el.type === "reference" && (el as ReferenceElement).componentId === componentId,
+  ) as ReferenceElement | undefined;
+
+  const offsetX = refEl?.position.x ?? 0;
+  const offsetY = refEl?.position.y ?? 0;
+  const scaleX = refEl && component ? refEl.size.w / component.size.w : 1;
+  const scaleY = refEl && component ? refEl.size.h / component.size.h : 1;
+
+  // Escape to exit
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        exitComponentEditMode();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [exitComponentEditMode]);
+
+  if (!component) return null;
+
+  return (
+    <>
+      {/* Dim layer over entire canvas */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+          background: "rgba(0, 0, 0, 0.5)",
+          zIndex: 10,
+        }}
+      />
+      {/* Component elements rendered at the reference position */}
+      <div
+        className="absolute"
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+          zIndex: 11,
+          pointerEvents: "none",
+        }}
+      >
+        {component.elements.map((child) => {
+          const isSelected = selectedElementIds.includes(child.id);
+          return (
+            <ComponentElementBox
+              key={child.id}
+              element={child}
+              offsetX={offsetX}
+              offsetY={offsetY}
+              scaleX={scaleX}
+              scaleY={scaleY}
+              isSelected={isSelected}
+              scale={scale}
+              onSelect={() => selectElement(child.id)}
+              onMove={(dx, dy) => {
+                updateComponentElement(componentId, child.id, {
+                  position: {
+                    x: child.position.x + dx,
+                    y: child.position.y + dy,
+                  },
+                } as Partial<SlideElement>);
+              }}
+            />
+          );
+        })}
+      </div>
+      {/* Banner */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 z-20"
+        style={{ top: 8 }}
+      >
+        <div className="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-md shadow-lg flex items-center gap-3">
+          <span>Editing Component: <strong>{component.name}</strong></span>
+          <button
+            onClick={exitComponentEditMode}
+            className="bg-indigo-500 hover:bg-indigo-400 px-2 py-0.5 rounded text-xs transition-colors"
+          >
+            Done (Esc)
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+const ComponentElementBox = memo(function ComponentElementBox({
+  element,
+  offsetX,
+  offsetY,
+  scaleX,
+  scaleY,
+  isSelected,
+  scale,
+  onSelect,
+  onMove,
+}: {
+  element: SlideElement;
+  offsetX: number;
+  offsetY: number;
+  scaleX: number;
+  scaleY: number;
+  isSelected: boolean;
+  scale: number;
+  onSelect: () => void;
+  onMove: (dx: number, dy: number) => void;
+}) {
+  const dragStart = useRef<{ x: number; y: number; ex: number; ey: number } | null>(null);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      onSelect();
+      setDeckDragging(true);
+      dragStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        ex: element.position.x,
+        ey: element.position.y,
+      };
+
+      const prevent = (ev: Event) => ev.preventDefault();
+      document.addEventListener("selectstart", prevent);
+      let rafId = 0;
+      let dragStarted = false;
+
+      const handleMouseUp = () => {
+        cancelAnimationFrame(rafId);
+        setDeckDragging(false);
+        dragStart.current = null;
+        document.removeEventListener("selectstart", prevent);
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      const handleMouseMove = (me: MouseEvent) => {
+        if (!dragStart.current) return;
+        if (me.buttons === 0) { handleMouseUp(); return; }
+        if (!dragStarted) {
+          const rawDx = me.clientX - dragStart.current.x;
+          const rawDy = me.clientY - dragStart.current.y;
+          if (rawDx * rawDx + rawDy * rawDy < 64) return;
+          dragStarted = true;
+        }
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          if (!dragStart.current) return;
+          // Divide by both canvas scale and component scale
+          const dx = (me.clientX - dragStart.current.x) / scale / scaleX;
+          const dy = (me.clientY - dragStart.current.y) / scale / scaleY;
+          onMove(
+            Math.round(dragStart.current.ex + dx - element.position.x),
+            Math.round(dragStart.current.ey + dy - element.position.y),
+          );
+        });
+      };
+
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    },
+    [element.position.x, element.position.y, scale, scaleX, scaleY, onSelect, onMove],
+  );
+
+  // Position the element at reference offset + scaled component-local position
+  const left = offsetX + element.position.x * scaleX;
+  const top = offsetY + element.position.y * scaleY;
+  const width = element.size.w * scaleX;
+  const height = element.size.h * scaleY;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left,
+        top,
+        width,
+        height,
+        pointerEvents: "auto",
+        cursor: "move",
+        outline: isSelected ? "2px solid #6366f1" : "1px solid rgba(99,102,241,0.3)",
+        outlineOffset: -1,
+      }}
+      onMouseDown={handleMouseDown}
+    >
+      <div style={{ width: element.size.w, height: element.size.h, transform: `scale(${scaleX}, ${scaleY})`, transformOrigin: "top left" }}>
+        <ElementRenderer element={element} editorMode />
+      </div>
+    </div>
+  );
+});

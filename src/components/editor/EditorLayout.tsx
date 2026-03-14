@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import type { Slide, SlideElement } from "@/types/deck";
 import { nextElementId, cloneSlide } from "@/utils/id";
+import type { ReferenceElement, SharedComponent } from "@/types/deck";
+import { getComponentClipboard, setComponentClipboard } from "./SelectionOverlay";
 import { findUndoChanges } from "@/utils/deckDiff";
 import { skipNextRestore } from "@/utils/handleStore";
 import { SlideList } from "./SlideList";
@@ -155,9 +157,14 @@ export function EditorLayout() {
         return;
       }
 
-      // Exit crop/trim mode on Escape or Enter
+      // Exit crop/trim/component edit mode on Escape or Enter
       if (e.key === "Escape" || e.key === "Enter") {
         const state = useDeckStore.getState();
+        if (state.editingComponentId) {
+          e.preventDefault();
+          state.exitComponentEditMode();
+          return;
+        }
         if (state.cropElementId) {
           e.preventDefault();
           state.setCropElement(null);
@@ -186,10 +193,19 @@ export function EditorLayout() {
             if (elements.length > 0) {
               elementClipboard = JSON.parse(JSON.stringify(elements));
               slideClipboard = null;
+              // Collect referenced components for cross-instance paste
+              const components: Record<string, SharedComponent> = {};
+              for (const el of elements) {
+                if (el.type === "reference" && deck.components) {
+                  const compId = (el as ReferenceElement).componentId;
+                  const comp = deck.components[compId];
+                  if (comp) components[compId] = comp;
+                }
+              }
               // Write to system clipboard for cross-instance paste
-              navigator.clipboard.writeText(
-                JSON.stringify({ __deckode: true, elements }),
-              ).catch(() => {});
+              const clipData: Record<string, unknown> = { __deckode: true, elements };
+              if (Object.keys(components).length > 0) clipData.components = components;
+              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
               e.preventDefault();
             }
           } else if (slide) {
@@ -221,8 +237,22 @@ export function EditorLayout() {
         }
         return;
       }
-      // Paste: Ctrl+V (elements or slide from internal clipboard)
+      // Paste: Ctrl+V (elements, component reference, or slide from internal clipboard)
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.code === "KeyV") {
+        // Paste component reference from "Copy Reference"
+        const compClip = getComponentClipboard();
+        if (compClip) {
+          const { deck, currentSlideIndex, pasteReference } = useDeckStore.getState();
+          if (deck) {
+            const slide = deck.slides[currentSlideIndex];
+            if (slide && deck.components?.[compClip]) {
+              pasteReference(slide.id, compClip, { x: 100, y: 100 });
+              setComponentClipboard(null);
+              e.preventDefault();
+              return;
+            }
+          }
+        }
         if (elementClipboard && elementClipboard.length > 0) {
           const { deck, currentSlideIndex, addElement, selectElement } = useDeckStore.getState();
           if (deck) {

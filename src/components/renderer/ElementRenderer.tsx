@@ -11,6 +11,7 @@ import { VideoElementRenderer } from "./elements/VideoElement";
 import { TikZElementRenderer } from "./elements/TikZElement";
 import { TableElementRenderer } from "./elements/TableElement";
 import { CustomElementRenderer } from "./elements/CustomElement";
+import { ReferenceElementRenderer } from "./elements/ReferenceElement";
 
 const Scene3DElementRenderer = lazy(() =>
   import("./elements/Scene3DElement").then((m) => ({ default: m.Scene3DElementRenderer })),
@@ -199,5 +200,7 @@ function renderByType(
         </Suspense>
       );
     }
+    case "reference":
+      return <ReferenceElementRenderer element={element} editorMode={editorMode} />;
   }
 }

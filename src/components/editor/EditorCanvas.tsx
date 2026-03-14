@@ -7,6 +7,7 @@ import type { ImageElement, VideoElement, SlideElement, ShapeElement } from "@/t
 import { SelectionOverlay, TrimOverlay } from "./SelectionOverlay";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { assert } from "@/utils/assert";
+import { ComponentEditOverlay } from "./ComponentEditOverlay";
 
 interface MarqueeRect {
   startX: number;
@@ -22,6 +23,7 @@ export function EditorCanvas() {
   const selectElements = useDeckStore((s) => s.selectElements);
   const addElement = useDeckStore((s) => s.addElement);
   const trimElementId = useDeckStore((s) => s.trimElementId);
+  const editingComponentId = useDeckStore((s) => s.editingComponentId);
   const adapter = useAdapter();
 
   const [marquee, setMarquee] = useState<MarqueeRect | null>(null);
@@ -145,6 +147,20 @@ export function EditorCanvas() {
           if (parsed?.__deckode && Array.isArray(parsed.elements)) {
             e.preventDefault();
             const { nextElementId } = await import("@/utils/id");
+
+            // Merge referenced components into deck
+            if (parsed.components && typeof parsed.components === "object") {
+              const state = useDeckStore.getState();
+              if (state.deck) {
+                if (!state.deck.components) state.deck.components = {};
+                for (const [compId, comp] of Object.entries(parsed.components)) {
+                  if (!state.deck.components[compId]) {
+                    state.deck.components[compId] = comp as import("@/types/deck").SharedComponent;
+                  }
+                }
+              }
+            }
+
             const newIds: string[] = [];
             for (const original of parsed.elements as SlideElement[]) {
               const clone: SlideElement = JSON.parse(JSON.stringify(original));
@@ -367,8 +383,15 @@ export function EditorCanvas() {
           previewKey={previewKey}
           editorMode
         />
-        <SelectionOverlay slide={slide} scale={scale} />
-        {marquee && (
+        {editingComponentId && (
+          <ComponentEditOverlay
+            componentId={editingComponentId}
+            slide={slide}
+            scale={scale}
+          />
+        )}
+        {!editingComponentId && <SelectionOverlay slide={slide} scale={scale} />}
+        {marquee && !editingComponentId && (
           <div
             className="absolute inset-0 pointer-events-none"
             style={{

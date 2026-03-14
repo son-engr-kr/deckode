@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { subscribeWithSelector } from "zustand/middleware";
 import { temporal } from "zundo";
-import type { Animation, Comment, Deck, DeckTheme, Slide, SlideElement } from "@/types/deck";
+import type { Animation, Comment, Deck, DeckTheme, SharedComponent, Slide, SlideElement, ReferenceElement } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
 import { nextElementId, syncCounters } from "@/utils/id";
 import { assert } from "@/utils/assert";
@@ -47,6 +47,7 @@ interface DeckState {
   highlightedElementIds: string[];
   cropElementId: string | null;
   trimElementId: string | null;
+  editingComponentId: string | null;
   isDirty: boolean;
   isSaving: boolean;
   savePaused: boolean;
@@ -88,6 +89,17 @@ interface DeckState {
   patchElementById: (elementId: string, patch: Partial<SlideElement>) => void;
   bringToFront: (slideId: string, elementId: string) => void;
   sendToBack: (slideId: string, elementId: string) => void;
+
+  // Shared component actions
+  createComponent: (slideId: string, groupId: string) => void;
+  detachReference: (slideId: string, elementId: string) => void;
+  pasteReference: (slideId: string, componentId: string, position?: { x: number; y: number }) => void;
+  enterComponentEditMode: (componentId: string) => void;
+  exitComponentEditMode: () => void;
+  updateComponentElement: (componentId: string, elementId: string, patch: Partial<SlideElement>) => void;
+  addComponentElement: (componentId: string, element: SlideElement) => void;
+  deleteComponentElement: (componentId: string, elementId: string) => void;
+  renameComponent: (componentId: string, name: string) => void;
 }
 
 let highlightTimer: ReturnType<typeof setTimeout> | null = null;
@@ -100,6 +112,17 @@ let batchStartState: any = null;
 
 export function setDeckDragging(active: boolean) {
   isDragging = active;
+}
+
+function computeBounds(elements: SlideElement[]): { x: number; y: number; w: number; h: number } {
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (const el of elements) {
+    x1 = Math.min(x1, el.position.x);
+    y1 = Math.min(y1, el.position.y);
+    x2 = Math.max(x2, el.position.x + el.size.w);
+    y2 = Math.max(y2, el.position.y + el.size.h);
+  }
+  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
 }
 
 function assertNoLineRotation(el: { type?: string; rotation?: number }) {
@@ -127,6 +150,7 @@ export const useDeckStore = create<DeckState>()(
         highlightedElementIds: [],
         cropElementId: null,
         trimElementId: null,
+        editingComponentId: null,
         isDirty: false,
         isSaving: false,
         savePaused: false,
@@ -146,6 +170,7 @@ export const useDeckStore = create<DeckState>()(
               ? [deck.slides[restoredIndex]!.id]
               : [];
             state.selectedElementIds = [];
+            state.editingComponentId = null;
             state.isDirty = false;
             state.savePaused = false;
           });
@@ -159,6 +184,7 @@ export const useDeckStore = create<DeckState>()(
             state.currentSlideIndex = 0;
             state.selectedSlideIds = [];
             state.selectedElementIds = [];
+            state.editingComponentId = null;
             state.isDirty = false;
             state.savePaused = false;
           });
@@ -178,6 +204,7 @@ export const useDeckStore = create<DeckState>()(
               ? [deck.slides[clamped]!.id]
               : [];
             state.selectedElementIds = [];
+            state.editingComponentId = null;
             state.isDirty = false;
           });
         },
@@ -205,8 +232,26 @@ export const useDeckStore = create<DeckState>()(
             return;
           }
 
+          // GC: remove unused components before serialization (on a deep clone)
+          let deckToSave = get().deck!;
+          if (deckToSave.components && Object.keys(deckToSave.components).length > 0) {
+            const usedIds = new Set<string>();
+            for (const slide of deckToSave.slides) {
+              for (const el of slide.elements) {
+                if (el.type === "reference") usedIds.add((el as ReferenceElement).componentId);
+              }
+            }
+            const allIds = Object.keys(deckToSave.components);
+            const unused = allIds.filter((id) => !usedIds.has(id));
+            if (unused.length > 0) {
+              deckToSave = JSON.parse(JSON.stringify(deckToSave));
+              for (const id of unused) delete deckToSave.components![id];
+              if (Object.keys(deckToSave.components!).length === 0) delete deckToSave.components;
+            }
+          }
+
           set((state) => { state.isSaving = true; });
-          _activeSave = _adapter.saveDeck(get().deck!);
+          _activeSave = _adapter.saveDeck(deckToSave);
           try {
             await _activeSave;
           } catch (err) {
@@ -571,6 +616,184 @@ export const useDeckStore = create<DeckState>()(
             if (idx === 0) return; // already back
             const [el] = slide.elements.splice(idx, 1);
             slide.elements.unshift(el!);
+            state.isDirty = true;
+          }),
+
+        // ── Shared Component Actions ────────────────────────────────
+
+        createComponent: (slideId, groupId) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = getSlide(state.deck.slides, slideId);
+            const members = slide.elements.filter((e) => e.groupId === groupId);
+            assert(members.length >= 2, "Group must have at least 2 elements");
+
+            // Compute bounding box
+            const bounds = computeBounds(members);
+
+            // Create component with elements positioned relative to (0,0)
+            const compId = `comp-${crypto.randomUUID().slice(0, 8)}`;
+            const compElements: SlideElement[] = members.map((el) => {
+              const clone = JSON.parse(JSON.stringify(el)) as SlideElement;
+              clone.position = {
+                x: el.position.x - bounds.x,
+                y: el.position.y - bounds.y,
+              };
+              delete clone.groupId;
+              return clone;
+            });
+
+            const component: SharedComponent = {
+              id: compId,
+              name: `Component ${compId.slice(5)}`,
+              elements: compElements,
+              size: { w: bounds.w, h: bounds.h },
+            };
+
+            if (!state.deck.components) state.deck.components = {};
+            state.deck.components[compId] = component;
+
+            // Remove group members from slide
+            slide.elements = slide.elements.filter((e) => e.groupId !== groupId);
+
+            // Insert ReferenceElement
+            const refEl: ReferenceElement = {
+              id: nextElementId(),
+              type: "reference",
+              componentId: compId,
+              position: { x: bounds.x, y: bounds.y },
+              size: { w: bounds.w, h: bounds.h },
+            };
+            slide.elements.push(refEl);
+            state.selectedElementIds = [refEl.id];
+            state.isDirty = true;
+          }),
+
+        detachReference: (slideId, elementId) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = getSlide(state.deck.slides, slideId);
+            const idx = slide.elements.findIndex((e) => e.id === elementId);
+            assert(idx !== -1, `Element ${elementId} not found`);
+            const refEl = slide.elements[idx]!;
+            assert(refEl.type === "reference", "Element is not a reference");
+            const comp = state.deck.components?.[(refEl as ReferenceElement).componentId];
+            assert(comp !== undefined, "Component not found");
+
+            // Inline elements with new IDs at the reference's position
+            const scaleX = refEl.size.w / comp.size.w;
+            const scaleY = refEl.size.h / comp.size.h;
+            const newIds: string[] = [];
+            const inlined: SlideElement[] = comp.elements.map((el) => {
+              const clone = JSON.parse(JSON.stringify(el)) as SlideElement;
+              clone.id = nextElementId();
+              clone.position = {
+                x: refEl.position.x + el.position.x * scaleX,
+                y: refEl.position.y + el.position.y * scaleY,
+              };
+              clone.size = {
+                w: el.size.w * scaleX,
+                h: el.size.h * scaleY,
+              };
+              newIds.push(clone.id);
+              return clone;
+            });
+
+            // Replace the reference element with inlined elements
+            slide.elements.splice(idx, 1, ...inlined);
+            state.selectedElementIds = newIds;
+            state.isDirty = true;
+          }),
+
+        pasteReference: (slideId, componentId, position) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = getSlide(state.deck.slides, slideId);
+            const comp = state.deck.components?.[componentId];
+            assert(comp !== undefined, `Component ${componentId} not found`);
+
+            const refEl: ReferenceElement = {
+              id: nextElementId(),
+              type: "reference",
+              componentId,
+              position: position ?? { x: 100, y: 100 },
+              size: { w: comp.size.w, h: comp.size.h },
+            };
+            slide.elements.push(refEl);
+            state.selectedElementIds = [refEl.id];
+            state.isDirty = true;
+          }),
+
+        enterComponentEditMode: (componentId) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            assert(state.deck.components?.[componentId] !== undefined, "Component not found");
+            state.editingComponentId = componentId;
+            state.selectedElementIds = [];
+          }),
+
+        exitComponentEditMode: () =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const compId = state.editingComponentId;
+            if (!compId) return;
+            const comp = state.deck.components?.[compId];
+            if (!comp || comp.elements.length === 0) {
+              state.editingComponentId = null;
+              return;
+            }
+
+            // Recalculate bounding box and normalize positions to (0,0)
+            const bounds = computeBounds(comp.elements);
+            for (const el of comp.elements) {
+              el.position.x -= bounds.x;
+              el.position.y -= bounds.y;
+            }
+            comp.size = { w: bounds.w, h: bounds.h };
+
+            state.editingComponentId = null;
+            state.selectedElementIds = [];
+            state.isDirty = true;
+          }),
+
+        updateComponentElement: (componentId, elementId, patch) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const comp = state.deck.components?.[componentId];
+            assert(comp !== undefined, `Component ${componentId} not found`);
+            const element = comp.elements.find((e) => e.id === elementId);
+            assert(element !== undefined, `Element ${elementId} not found in component`);
+            Object.assign(element, patch);
+            state.isDirty = true;
+          }),
+
+        addComponentElement: (componentId, element) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const comp = state.deck.components?.[componentId];
+            assert(comp !== undefined, `Component ${componentId} not found`);
+            comp.elements.push(element);
+            state.isDirty = true;
+          }),
+
+        deleteComponentElement: (componentId, elementId) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const comp = state.deck.components?.[componentId];
+            assert(comp !== undefined, `Component ${componentId} not found`);
+            const idx = comp.elements.findIndex((e) => e.id === elementId);
+            assert(idx !== -1, `Element ${elementId} not found in component`);
+            comp.elements.splice(idx, 1);
+            state.selectedElementIds = state.selectedElementIds.filter((id) => id !== elementId);
+            state.isDirty = true;
+          }),
+
+        renameComponent: (componentId, name) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const comp = state.deck.components?.[componentId];
+            assert(comp !== undefined, `Component ${componentId} not found`);
+            comp.name = name;
             state.isDirty = true;
           }),
       })),

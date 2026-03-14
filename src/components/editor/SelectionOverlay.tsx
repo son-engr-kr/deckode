@@ -1,12 +1,18 @@
 import { useRef, useCallback, useState, useEffect, useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
-import type { Slide, SlideElement, VideoElement as VideoElementType, ImageElement as ImageElementType, CropRect } from "@/types/deck";
+import type { Slide, SlideElement, VideoElement as VideoElementType, ImageElement as ImageElementType, CropRect, ReferenceElement as ReferenceElementType } from "@/types/deck";
 import { CANVAS_HEIGHT } from "@/types/deck";
 import { getElementPositionStyle } from "@/utils/elementStyle";
 import { CropOverlay } from "./CropOverlay";
 import { WaypointOverlay } from "./WaypointOverlay";
 import type { ShapeElement as ShapeElementType } from "@/types/deck";
+
+// Module-level clipboard for component references (not in store — not undoable)
+let componentClipboard: string | null = null;
+
+export function getComponentClipboard() { return componentClipboard; }
+export function setComponentClipboard(id: string | null) { componentClipboard = id; }
 
 function getGroupBounds(elements: SlideElement[]) {
   let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
@@ -133,7 +139,9 @@ export function SelectionOverlay({ slide, scale }: Props) {
           showResizeHandles={element.id === singleSelectedId && !element.groupId && !isCropping}
           onSelect={(e: React.MouseEvent) => handleSelect(element, e)}
           onDoubleClick={() => {
-            if ((element.type === "image" || element.type === "video") && !isCropping) {
+            if (element.type === "reference") {
+              useDeckStore.getState().enterComponentEditMode((element as ReferenceElementType).componentId);
+            } else if ((element.type === "image" || element.type === "video") && !isCropping) {
               setCropElement(element.id);
             }
           }}
@@ -581,6 +589,9 @@ function ElementContextMenu({
   const groupElements = useDeckStore((s) => s.groupElements);
   const ungroupElements = useDeckStore((s) => s.ungroupElements);
   const setCropElement = useDeckStore((s) => s.setCropElement);
+  const createComponent = useDeckStore((s) => s.createComponent);
+  const detachReference = useDeckStore((s) => s.detachReference);
+  const enterComponentEditMode = useDeckStore((s) => s.enterComponentEditMode);
 
   const handleAction = useCallback(
     (action: () => void) => {
@@ -599,8 +610,9 @@ function ElementContextMenu({
   // Determine group context
   const slide = deck?.slides.find((s) => s.id === slideId);
   const clickedElement = slide?.elements.find((e) => e.id === elementId);
+  const isReference = clickedElement?.type === "reference";
   // Can group: 2+ elements selected, not all in the same single group already
-  const canGroup = selectedElementIds.length >= 2 && (() => {
+  const canGroup = !isReference && selectedElementIds.length >= 2 && (() => {
     const groupIds = new Set<string>();
     let allGrouped = true;
     for (const id of selectedElementIds) {
@@ -612,6 +624,8 @@ function ElementContextMenu({
     return !(allGrouped && groupIds.size === 1);
   })();
   const clickedGroupId = clickedElement?.groupId;
+  // Can create component: element is in a group (and not already a reference)
+  const canCreateComponent = !isReference && !!clickedGroupId;
 
   return (
     <>
@@ -645,6 +659,36 @@ function ElementContextMenu({
           </>
         )}
         <div className="h-px bg-zinc-700 my-1" />
+        {/* Component actions for reference elements */}
+        {isReference && (
+          <>
+            <ContextMenuItem
+              label="Edit Component"
+              onClick={() => handleAction(() => enterComponentEditMode((clickedElement as ReferenceElementType).componentId))}
+            />
+            <ContextMenuItem
+              label="Copy Reference"
+              onClick={() => handleAction(() => {
+                setComponentClipboard((clickedElement as ReferenceElementType).componentId);
+              })}
+            />
+            <ContextMenuItem
+              label="Detach (Inline)"
+              onClick={() => handleAction(() => detachReference(slideId, elementId))}
+            />
+            <div className="h-px bg-zinc-700 my-1" />
+          </>
+        )}
+        {/* Create Component from group */}
+        {canCreateComponent && (
+          <>
+            <ContextMenuItem
+              label="Create Component"
+              onClick={() => handleAction(() => createComponent(slideId, clickedGroupId!))}
+            />
+            <div className="h-px bg-zinc-700 my-1" />
+          </>
+        )}
         {canGroup && (
           <ContextMenuItem
             label="Group"
@@ -656,14 +700,14 @@ function ElementContextMenu({
             })}
           />
         )}
-        {clickedGroupId && (
+        {clickedGroupId && !isReference && (
           <ContextMenuItem
             label="Ungroup"
             shortcut="Ctrl+Shift+G"
             onClick={() => handleAction(() => ungroupElements(slideId, clickedGroupId))}
           />
         )}
-        {(canGroup || clickedGroupId) && <div className="h-px bg-zinc-700 my-1" />}
+        {(canGroup || (clickedGroupId && !isReference)) && <div className="h-px bg-zinc-700 my-1" />}
         <ContextMenuItem
           label="Duplicate"
           shortcut="Ctrl+D"

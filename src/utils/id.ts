@@ -32,6 +32,16 @@ export function syncCounters(deck: Deck): void {
       seenElements.add(el.id);
     }
   }
+
+  // Also advance counters for elements inside shared components
+  if (deck.components) {
+    for (const comp of Object.values(deck.components)) {
+      for (const el of comp.elements) {
+        const eNum = parseIdNum(el.id, "e");
+        if (eNum >= elementCounter) elementCounter = eNum + 1;
+      }
+    }
+  }
 }
 
 function parseIdNum(id: string, prefix: string): number {
@@ -55,6 +65,7 @@ export function cloneSlide(source: Slide): Slide {
   delete clone._ref;
 
   // Build old→new element ID map
+  // ReferenceElements keep their componentId (shared pointer), only the element ID changes
   const idMap = new Map<string, string>();
   for (const el of clone.elements) {
     const newId = nextElementId();
