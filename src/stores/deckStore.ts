@@ -6,6 +6,7 @@ import type { Animation, Comment, Deck, DeckTheme, Slide, SlideElement } from "@
 import type { FileSystemAdapter } from "@/adapters/types";
 import { nextElementId, syncCounters } from "@/utils/id";
 import { assert } from "@/utils/assert";
+import { setTabProject } from "@/utils/handleStore";
 
 // -- Session-persisted slide index helpers --
 
@@ -135,6 +136,7 @@ export const useDeckStore = create<DeckState>()(
 
         openProject: (project, deck) => {
           syncCounters(deck);
+          setTabProject(project);
           const restoredIndex = loadSlideIndex(project, deck.slides.length);
           set((state) => {
             state.currentProject = project;
@@ -149,7 +151,8 @@ export const useDeckStore = create<DeckState>()(
           });
         },
 
-        closeProject: () =>
+        closeProject: () => {
+          setTabProject(null);
           set((state) => {
             state.currentProject = null;
             state.deck = null;
@@ -158,7 +161,8 @@ export const useDeckStore = create<DeckState>()(
             state.selectedElementIds = [];
             state.isDirty = false;
             state.savePaused = false;
-          }),
+          });
+        },
 
         loadDeck: (deck) => {
           syncCounters(deck);

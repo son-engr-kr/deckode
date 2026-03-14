@@ -49,9 +49,30 @@ export function skipNextRestore(): void {
   _skipRestore = true;
 }
 
+// ── Per-tab project tracking via sessionStorage ──
+
+const SESSION_PROJECT_KEY = "deckode:tabProject";
+
+/** Remember which project this tab has open (survives refresh, not shared across tabs). */
+export function setTabProject(name: string | null): void {
+  if (typeof sessionStorage === "undefined") return;
+  if (name) {
+    sessionStorage.setItem(SESSION_PROJECT_KEY, name);
+  } else {
+    sessionStorage.removeItem(SESSION_PROJECT_KEY);
+  }
+}
+
+/** Get the project name this tab had open before refresh. */
+export function getTabProject(): string | null {
+  if (typeof sessionStorage === "undefined") return null;
+  return sessionStorage.getItem(SESSION_PROJECT_KEY);
+}
+
 // ── Single handle (legacy, used for auto-restore on load) ──
 
 export async function saveHandle(handle: FileSystemDirectoryHandle): Promise<void> {
+  setTabProject(handle.name);
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readwrite");
@@ -65,8 +86,12 @@ export async function restoreHandle(): Promise<FileSystemDirectoryHandle | null>
   if (_skipRestore) {
     _skipRestore = false;
     clearHandle();
+    setTabProject(null);
     return null;
   }
+
+  // Check sessionStorage for per-tab project identity
+  const tabProject = getTabProject();
 
   const db = await openDB();
   const handle: FileSystemDirectoryHandle | undefined = await new Promise((resolve, reject) => {
@@ -77,6 +102,19 @@ export async function restoreHandle(): Promise<FileSystemDirectoryHandle | null>
   });
 
   if (!handle) return null;
+
+  // If this tab had a specific project and the stored handle is for a different one, skip
+  if (tabProject && handle.name !== tabProject) {
+    // Try to find the correct handle from recent projects instead
+    const recent = await listRecentProjects();
+    const match = recent.find((r) => r.name === tabProject);
+    if (match) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const perm = await (match.handle as any).requestPermission({ mode: "readwrite" });
+      if (perm === "granted") return match.handle;
+    }
+    return null;
+  }
 
   // Re-verify permission (may prompt user or succeed silently)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
