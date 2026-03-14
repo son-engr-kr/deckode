@@ -342,6 +342,7 @@ export const useDeckStore = create<DeckState>()(
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
             const idx = afterIndex ?? state.deck.slides.length;
+            slide._ref = `./slides/${slide.id}.json`;
             state.deck.slides.splice(idx + 1, 0, slide);
             state.isDirty = true;
           }),
