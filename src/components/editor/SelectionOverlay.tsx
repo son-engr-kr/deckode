@@ -398,23 +398,26 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
       const origH = element.size.h;
       let rafId = 0;
 
-      // Lock aspect ratio for image/video using natural content dimensions
-      let aspectRatio: number | null = null;
+      // Determine natural aspect ratio for types that always lock ratio
+      let naturalRatio: number | null = null;
       if (element.type === "image" || element.type === "video") {
         const container = document.querySelector(`[data-element-id="${element.id}"]`);
         if (element.type === "image") {
           const img = container?.querySelector("img");
           if (img && img.naturalWidth && img.naturalHeight) {
-            aspectRatio = img.naturalWidth / img.naturalHeight;
+            naturalRatio = img.naturalWidth / img.naturalHeight;
           }
         } else {
           const video = container?.querySelector("video");
           if (video && video.videoWidth && video.videoHeight) {
-            aspectRatio = video.videoWidth / video.videoHeight;
+            naturalRatio = video.videoWidth / video.videoHeight;
           }
         }
-        // Fallback to current element ratio
-        if (!aspectRatio) aspectRatio = origW / origH;
+        if (!naturalRatio) naturalRatio = origW / origH;
+      }
+      // Reference elements always lock aspect ratio
+      if (element.type === "reference") {
+        naturalRatio = origW / origH;
       }
 
       const handleMouseUp = () => {
@@ -434,6 +437,14 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
           const isLeft = corner === "nw" || corner === "sw";
           const isTop = corner === "nw" || corner === "ne";
 
+          // Shift = lock aspect ratio (always on for image/video/reference)
+          const lockRatio = me.shiftKey || naturalRatio !== null;
+          const aspectRatio = lockRatio
+            ? (naturalRatio ?? origW / origH)
+            : null;
+          // Ctrl = resize from center
+          const fromCenter = me.ctrlKey || me.metaKey;
+
           // Step 1: compute raw dw/dh from mouse delta
           let dw = isLeft
             ? Math.round(-rawDx / visScaleX)
@@ -442,7 +453,7 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
             ? Math.round(-rawDy / visScaleY)
             : Math.round(rawDy / visScaleY);
 
-          // Step 2: enforce aspect ratio for image/video
+          // Step 2: enforce aspect ratio
           if (aspectRatio !== null) {
             const relW = Math.abs(dw) / (origW || 1);
             const relH = Math.abs(dh) / (origH || 1);
@@ -463,9 +474,16 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
             if (aspectRatio !== null) dw = Math.round((origH + dh) * aspectRatio) - origW;
           }
 
-          // Step 4: compute position offsets from finalized dw/dh
-          const dx = isLeft ? Math.round(-(1 - cr) * dw) : Math.round(-cl * dw);
-          const dy = isTop ? Math.round(-(1 - cb) * dh) : Math.round(-ct * dh);
+          // Step 4: compute position offsets
+          let dx: number, dy: number;
+          if (fromCenter) {
+            // Resize from center: position shifts by half the size change
+            dx = Math.round(-dw / 2);
+            dy = Math.round(-dh / 2);
+          } else {
+            dx = isLeft ? Math.round(-(1 - cr) * dw) : Math.round(-cl * dw);
+            dy = isTop ? Math.round(-(1 - cb) * dh) : Math.round(-ct * dh);
+          }
 
           onResize(
             (origX + dx) - element.position.x,
@@ -791,31 +809,47 @@ function GroupBox({
           const dx = (me.clientX - startX) / scale;
           const dy = (me.clientY - startY) / scale;
 
-          let anchorX: number, anchorY: number, newW: number, newH: number;
+          const fromCenter = me.ctrlKey || me.metaKey;
+          const lockRatio = me.shiftKey;
+
+          let newW: number, newH: number;
           switch (corner) {
-            case "se":
-              anchorX = ob.x; anchorY = ob.y;
-              newW = ob.w + dx; newH = ob.h + dy;
-              break;
-            case "sw":
-              anchorX = ob.x + ob.w; anchorY = ob.y;
-              newW = ob.w - dx; newH = ob.h + dy;
-              break;
-            case "ne":
-              anchorX = ob.x; anchorY = ob.y + ob.h;
-              newW = ob.w + dx; newH = ob.h - dy;
-              break;
-            case "nw":
-            default:
-              anchorX = ob.x + ob.w; anchorY = ob.y + ob.h;
-              newW = ob.w - dx; newH = ob.h - dy;
-              break;
+            case "se": newW = ob.w + dx; newH = ob.h + dy; break;
+            case "sw": newW = ob.w - dx; newH = ob.h + dy; break;
+            case "ne": newW = ob.w + dx; newH = ob.h - dy; break;
+            case "nw": default: newW = ob.w - dx; newH = ob.h - dy; break;
+          }
+
+          // Shift: lock aspect ratio
+          if (lockRatio) {
+            const ratio = ob.w / ob.h;
+            const relW = Math.abs(newW - ob.w) / ob.w;
+            const relH = Math.abs(newH - ob.h) / ob.h;
+            if (relW >= relH) {
+              newH = newW / ratio;
+            } else {
+              newW = newH * ratio;
+            }
           }
 
           newW = Math.max(20, newW);
           newH = Math.max(20, newH);
           const sx = newW / ob.w;
           const sy = newH / ob.h;
+
+          // Ctrl: resize from center, otherwise from opposite corner
+          let anchorX: number, anchorY: number;
+          if (fromCenter) {
+            anchorX = ob.x + ob.w / 2;
+            anchorY = ob.y + ob.h / 2;
+          } else {
+            switch (corner) {
+              case "se": anchorX = ob.x; anchorY = ob.y; break;
+              case "sw": anchorX = ob.x + ob.w; anchorY = ob.y; break;
+              case "ne": anchorX = ob.x; anchorY = ob.y + ob.h; break;
+              case "nw": default: anchorX = ob.x + ob.w; anchorY = ob.y + ob.h; break;
+            }
+          }
 
           for (const orig of origMembers) {
             const patch: Partial<SlideElement> = {
