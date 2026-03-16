@@ -347,7 +347,6 @@ export interface SharedComponent {
   id: string;
   name: string;
   elements: SlideElement[];
-  size: Size;
 }
 
 // ----- Deck (top-level) -----

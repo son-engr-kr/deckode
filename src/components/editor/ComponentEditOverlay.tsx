@@ -1,7 +1,8 @@
-import { useEffect, useRef, useCallback, memo } from "react";
+import { useEffect, useRef, useCallback, useState, memo } from "react";
 import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
 import type { Slide, SlideElement, ReferenceElement } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
+import { computeBounds } from "@/utils/bounds";
 import { ElementRenderer } from "@/components/renderer/ElementRenderer";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -24,10 +25,16 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
     (el) => el.type === "reference" && (el as ReferenceElement).componentId === componentId,
   ) as ReferenceElement | undefined;
 
+  // Freeze bounds at mount so dragging doesn't cause scale jumps
+  const [frozenBounds] = useState(() => {
+    const comp = useDeckStore.getState().deck?.components?.[componentId];
+    return comp ? computeBounds(comp.elements) : { x: 0, y: 0, w: 0, h: 0 };
+  });
+
   const offsetX = refEl?.position.x ?? 0;
   const offsetY = refEl?.position.y ?? 0;
-  const scaleX = refEl && component ? refEl.size.w / component.size.w : 1;
-  const scaleY = refEl && component ? refEl.size.h / component.size.h : 1;
+  const scaleX = refEl && frozenBounds.w > 0 ? refEl.size.w / frozenBounds.w : 1;
+  const scaleY = refEl && frozenBounds.h > 0 ? refEl.size.h / frozenBounds.h : 1;
 
   // Escape to exit
   useEffect(() => {
@@ -46,8 +53,8 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
   // Compute the component area bounds (in canvas coordinates) for the cutout
   const compLeft = offsetX;
   const compTop = offsetY;
-  const compW = refEl ? refEl.size.w : component.size.w;
-  const compH = refEl ? refEl.size.h : component.size.h;
+  const compW = refEl ? refEl.size.w : frozenBounds.w;
+  const compH = refEl ? refEl.size.h : frozenBounds.h;
 
   // CSS clip-path to cut out the component area from the dim overlay
   const clipPath = `polygon(
@@ -95,6 +102,8 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
                 element={child}
                 offsetX={offsetX}
                 offsetY={offsetY}
+                originX={frozenBounds.x}
+                originY={frozenBounds.y}
                 scaleX={scaleX}
                 scaleY={scaleY}
                 isSelected={isSelected}
@@ -136,6 +145,8 @@ const ComponentElementBox = memo(function ComponentElementBox({
   element,
   offsetX,
   offsetY,
+  originX,
+  originY,
   scaleX,
   scaleY,
   isSelected,
@@ -146,6 +157,8 @@ const ComponentElementBox = memo(function ComponentElementBox({
   element: SlideElement;
   offsetX: number;
   offsetY: number;
+  originX: number;
+  originY: number;
   scaleX: number;
   scaleY: number;
   isSelected: boolean;
@@ -211,9 +224,9 @@ const ComponentElementBox = memo(function ComponentElementBox({
     [element.position.x, element.position.y, scale, scaleX, scaleY, onSelect, onMove],
   );
 
-  // Position the element at reference offset + scaled component-local position
-  const left = offsetX + element.position.x * scaleX;
-  const top = offsetY + element.position.y * scaleY;
+  // Position the element at reference offset + scaled component-local position (minus origin)
+  const left = offsetX + (element.position.x - originX) * scaleX;
+  const top = offsetY + (element.position.y - originY) * scaleY;
   const width = element.size.w * scaleX;
   const height = element.size.h * scaleY;
 

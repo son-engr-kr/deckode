@@ -1,5 +1,6 @@
 import { useDeckStore } from "@/stores/deckStore";
 import type { ReferenceElement as ReferenceElementType } from "@/types/deck";
+import { computeBounds } from "@/utils/bounds";
 import { ElementRenderer } from "../ElementRenderer";
 
 interface Props {
@@ -33,27 +34,30 @@ export function ReferenceElementRenderer({ element, editorMode }: Props) {
     );
   }
 
-  const scaleX = element.size.w / component.size.w;
-  const scaleY = element.size.h / component.size.h;
+  const bounds = computeBounds(component.elements);
+  const scaleX = bounds.w > 0 ? element.size.w / bounds.w : 1;
+  const scaleY = bounds.h > 0 ? element.size.h / bounds.h : 1;
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative", overflow: "hidden" }}>
       <div
         style={{
-          width: component.size.w,
-          height: component.size.h,
+          width: bounds.w,
+          height: bounds.h,
           transform: `scale(${scaleX}, ${scaleY})`,
           transformOrigin: "top left",
           position: "relative",
         }}
       >
-        {component.elements.map((child) => (
-          <ElementRenderer
-            key={child.id}
-            element={child}
-            editorMode={editorMode}
-          />
-        ))}
+        <div style={{ position: "relative", left: -bounds.x, top: -bounds.y }}>
+          {component.elements.map((child) => (
+            <ElementRenderer
+              key={child.id}
+              element={child}
+              editorMode={editorMode}
+            />
+          ))}
+        </div>
       </div>
       {/* Badge to indicate shared component in editor */}
       {editorMode && (

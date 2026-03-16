@@ -249,8 +249,7 @@ A group can be promoted to a **shared component** — a reusable set of elements
   "elements": [
     { "id": "e10", "type": "shape", "shape": "rectangle", "position": { "x": 0, "y": 0 }, "size": { "w": 200, "h": 60 }, "style": { "fill": "#3b82f6" } },
     { "id": "e11", "type": "text", "content": "Title", "position": { "x": 10, "y": 15 }, "size": { "w": 180, "h": 30 }, "style": { "color": "#ffffff" } }
-  ],
-  "size": { "w": 200, "h": 60 }
+  ]
 }
 ```
 
@@ -259,7 +258,8 @@ A group can be promoted to a **shared component** — a reusable set of elements
 | `id` | string | yes | Unique component ID (`"comp-"` prefix) |
 | `name` | string | yes | Human-readable name |
 | `elements` | array | yes | Child elements with positions relative to (0,0) |
-| `size` | object | yes | Bounding box `{ "w", "h" }` of the component |
+
+The component's bounding box is computed dynamically from its elements — no stored `size` field needed.
 
 #### Referencing a Component
 

@@ -6,6 +6,7 @@ import type { Animation, Comment, Deck, DeckTheme, SharedComponent, Slide, Slide
 import type { FileSystemAdapter } from "@/adapters/types";
 import { nextElementId, syncCounters } from "@/utils/id";
 import { assert } from "@/utils/assert";
+import { computeBounds } from "@/utils/bounds";
 import { setTabProject } from "@/utils/handleStore";
 
 // -- Session-persisted slide index helpers --
@@ -114,16 +115,7 @@ export function setDeckDragging(active: boolean) {
   isDragging = active;
 }
 
-function computeBounds(elements: SlideElement[]): { x: number; y: number; w: number; h: number } {
-  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
-  for (const el of elements) {
-    x1 = Math.min(x1, el.position.x);
-    y1 = Math.min(y1, el.position.y);
-    x2 = Math.max(x2, el.position.x + el.size.w);
-    y2 = Math.max(y2, el.position.y + el.size.h);
-  }
-  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
-}
+// computeBounds is imported from @/utils/bounds
 
 function assertNoLineRotation(el: { type?: string; rotation?: number }) {
   assert(
@@ -232,7 +224,7 @@ export const useDeckStore = create<DeckState>()(
             return;
           }
 
-          // GC: remove unused components before serialization (on a deep clone)
+          // GC: remove unused components + strip legacy `size` field before serialization
           let deckToSave = get().deck!;
           if (deckToSave.components && Object.keys(deckToSave.components).length > 0) {
             const usedIds = new Set<string>();
@@ -243,10 +235,14 @@ export const useDeckStore = create<DeckState>()(
             }
             const allIds = Object.keys(deckToSave.components);
             const unused = allIds.filter((id) => !usedIds.has(id));
-            if (unused.length > 0) {
-              deckToSave = JSON.parse(JSON.stringify(deckToSave));
-              for (const id of unused) delete deckToSave.components![id];
-              if (Object.keys(deckToSave.components!).length === 0) delete deckToSave.components;
+            // Always clone to strip legacy `size` from components
+            deckToSave = JSON.parse(JSON.stringify(deckToSave));
+            for (const id of unused) delete deckToSave.components![id];
+            if (Object.keys(deckToSave.components!).length === 0) {
+              delete deckToSave.components;
+            } else {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              for (const comp of Object.values(deckToSave.components!)) delete (comp as any).size;
             }
           }
 
@@ -647,7 +643,6 @@ export const useDeckStore = create<DeckState>()(
               id: compId,
               name: `Component ${compId.slice(5)}`,
               elements: compElements,
-              size: { w: bounds.w, h: bounds.h },
             };
 
             if (!state.deck.components) state.deck.components = {};
@@ -681,15 +676,16 @@ export const useDeckStore = create<DeckState>()(
             assert(comp !== undefined, "Component not found");
 
             // Inline elements with new IDs at the reference's position
-            const scaleX = refEl.size.w / comp.size.w;
-            const scaleY = refEl.size.h / comp.size.h;
+            const compBounds = computeBounds(comp.elements);
+            const scaleX = compBounds.w > 0 ? refEl.size.w / compBounds.w : 1;
+            const scaleY = compBounds.h > 0 ? refEl.size.h / compBounds.h : 1;
             const newIds: string[] = [];
             const inlined: SlideElement[] = comp.elements.map((el) => {
               const clone = JSON.parse(JSON.stringify(el)) as SlideElement;
               clone.id = nextElementId();
               clone.position = {
-                x: refEl.position.x + el.position.x * scaleX,
-                y: refEl.position.y + el.position.y * scaleY,
+                x: refEl.position.x + (el.position.x - compBounds.x) * scaleX,
+                y: refEl.position.y + (el.position.y - compBounds.y) * scaleY,
               };
               clone.size = {
                 w: el.size.w * scaleX,
@@ -712,12 +708,13 @@ export const useDeckStore = create<DeckState>()(
             const comp = state.deck.components?.[componentId];
             assert(comp !== undefined, `Component ${componentId} not found`);
 
+            const compBounds = computeBounds(comp.elements);
             const refEl: ReferenceElement = {
               id: nextElementId(),
               type: "reference",
               componentId,
               position: position ?? { x: 100, y: 100 },
-              size: { w: comp.size.w, h: comp.size.h },
+              size: { w: compBounds.w, h: compBounds.h },
             };
             slide.elements.push(refEl);
             state.selectedElementIds = [refEl.id];
@@ -743,30 +740,11 @@ export const useDeckStore = create<DeckState>()(
               return;
             }
 
-            // Recalculate bounding box and normalize positions to (0,0)
+            // Normalize element positions to (0,0) origin for clean JSON
             const bounds = computeBounds(comp.elements);
             for (const el of comp.elements) {
               el.position.x -= bounds.x;
               el.position.y -= bounds.y;
-            }
-
-            // Scale all reference elements proportionally to the size change
-            const oldW = comp.size.w;
-            const oldH = comp.size.h;
-            comp.size = { w: bounds.w, h: bounds.h };
-            if (oldW > 0 && oldH > 0 && (bounds.w !== oldW || bounds.h !== oldH)) {
-              const ratioW = bounds.w / oldW;
-              const ratioH = bounds.h / oldH;
-              for (const slide of state.deck.slides) {
-                for (const el of slide.elements) {
-                  if (el.type === "reference" && (el as ReferenceElement).componentId === compId) {
-                    el.size = {
-                      w: Math.round(el.size.w * ratioW),
-                      h: Math.round(el.size.h * ratioH),
-                    };
-                  }
-                }
-              }
             }
 
             state.editingComponentId = null;
