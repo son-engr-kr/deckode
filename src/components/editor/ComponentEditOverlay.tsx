@@ -3,6 +3,7 @@ import { useDeckStore, setDeckDragging } from "@/stores/deckStore";
 import type { Slide, SlideElement, ReferenceElement } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import { ElementRenderer } from "@/components/renderer/ElementRenderer";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 interface Props {
   componentId: string;
@@ -12,6 +13,7 @@ interface Props {
 
 export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
   const component = useDeckStore((s) => s.deck?.components?.[componentId]);
+  const theme = useDeckStore((s) => s.deck?.theme);
   const exitComponentEditMode = useDeckStore((s) => s.exitComponentEditMode);
   const selectedElementIds = useDeckStore((s) => s.selectedElementIds);
   const selectElement = useDeckStore((s) => s.selectElement);
@@ -41,9 +43,25 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
 
   if (!component) return null;
 
+  // Compute the component area bounds (in canvas coordinates) for the cutout
+  const compLeft = offsetX;
+  const compTop = offsetY;
+  const compW = refEl ? refEl.size.w : component.size.w;
+  const compH = refEl ? refEl.size.h : component.size.h;
+
+  // CSS clip-path to cut out the component area from the dim overlay
+  const clipPath = `polygon(
+    0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%,
+    ${compLeft}px ${compTop}px,
+    ${compLeft}px ${compTop + compH}px,
+    ${compLeft + compW}px ${compTop + compH}px,
+    ${compLeft + compW}px ${compTop}px,
+    ${compLeft}px ${compTop}px
+  )`;
+
   return (
     <>
-      {/* Dim layer over entire canvas */}
+      {/* Dim layer with cutout over component area */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -52,6 +70,7 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
           width: CANVAS_WIDTH,
           height: CANVAS_HEIGHT,
           background: "rgba(0, 0, 0, 0.5)",
+          clipPath,
           zIndex: 10,
         }}
       />
@@ -67,30 +86,32 @@ export function ComponentEditOverlay({ componentId, slide, scale }: Props) {
           pointerEvents: "none",
         }}
       >
-        {component.elements.map((child) => {
-          const isSelected = selectedElementIds.includes(child.id);
-          return (
-            <ComponentElementBox
-              key={child.id}
-              element={child}
-              offsetX={offsetX}
-              offsetY={offsetY}
-              scaleX={scaleX}
-              scaleY={scaleY}
-              isSelected={isSelected}
-              scale={scale}
-              onSelect={() => selectElement(child.id)}
-              onMove={(dx, dy) => {
-                updateComponentElement(componentId, child.id, {
-                  position: {
-                    x: child.position.x + dx,
-                    y: child.position.y + dy,
-                  },
-                } as Partial<SlideElement>);
-              }}
-            />
-          );
-        })}
+        <ThemeProvider theme={theme ?? {}}>
+          {component.elements.map((child) => {
+            const isSelected = selectedElementIds.includes(child.id);
+            return (
+              <ComponentElementBox
+                key={child.id}
+                element={child}
+                offsetX={offsetX}
+                offsetY={offsetY}
+                scaleX={scaleX}
+                scaleY={scaleY}
+                isSelected={isSelected}
+                scale={scale}
+                onSelect={() => selectElement(child.id)}
+                onMove={(dx, dy) => {
+                  updateComponentElement(componentId, child.id, {
+                    position: {
+                      x: child.position.x + dx,
+                      y: child.position.y + dy,
+                    },
+                  } as Partial<SlideElement>);
+                }}
+              />
+            );
+          })}
+        </ThemeProvider>
       </div>
       {/* Banner */}
       <div
@@ -206,7 +227,7 @@ const ComponentElementBox = memo(function ComponentElementBox({
         height,
         pointerEvents: "auto",
         cursor: "move",
-        outline: isSelected ? "2px solid #6366f1" : "1px solid rgba(99,102,241,0.3)",
+        outline: isSelected ? "2px solid #6366f1" : "1px solid rgba(99,102,241,0.4)",
         outlineOffset: -1,
       }}
       onMouseDown={handleMouseDown}
