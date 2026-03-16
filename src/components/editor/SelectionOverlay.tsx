@@ -398,27 +398,7 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
       const origH = element.size.h;
       let rafId = 0;
 
-      // Determine natural aspect ratio for types that always lock ratio
-      let naturalRatio: number | null = null;
-      if (element.type === "image" || element.type === "video") {
-        const container = document.querySelector(`[data-element-id="${element.id}"]`);
-        if (element.type === "image") {
-          const img = container?.querySelector("img");
-          if (img && img.naturalWidth && img.naturalHeight) {
-            naturalRatio = img.naturalWidth / img.naturalHeight;
-          }
-        } else {
-          const video = container?.querySelector("video");
-          if (video && video.videoWidth && video.videoHeight) {
-            naturalRatio = video.videoWidth / video.videoHeight;
-          }
-        }
-        if (!naturalRatio) naturalRatio = origW / origH;
-      }
-      // Reference elements always lock aspect ratio
-      if (element.type === "reference") {
-        naturalRatio = origW / origH;
-      }
+      // No forced ratio lock — Shift key enables ratio lock for all types
 
       const handleMouseUp = () => {
         cancelAnimationFrame(rafId);
@@ -437,11 +417,9 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
           const isLeft = corner === "nw" || corner === "sw";
           const isTop = corner === "nw" || corner === "ne";
 
-          // Shift = lock aspect ratio (always on for image/video/reference)
-          const lockRatio = me.shiftKey || naturalRatio !== null;
-          const aspectRatio = lockRatio
-            ? (naturalRatio ?? origW / origH)
-            : null;
+          // Shift = lock aspect ratio
+          const lockRatio = me.shiftKey;
+          const aspectRatio = lockRatio ? origW / origH : null;
           // Ctrl = resize from center
           const fromCenter = me.ctrlKey || me.metaKey;
 
