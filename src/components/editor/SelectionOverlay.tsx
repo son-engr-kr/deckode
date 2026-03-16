@@ -301,6 +301,7 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
         }
         return;
       }
+      if (e.button === 1) return; // middle-click: let it bubble for pan
       if (e.button !== 0) {
         e.stopPropagation();
         return;
@@ -388,6 +389,7 @@ const InteractiveElement = memo(function InteractiveElement({ element, isSelecte
 
   const handleResizeMouseDown = useCallback(
     (e: React.MouseEvent, corner: Corner) => {
+      if (e.button === 1) return; // middle-click: let it bubble for pan
       e.stopPropagation();
       setDeckDragging(true);
       const startX = e.clientX;

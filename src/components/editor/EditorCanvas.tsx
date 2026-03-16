@@ -16,6 +16,9 @@ interface MarqueeRect {
   endY: number;
 }
 
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 5;
+
 export function EditorCanvas() {
   const slide = useDeckStore((s) => s.deck?.slides[s.currentSlideIndex]);
   const theme = useDeckStore((s) => s.deck?.theme);
@@ -62,26 +65,124 @@ export function EditorCanvas() {
     return () => timers.forEach(clearTimeout);
   }, [previewFlashTimes, previewKey]);
 
+  // ---- Zoom / Pan state ----
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.8);
+  const [baseScale, setBaseScale] = useState(0.8);
+  const [zoom, setZoom] = useState(1);
+  const [panX, setPanX] = useState(0);
+  const [panY, setPanY] = useState(0);
+  const [isPanning, setIsPanning] = useState(false);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+
+  const scale = baseScale * zoom;
+
+  // Ref for reading current view state in event handlers (avoids stale closures)
+  const viewRef = useRef({ zoom, panX, panY, baseScale });
+  viewRef.current = { zoom, panX, panY, baseScale };
+
+  const clampPan = useCallback((px: number, py: number, z: number, bs: number) => {
+    const s = bs * z;
+    const cw = CANVAS_WIDTH * s;
+    const ch = CANVAS_HEIGHT * s;
+    const container = containerRef.current;
+    if (!container) return { px: 0, py: 0 };
+    const containerW = container.clientWidth;
+    const containerH = container.clientHeight;
+    const maxPx = Math.max(0, (cw - containerW) / 2);
+    const maxPy = Math.max(0, (ch - containerH) / 2);
+    return {
+      px: cw <= containerW ? 0 : Math.min(Math.max(px, -maxPx), maxPx),
+      py: ch <= containerH ? 0 : Math.min(Math.max(py, -maxPy), maxPy),
+    };
+  }, []);
 
   const updateScale = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
     const padding = 40;
-    const availW = container.clientWidth - padding * 2;
-    const availH = container.clientHeight - padding * 2;
-    const scaleX = availW / CANVAS_WIDTH;
-    const scaleY = availH / CANVAS_HEIGHT;
-    setScale(Math.min(scaleX, scaleY, 1.5));
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    setContainerSize({ w: cw, h: ch });
+    const availW = cw - padding * 2;
+    const availH = ch - padding * 2;
+    setBaseScale(Math.min(availW / CANVAS_WIDTH, availH / CANVAS_HEIGHT, 1.5));
   }, []);
 
   useEffect(() => {
     updateScale();
-    window.addEventListener("resize", updateScale);
-    return () => window.removeEventListener("resize", updateScale);
+    const container = containerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver(() => updateScale());
+    ro.observe(container);
+    return () => ro.disconnect();
   }, [updateScale]);
+
+  // Zoom: Ctrl+Wheel toward cursor position
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+
+      const { zoom: z, panX: px, panY: py, baseScale: bs } = viewRef.current;
+      const s = bs * z;
+      const rect = container.getBoundingClientRect();
+      const cursorX = e.clientX - rect.left;
+      const cursorY = e.clientY - rect.top;
+      const containerW = container.clientWidth;
+      const containerH = container.clientHeight;
+      const canvasW = CANVAS_WIDTH * s;
+      const canvasH = CANVAS_HEIGHT * s;
+
+      // Current canvas position in container
+      const centerX = (containerW - canvasW) / 2;
+      const centerY = (containerH - canvasH) / 2;
+      const curLeft = centerX + px;
+      const curTop = centerY + py;
+
+      // Canvas point under cursor (in 960×540 space)
+      const cpx = (cursorX - curLeft) / s;
+      const cpy = (cursorY - curTop) / s;
+
+      // Compute new zoom
+      const factor = e.deltaY > 0 ? 1 / 1.1 : 1.1;
+      const newZoom = Math.min(Math.max(z * factor, MIN_ZOOM), MAX_ZOOM);
+      const newScale = bs * newZoom;
+
+      // Adjust pan so the same canvas point stays under cursor
+      const newCanvasW = CANVAS_WIDTH * newScale;
+      const newCanvasH = CANVAS_HEIGHT * newScale;
+      const newCenterX = (containerW - newCanvasW) / 2;
+      const newCenterY = (containerH - newCanvasH) / 2;
+      const rawPanX = (cursorX - cpx * newScale) - newCenterX;
+      const rawPanY = (cursorY - cpy * newScale) - newCenterY;
+
+      const clamped = clampPan(rawPanX, rawPanY, newZoom, bs);
+      setZoom(newZoom);
+      setPanX(clamped.px);
+      setPanY(clamped.py);
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, [clampPan]);
+
+  // Reset zoom/pan: Ctrl+0
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "0") {
+        e.preventDefault();
+        setZoom(1);
+        setPanX(0);
+        setPanY(0);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   // Clipboard paste: add image/video/elements from Ctrl+V
   useEffect(() => {
@@ -262,9 +363,46 @@ export function EditorCanvas() {
 
   if (!slide) return null;
 
-  // Start marquee selection or deselect when clicking empty canvas space.
+  // ---- Compute canvas position (centered + pan, clamped) ----
+  const canvasW = CANVAS_WIDTH * scale;
+  const canvasH = CANVAS_HEIGHT * scale;
+  const maxPanXD = Math.max(0, (canvasW - containerSize.w) / 2);
+  const maxPanYD = Math.max(0, (canvasH - containerSize.h) / 2);
+  const displayPanX = canvasW <= containerSize.w ? 0 : Math.min(Math.max(panX, -maxPanXD), maxPanXD);
+  const displayPanY = canvasH <= containerSize.h ? 0 : Math.min(Math.max(panY, -maxPanYD), maxPanYD);
+  const canvasLeft = (containerSize.w - canvasW) / 2 + displayPanX;
+  const canvasTop = (containerSize.h - canvasH) / 2 + displayPanY;
+
+  // Start marquee selection, pan, or deselect when clicking canvas area.
   // InteractiveElement's handleMouseDown calls stopPropagation, so element clicks never reach here.
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    // Middle mouse: pan
+    if (e.button === 1) {
+      e.preventDefault();
+      setIsPanning(true);
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const { panX: startPanX, panY: startPanY, zoom: z, baseScale: bs } = viewRef.current;
+
+      const handleMove = (me: MouseEvent) => {
+        const rawPx = startPanX + (me.clientX - startX);
+        const rawPy = startPanY + (me.clientY - startY);
+        const clamped = clampPan(rawPx, rawPy, z, bs);
+        setPanX(clamped.px);
+        setPanY(clamped.py);
+      };
+
+      const handleUp = () => {
+        setIsPanning(false);
+        window.removeEventListener("mousemove", handleMove);
+        window.removeEventListener("mouseup", handleUp);
+      };
+
+      window.addEventListener("mousemove", handleMove);
+      window.addEventListener("mouseup", handleUp);
+      return;
+    }
+
     if (e.button !== 0) return;
 
     const wrapper = canvasWrapperRef.current;
@@ -481,15 +619,22 @@ export function EditorCanvas() {
   return (
     <div
       ref={containerRef}
-      className="flex-1 relative flex items-center justify-center bg-zinc-900 overflow-hidden"
+      className="flex-1 relative bg-zinc-900 overflow-hidden"
+      style={{ cursor: isPanning ? "grabbing" : undefined }}
       onMouseDown={handleCanvasMouseDown}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onAuxClick={(e) => { if (e.button === 1) e.preventDefault(); }}
     >
       <div
         ref={canvasWrapperRef}
-        className="relative"
-        style={{ userSelect: "none", WebkitUserDrag: "none" } as React.CSSProperties}
+        className="absolute"
+        style={{
+          left: canvasLeft,
+          top: canvasTop,
+          userSelect: "none",
+          WebkitUserDrag: "none",
+        } as React.CSSProperties}
         onDragStart={(e) => {
           // Prevent native HTML drag from rendered elements (images, text, SVGs).
           // External file drops still work because they originate outside the window.
@@ -554,6 +699,12 @@ export function EditorCanvas() {
           </div>
         );
       })()}
+      {/* Zoom indicator */}
+      {zoom !== 1 && (
+        <div className="absolute bottom-3 right-3 px-2 py-1 rounded bg-black/50 text-zinc-300 text-xs tabular-nums pointer-events-none">
+          {Math.round(zoom * 100)}%
+        </div>
+      )}
     </div>
   );
 }
