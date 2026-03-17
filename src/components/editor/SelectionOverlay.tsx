@@ -9,16 +9,10 @@ import { WaypointOverlay } from "./WaypointOverlay";
 import type { ShapeElement as ShapeElementType } from "@/types/deck";
 
 import { setComponentClipboard } from "./clipboard";
+import { computeBounds } from "@/utils/bounds";
 
 function getGroupBounds(elements: SlideElement[]) {
-  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
-  for (const el of elements) {
-    x1 = Math.min(x1, el.position.x);
-    y1 = Math.min(y1, el.position.y);
-    x2 = Math.max(x2, el.position.x + el.size.w);
-    y2 = Math.max(y2, el.position.y + el.size.h);
-  }
-  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+  return computeBounds(elements);
 }
 
 interface Props {
