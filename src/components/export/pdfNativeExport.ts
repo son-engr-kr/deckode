@@ -17,6 +17,8 @@ import type {
   TikZElement,
   ReferenceElement,
   Slide,
+  VideoElement as VideoElementType,
+  VideoStyle,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
@@ -27,6 +29,7 @@ import {
   isPdfSrc,
   rasterizePdfToBase64,
   cropImageViaCanvas,
+  captureVideoFirstFrame,
   hexToRgb,
   DEFAULT_BG,
   DEFAULT_TEXT_COLOR,
@@ -942,7 +945,7 @@ async function drawImage(
 // Table → PDF (drawTable)
 // ========================================================================
 
-function drawTable(doc: jsPDF, el: TableElement, deck: Deck): void {
+async function drawTable(doc: jsPDF, el: TableElement, deck: Deck): Promise<void> {
   const s = resolveStyle<TableStyle>(deck.theme?.table, el.style);
   const fontSize = s.fontSize ?? DEFAULT_TABLE_SIZE;
   const color = s.color ?? "#1e293b";
@@ -971,13 +974,39 @@ function drawTable(doc: jsPDF, el: TableElement, deck: Deck): void {
   doc.setFont("helvetica", "bold");
   setTextColor(doc, hColor);
 
+  // Helper: draw cell text, rasterizing if it contains inline math
+  const drawCellText = async (
+    text: string,
+    cx: number,
+    cy: number,
+    cellColor: string,
+  ) => {
+    if (text.includes("$")) {
+      const html = rasterInlineHtml(text);
+      const img = await rasterizeHtmlToImage(
+        `<div style="font-size:${fontSize}px;color:${cellColor};font-family:helvetica,sans-serif;white-space:nowrap">${html}</div>`,
+        colWidth - cellPadding * 2,
+        cellColor,
+      );
+      if (img) {
+        let imgW = img.width;
+        let imgH = img.height;
+        const targetH = fontSize * 1.2;
+        if (imgH > targetH) {
+          const scale = targetH / imgH;
+          imgW *= scale;
+          imgH *= scale;
+        }
+        doc.addImage(img.dataUrl, "PNG", cx + cellPadding, cy - imgH * 0.5, imgW, imgH);
+        return;
+      }
+    }
+    doc.text(text, cx + cellPadding, cy + fontSize / 3);
+  };
+
   for (let ci = 0; ci < colCount; ci++) {
     const cellX = x + ci * colWidth;
-    doc.text(
-      el.columns[ci] ?? "",
-      cellX + cellPadding,
-      y + rowHeight / 2 + fontSize / 3,
-    );
+    await drawCellText(el.columns[ci] ?? "", cellX, y + rowHeight / 2, hColor);
     // Column separator
     if (ci > 0) {
       doc.line(cellX, y, cellX, y + h);
@@ -1003,11 +1032,7 @@ function drawTable(doc: jsPDF, el: TableElement, deck: Deck): void {
     for (let ci = 0; ci < colCount; ci++) {
       const cellX = x + ci * colWidth;
       const cellText = el.rows[ri]?.[ci] ?? "";
-      doc.text(
-        cellText,
-        cellX + cellPadding,
-        rowY + rowHeight / 2 + fontSize / 3,
-      );
+      await drawCellText(cellText, cellX, rowY + rowHeight / 2, color);
     }
   }
 }
@@ -1043,21 +1068,46 @@ async function drawTikZ(
 // Video → PDF (placeholder)
 // ========================================================================
 
-function drawVideo(doc: jsPDF, el: SlideElement): void {
+async function drawVideo(
+  doc: jsPDF,
+  el: VideoElementType,
+  deck: Deck,
+  adapter: FileSystemAdapter,
+): Promise<void> {
   const { x, y } = el.position;
   const { w, h } = el.size;
+  const s = resolveStyle<VideoStyle>(deck.theme?.video, el.style);
 
-  setFillColor(doc, "#1e1e1e");
-  doc.rect(x, y, w, h, "F");
+  const resolved = await resolveAssetSrc(el.src, adapter);
+  const frame = await captureVideoFirstFrame(resolved);
 
-  setDrawColor(doc, "#666666");
-  doc.setLineWidth(1);
-  doc.rect(x, y, w, h, "S");
+  if (!frame) {
+    setFillColor(doc, "#1e1e1e");
+    doc.rect(x, y, w, h, "F");
+    setDrawColor(doc, "#666666");
+    doc.setLineWidth(1);
+    doc.rect(x, y, w, h, "S");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    setTextColor(doc, "#999999");
+    doc.text("[Video]", x + w / 2, y + h / 2, { align: "center" });
+    return;
+  }
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(14);
-  setTextColor(doc, "#999999");
-  doc.text("[Video]", x + w / 2, y + h / 2, { align: "center" });
+  const crop = s.crop;
+  const hasCrop = crop && (crop.top || crop.right || crop.bottom || crop.left);
+  const objectFit = s.objectFit ?? "contain";
+
+  if (hasCrop) {
+    const cropped = await cropImageViaCanvas(frame, w, h, objectFit, crop);
+    const cx = x + w * crop.left;
+    const cy = y + h * crop.top;
+    const cw = w * (1 - crop.left - crop.right);
+    const ch = h * (1 - crop.top - crop.bottom);
+    doc.addImage(cropped, "PNG", cx, cy, cw, ch);
+  } else {
+    doc.addImage(frame, "JPEG", x, y, w, h);
+  }
 }
 
 // ========================================================================
@@ -1177,7 +1227,7 @@ async function renderSlide(
         await drawImage(doc, el, deck, adapter);
         break;
       case "table":
-        drawTable(doc, el, deck);
+        await drawTable(doc, el, deck);
         break;
       case "tikz":
         await drawTikZ(doc, el, deck, adapter);
@@ -1186,7 +1236,7 @@ async function renderSlide(
         drawMermaidPlaceholder(doc, el);
         break;
       case "video":
-        drawVideo(doc, el);
+        await drawVideo(doc, el as VideoElementType, deck, adapter);
         break;
       case "custom":
         drawCustomPlaceholder(doc, el);

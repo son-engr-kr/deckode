@@ -20,6 +20,8 @@ import type {
   TikZElement,
   MermaidElement,
   ReferenceElement,
+  VideoElement as VideoElementType,
+  VideoStyle,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
@@ -40,6 +42,7 @@ import {
   DEFAULT_CODE_RADIUS,
   DEFAULT_CODE_THEME,
   DEFAULT_TABLE_SIZE,
+  captureVideoFirstFrame,
 } from "@/utils/exportUtils";
 import { computeBounds } from "@/utils/bounds";
 import { resolveMarkers } from "@/utils/lineMarkers";
@@ -362,7 +365,7 @@ async function buildElement(
     case "mermaid":
       return buildMermaid(el);
     case "video":
-      return buildVideo();
+      return await buildVideo(el as VideoElementType, deck, adapter);
     case "reference":
       return await buildReference(el as ReferenceElement, deck, adapter);
     default:
@@ -756,7 +759,7 @@ function buildTable(el: TableElement, deck: Deck): HTMLElement {
   for (const col of el.columns) {
     const th = document.createElement("th");
     th.style.cssText = `background:${hBg};color:${hColor};padding:6px 10px;border-bottom:1px solid ${bColor};text-align:left;font-weight:600;white-space:nowrap`;
-    th.textContent = col;
+    th.innerHTML = inlineHtml(col);
     hRow.appendChild(th);
   }
   thead.appendChild(hRow);
@@ -770,7 +773,7 @@ function buildTable(el: TableElement, deck: Deck): HTMLElement {
     for (let ci = 0; ci < el.columns.length; ci++) {
       const td = document.createElement("td");
       td.style.cssText = `padding:5px 10px;border-bottom:${isLast ? "none" : `1px solid ${bColor}`}`;
-      td.textContent = el.rows[ri]?.[ci] ?? "";
+      td.innerHTML = inlineHtml(el.rows[ri]?.[ci] ?? "");
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
@@ -868,11 +871,38 @@ function buildMermaid(el: MermaidElement): HTMLElement {
   return d;
 }
 
-// ---- Video (placeholder) ----
+// ---- Video (first frame or placeholder) ----
 
-function buildVideo(): HTMLElement {
+async function buildVideo(
+  el: VideoElementType,
+  deck: Deck,
+  adapter: FileSystemAdapter,
+): Promise<HTMLElement> {
+  const s = resolveStyle<VideoStyle>(deck.theme?.video, el.style);
+  const resolved = await resolveAssetSrc(el.src, adapter);
+  const frame = await captureVideoFirstFrame(resolved);
+
+  if (!frame) {
+    const d = document.createElement("div");
+    d.style.cssText = `width:100%;height:100%;background:#1e1e1e;border:1px solid #666;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;font-family:${DEFAULT_TEXT_FONT}`;
+    d.textContent = "[Video]";
+    return d;
+  }
+
   const d = document.createElement("div");
-  d.style.cssText = `width:100%;height:100%;background:#1e1e1e;border:1px solid #666;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;font-family:${DEFAULT_TEXT_FONT}`;
-  d.textContent = "[Video]";
+  d.style.cssText = "width:100%;height:100%";
+
+  const img = document.createElement("img");
+  const crop = s.crop;
+  const hasCrop = crop && (crop.top || crop.right || crop.bottom || crop.left);
+  img.style.cssText = [
+    "width:100%",
+    "height:100%",
+    `object-fit:${s.objectFit ?? "contain"}`,
+    `border-radius:${s.borderRadius ?? 0}px`,
+    hasCrop ? `clip-path:inset(${crop.top * 100}% ${crop.right * 100}% ${crop.bottom * 100}% ${crop.left * 100}%)` : "",
+  ].filter(Boolean).join(";");
+  img.src = frame;
+  d.appendChild(img);
   return d;
 }

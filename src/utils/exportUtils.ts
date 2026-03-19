@@ -182,6 +182,56 @@ export async function cropImageViaCanvas(
   return canvas.toDataURL("image/png");
 }
 
+// ---- Video first frame capture (returns base64 data URL) ----
+
+export function captureVideoFirstFrame(src: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.preload = "metadata";
+    video.src = src;
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      resolve(null);
+    }, 8000);
+
+    const cleanup = () => {
+      clearTimeout(timeout);
+      video.removeAttribute("src");
+      video.load();
+    };
+
+    video.addEventListener("loadeddata", () => {
+      video.currentTime = 0.1;
+    }, { once: true });
+
+    video.addEventListener("seeked", () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          cleanup();
+          resolve(dataUrl);
+          return;
+        }
+      } catch { /* CORS or tainted canvas */ }
+      cleanup();
+      resolve(null);
+    }, { once: true });
+
+    video.addEventListener("error", () => {
+      cleanup();
+      resolve(null);
+    }, { once: true });
+  });
+}
+
 export function hexToRgb(hex: string): [number, number, number] {
   let clean = hex.replace(/^#/, "");
   // Short hex: #RGB → RRGGBB
