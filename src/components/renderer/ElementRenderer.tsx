@@ -1,4 +1,5 @@
-import { lazy, Suspense, memo } from "react";
+import { lazy, Suspense, memo, Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { motion } from "framer-motion";
 import type { SlideElement, Animation, Scene3DElement } from "@/types/deck";
 import { getAnimationConfig } from "@/utils/animationEffects";
@@ -39,17 +40,80 @@ interface Props {
   editorMode?: boolean;
 }
 
+// ── Error boundary for individual elements ──
+
+class ElementErrorBoundary extends Component<
+  { elementId: string; elementType: string; children: ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(`[ElementRenderer] Crash in element "${this.props.elementId}" (${this.props.elementType}):`, error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#2a1215",
+            border: "1px solid #7f1d1d",
+            borderRadius: 4,
+            padding: 6,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          <div style={{ color: "#f87171", fontSize: 11, fontWeight: 600 }}>
+            Element error: {this.props.elementType}/{this.props.elementId}
+          </div>
+          <pre style={{ color: "#fca5a5", fontSize: 9, fontFamily: "monospace", whiteSpace: "pre-wrap", margin: 0, overflow: "auto" }}>
+            {this.state.error.message}
+          </pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export const ElementRenderer = memo(function ElementRenderer({ element, animations, activeAnimations, delayOverrides, thumbnail, previewMode, previewKey, noPosition, editorMode }: Props) {
+  // Guard against malformed elements (missing position/size)
+  if (!noPosition && (!element.position || !element.size)) {
+    return (
+      <div data-element-id={element.id} className="absolute" style={{ left: 0, top: 0, width: 200, height: 40 }}>
+        <div style={{ backgroundColor: "#2a1215", border: "1px solid #7f1d1d", borderRadius: 4, padding: 6, color: "#f87171", fontSize: 11, fontWeight: 600 }}>
+          Invalid element: {element.type}/{element.id} (missing {!element.position ? "position" : "size"})
+        </div>
+      </div>
+    );
+  }
+
   const positionStyle = noPosition
     ? { width: "100%" as const, height: "100%" as const }
     : getElementPositionStyle(element);
   const child = renderByType(element, thumbnail, animations, activeAnimations, editorMode);
 
+  const wrapped = (
+    <ElementErrorBoundary elementId={element.id} elementType={element.type}>
+      {child}
+    </ElementErrorBoundary>
+  );
+
   // No animations → plain div (zero overhead in editor)
   if (!animations || animations.length === 0) {
     return (
       <div data-element-id={element.id} className={noPosition ? undefined : "absolute"} style={positionStyle}>
-        {child}
+        {wrapped}
       </div>
     );
   }
@@ -63,7 +127,7 @@ export const ElementRenderer = memo(function ElementRenderer({ element, animatio
         delayOverrides={delayOverrides}
         previewMode={previewMode}
       >
-        {child}
+        {wrapped}
       </AnimatedWrapper>
     </div>
   );
