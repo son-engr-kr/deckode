@@ -496,6 +496,7 @@ function PresenterConsole({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const slideAreaRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const [currentScale, setCurrentScale] = useState(0.5);
   const [nextScale, setNextScale] = useState(0.2);
@@ -548,7 +549,9 @@ function PresenterConsole({
     const mainW = rect.width * (frac - 0.03);
     const mainH = rect.height - 44 - 32;
     setCurrentScale(Math.min(mainW / CANVAS_WIDTH, mainH / CANVAS_HEIGHT));
-    const sideW = rect.width * (1 - frac - 0.03);
+    const sideW = sidebarRef.current
+      ? sidebarRef.current.getBoundingClientRect().width - 24
+      : rect.width * (1 - frac - 0.03);
     const sideH = (rect.height - 44) * 0.32;
     setNextScale(Math.min(sideW / CANVAS_WIDTH, sideH / CANVAS_HEIGHT));
   }, [slideFraction]);
@@ -693,9 +696,9 @@ function PresenterConsole({
         />
 
         {/* Right sidebar: next slide + notes */}
-        <div className="flex flex-col border-l border-zinc-800 min-w-0" style={{ width: `${(1 - slideFraction) * 100}%` }}>
+        <div ref={sidebarRef} className="flex flex-col border-l border-zinc-800 min-w-0" style={{ width: `${(1 - slideFraction) * 100}%` }}>
           {/* Next preview: next animation step or next slide */}
-          <div className="flex flex-col items-center justify-center p-3 border-b border-zinc-800 shrink-0">
+          <div className="flex flex-col items-center justify-center p-3 border-b border-zinc-800 shrink-0 overflow-hidden">
             <div className="text-xs font-semibold text-zinc-500 mb-1.5 uppercase tracking-wider">
               {activeStep < steps.length
                 ? `Next Step (${activeStep + 1}/${steps.length})`
