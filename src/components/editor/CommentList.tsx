@@ -1,7 +1,31 @@
 import { useState, useRef, useEffect } from "react";
 import { useDeckStore } from "@/stores/deckStore";
-import type { Comment } from "@/types/deck";
+import type { Comment, CommentCategory } from "@/types/deck";
 import { FieldLabel } from "./fields";
+
+const CATEGORIES: { value: CommentCategory; label: string; color: string }[] = [
+  { value: "content", label: "Content", color: "#f59e0b" },
+  { value: "design", label: "Design", color: "#8b5cf6" },
+  { value: "bug", label: "Bug", color: "#ef4444" },
+  { value: "todo", label: "Todo", color: "#3b82f6" },
+  { value: "question", label: "Question", color: "#10b981" },
+];
+
+const CATEGORY_MAP = new Map(CATEGORIES.map((c) => [c.value, c]));
+
+// Stable author colors derived from name hash
+const AUTHOR_COLORS = [
+  "#f59e0b", "#8b5cf6", "#3b82f6", "#10b981", "#ef4444",
+  "#ec4899", "#06b6d4", "#f97316", "#84cc16", "#6366f1",
+];
+
+function authorColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  }
+  return AUTHOR_COLORS[Math.abs(hash) % AUTHOR_COLORS.length]!;
+}
 
 interface Props {
   slideId: string;
@@ -24,6 +48,8 @@ export function CommentList({ slideId, elementId }: Props) {
     : [...allComments].sort((a, b) => a.createdAt - b.createdAt);
 
   const [draft, setDraft] = useState("");
+  const [authorName, setAuthorName] = useState("user");
+  const [category, setCategory] = useState<CommentCategory | "">("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -43,6 +69,8 @@ export function CommentList({ slideId, elementId }: Props) {
       id: crypto.randomUUID().slice(0, 8),
       elementId,
       text,
+      author: authorName.trim() || "user",
+      category: category || undefined,
       createdAt: Date.now(),
     });
     setDraft("");
@@ -92,80 +120,139 @@ export function CommentList({ slideId, elementId }: Props) {
 
       {comments.length > 0 && (
         <div className="space-y-1.5 mb-2">
-          {comments.map((comment) => (
-            <div
-              key={comment.id}
-              className="group rounded bg-amber-900/20 border border-amber-700/30 px-2 py-1.5"
-            >
-              {/* Element label in slide-level view */}
-              {!elementId && comment.elementId && (
-                <button
-                  onClick={() => selectElement(comment.elementId!)}
-                  className="text-[10px] text-amber-500/70 font-mono hover:text-amber-400 transition-colors mb-0.5 block"
-                >
-                  {elementLabels.get(comment.elementId) ?? comment.elementId}
-                </button>
-              )}
-              {!elementId && !comment.elementId && (
-                <span className="text-[10px] text-zinc-500 font-mono mb-0.5 block">slide</span>
-              )}
+          {comments.map((comment) => {
+            const aColor = comment.author ? authorColor(comment.author) : "#94a3b8";
+            const cat = comment.category ? CATEGORY_MAP.get(comment.category) : null;
 
-              {editingId === comment.id ? (
-                <textarea
-                  data-comment-edit={comment.id}
-                  className="w-full bg-zinc-800 text-amber-200 rounded px-1.5 py-1 text-xs resize-none border border-amber-600 focus:outline-none"
-                  value={editText}
-                  rows={2}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onKeyDown={handleEditKeyDown}
-                  onBlur={commitEdit}
-                />
-              ) : (
-                <div className="flex items-start gap-1">
-                  <p className="text-xs text-amber-200/90 whitespace-pre-wrap flex-1 break-words">
-                    {comment.text}
-                  </p>
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                    <button
-                      onClick={() => startEdit(comment)}
-                      className="text-[10px] text-zinc-500 hover:text-amber-400 px-1"
-                      title="Edit"
+            return (
+              <div
+                key={comment.id}
+                className="group rounded border px-2 py-1.5"
+                style={{
+                  backgroundColor: `${aColor}10`,
+                  borderColor: `${aColor}30`,
+                }}
+              >
+                {/* Author + category header */}
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  {comment.author && (
+                    <span
+                      className="text-[10px] font-semibold"
+                      style={{ color: aColor }}
                     >
-                      edit
-                    </button>
-                    <button
-                      onClick={() => deleteComment(slideId, comment.id)}
-                      className="text-[10px] text-zinc-500 hover:text-red-400 px-1"
-                      title="Delete"
+                      {comment.author}
+                    </span>
+                  )}
+                  {cat && (
+                    <span
+                      className="text-[9px] px-1 py-px rounded font-medium"
+                      style={{
+                        backgroundColor: `${cat.color}20`,
+                        color: cat.color,
+                      }}
                     >
-                      del
+                      {cat.label}
+                    </span>
+                  )}
+                  {/* Element label in slide-level view */}
+                  {!elementId && comment.elementId && (
+                    <button
+                      onClick={() => selectElement(comment.elementId!)}
+                      className="text-[10px] text-zinc-500 font-mono hover:text-zinc-300 transition-colors ml-auto"
+                    >
+                      {elementLabels.get(comment.elementId) ?? comment.elementId}
                     </button>
-                  </div>
+                  )}
+                  {!elementId && !comment.elementId && (
+                    <span className="text-[10px] text-zinc-500 font-mono ml-auto">slide</span>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+
+                {editingId === comment.id ? (
+                  <textarea
+                    data-comment-edit={comment.id}
+                    className="w-full bg-zinc-800 text-zinc-200 rounded px-1.5 py-1 text-xs resize-none border border-zinc-600 focus:outline-none"
+                    value={editText}
+                    rows={2}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={handleEditKeyDown}
+                    onBlur={commitEdit}
+                  />
+                ) : (
+                  <div className="flex items-start gap-1">
+                    <p className="text-xs text-zinc-200/90 whitespace-pre-wrap flex-1 break-words">
+                      {comment.text}
+                    </p>
+                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                      <button
+                        onClick={() => startEdit(comment)}
+                        className="text-[10px] text-zinc-500 hover:text-zinc-300 px-1"
+                        title="Edit"
+                      >
+                        edit
+                      </button>
+                      <button
+                        onClick={() => deleteComment(slideId, comment.id)}
+                        className="text-[10px] text-zinc-500 hover:text-red-400 px-1"
+                        title="Delete"
+                      >
+                        del
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* Add comment form */}
-      <div className="flex gap-1">
-        <textarea
-          ref={textareaRef}
-          className="flex-1 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs resize-none border border-zinc-700 focus:border-amber-500 focus:outline-none"
-          value={draft}
-          rows={1}
-          placeholder="Add comment..."
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <button
-          onClick={handleAdd}
-          disabled={!draft.trim()}
-          className="px-2 py-1 text-xs rounded bg-amber-600 text-white hover:bg-amber-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
-        >
-          +
-        </button>
+      <div className="space-y-1">
+        {/* Author + category row */}
+        <div className="flex items-center gap-1.5">
+          <input
+            className="w-16 bg-zinc-800 text-zinc-300 rounded px-1.5 py-0.5 text-[10px] border border-zinc-700 focus:border-zinc-500 focus:outline-none shrink-0"
+            value={authorName}
+            onChange={(e) => setAuthorName(e.target.value)}
+            placeholder="user"
+            title="Author name"
+          />
+          <div className="flex gap-0.5 flex-wrap">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => setCategory(category === cat.value ? "" : cat.value)}
+              className="text-[9px] px-1.5 py-0.5 rounded transition-colors"
+              style={
+                category === cat.value
+                  ? { backgroundColor: `${cat.color}30`, color: cat.color }
+                  : { backgroundColor: "transparent", color: "#71717a" }
+              }
+            >
+              {cat.label}
+            </button>
+          ))}
+          </div>
+        </div>
+        <div className="flex gap-1">
+          <textarea
+            ref={textareaRef}
+            className="flex-1 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs resize-none border border-zinc-700 focus:border-zinc-500 focus:outline-none"
+            value={draft}
+            rows={1}
+            placeholder="Add comment..."
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button
+            onClick={handleAdd}
+            disabled={!draft.trim()}
+            className="px-2 py-1 text-xs rounded bg-zinc-700 text-white hover:bg-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
+          >
+            +
+          </button>
+        </div>
       </div>
     </div>
   );

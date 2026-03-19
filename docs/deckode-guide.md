@@ -161,6 +161,33 @@ A Deckode presentation is a single `deck.json` file (with optional `$ref` splits
 | `notes` | string | no | Speaker notes (plain text or Markdown) |
 | `elements` | array | yes | Array of Element objects |
 | `animations` | array | no | Array of Animation objects |
+| `comments` | array | no | Array of Comment objects (editor-only, not exported to PDF/PPTX) |
+
+#### Comments
+
+Comments are editor-only review annotations attached to a slide or a specific element. They are not rendered on the canvas or exported.
+
+```json
+{
+  "id": "c1",
+  "elementId": "e3",
+  "text": "Consider using a darker shade here",
+  "author": "user",
+  "category": "design",
+  "createdAt": 1710700000000
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | yes | Unique comment ID (8-char UUID) |
+| `elementId` | string | no | Target element ID. Omit for slide-level comments |
+| `text` | string | yes | Comment content |
+| `author` | string | no | Who wrote the comment (`"user"` for editor, agent name for AI) |
+| `category` | string | no | `"content"` \| `"design"` \| `"bug"` \| `"todo"` \| `"question"` |
+| `createdAt` | number | yes | Timestamp (ms since epoch) |
+
+Comments are color-coded by author in the editor. Each category has a distinct badge color. When elements are deleted, their associated comments are automatically removed.
 
 ### Element Object
 
