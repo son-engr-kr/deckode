@@ -129,6 +129,8 @@ export function deckApiPlugin(): Plugin {
 
   /** Content hash of the most recent editor save per project */
   const lastSaveHash = new Map<string, number>();
+  /** Cached serialized slide content per project, keyed by slide id */
+  const slideCache = new Map<string, Map<string, string>>();
   /** Active fs.watch handles per project */
   const watchers = new Map<string, fs.FSWatcher[]>();
 
@@ -417,7 +419,7 @@ export function deckApiPlugin(): Plugin {
           }
         }
 
-        saveDeck(deckPath(name), deck);
+        saveDeck(deckPath(name), deck, name);
 
         // Create assets directory for the project
         const projectAssetsDir = path.resolve(dir, "assets");
@@ -477,6 +479,15 @@ export function deckApiPlugin(): Plugin {
           return;
         }
         resolveSlideRefs(deck, path.dirname(filePath));
+        // Populate slide cache from loaded deck
+        const cache = new Map<string, string>();
+        for (const slide of deck.slides) {
+          if (slide._ref) {
+            const { _ref, ...slideData } = slide;
+            cache.set(slideData.id ?? _ref, JSON.stringify(slideData, null, 2));
+          }
+        }
+        slideCache.set(project, cache);
         watchProject(project);
         jsonResponse(res, 200, deck);
       });
@@ -492,11 +503,14 @@ export function deckApiPlugin(): Plugin {
         const dp = deckPath(project);
         const dir = path.dirname(dp);
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        splitSlideRefs(deck, path.dirname(dp));
+        // Get or create slide cache for this project
+        if (!slideCache.has(project)) slideCache.set(project, new Map());
+        const cache = slideCache.get(project)!;
+        splitSlideRefs(deck, path.dirname(dp), cache);
         const serialized = JSON.stringify(deck, null, 2);
         const hash = fnv1aHash(serialized);
         // Skip disk write if content is identical
-        if (hash !== lastSaveHash.get(project) || !fs.existsSync(dp) || fs.readFileSync(dp, "utf-8") !== serialized) {
+        if (hash !== lastSaveHash.get(project)) {
           fs.writeFileSync(dp, serialized, "utf-8");
         }
         lastSaveHash.set(project, hash);
@@ -530,7 +544,7 @@ export function deckApiPlugin(): Plugin {
           jsonResponse(res, 400, { error: "Schema validation failed", details: validate.errors });
           return;
         }
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slides: deck.slides.length });
       });
@@ -554,7 +568,7 @@ export function deckApiPlugin(): Plugin {
         } else {
           deck.slides.push(slide);
         }
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId: slide.id, totalSlides: deck.slides.length });
       });
@@ -573,7 +587,7 @@ export function deckApiPlugin(): Plugin {
         const slide = deck.slides.find((s: any) => s.id === slideId);
         assert(slide, `Slide ${slideId} not found`);
         Object.assign(slide, patch, { id: slideId }); // preserve id
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId });
       });
@@ -591,7 +605,7 @@ export function deckApiPlugin(): Plugin {
         const idx = deck.slides.findIndex((s: any) => s.id === slideId);
         assert(idx !== -1, `Slide ${slideId} not found`);
         deck.slides.splice(idx, 1);
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, remaining: deck.slides.length });
       });
@@ -610,7 +624,7 @@ export function deckApiPlugin(): Plugin {
         const slide = deck.slides.find((s: any) => s.id === slideId);
         assert(slide, `Slide ${slideId} not found`);
         slide.elements.push(element);
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId, elementId: element.id, totalElements: slide.elements.length });
       });
@@ -632,7 +646,7 @@ export function deckApiPlugin(): Plugin {
         const element = slide.elements.find((e: any) => e.id === elementId);
         assert(element, `Element ${elementId} not found in slide ${slideId}`);
         Object.assign(element, patch, { id: elementId }); // preserve id
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId, elementId });
       });
@@ -653,7 +667,7 @@ export function deckApiPlugin(): Plugin {
         const idx = slide.elements.findIndex((e: any) => e.id === elementId);
         assert(idx !== -1, `Element ${elementId} not found in slide ${slideId}`);
         slide.elements.splice(idx, 1);
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId, remaining: slide.elements.length });
       });
@@ -674,7 +688,7 @@ export function deckApiPlugin(): Plugin {
 
         const refPath = `./slides/${slideId}.json`;
         slide._ref = refPath;
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         notifyDeckChanged(project);
         jsonResponse(res, 200, { ok: true, slideId, ref: refPath });
       });
@@ -695,7 +709,7 @@ export function deckApiPlugin(): Plugin {
 
         const refPath = path.resolve(projectDir(project), slide._ref);
         delete slide._ref;
-        saveDeck(deckPath(project), deck);
+        saveDeck(deckPath(project), deck, project);
         // Remove the external file
         if (fs.existsSync(refPath)) fs.unlinkSync(refPath);
         notifyDeckChanged(project);
@@ -726,8 +740,10 @@ function loadDeck(filePath: string): LoadDeckResult {
   return { ok: true, deck };
 }
 
-function saveDeck(filePath: string, deck: any) {
+function saveDeck(filePath: string, deck: any, project?: string) {
   const projectRoot = path.dirname(filePath);
+  // AI tool saves invalidate the slide cache so the editor re-reads from disk
+  if (project) slideCache.delete(project);
   splitSlideRefs(deck, projectRoot);
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
@@ -763,9 +779,9 @@ function resolveSlideRefs(deck: any, projectRoot: string): void {
 /**
  * For each slide with `_ref`, write it to its external file and replace
  * the slide in-array with `{ "$ref": "..." }`. Mutates the deck object.
- * Only writes slide files whose content actually changed.
+ * Only writes slide files whose content actually changed (compared against in-memory cache).
  */
-function splitSlideRefs(deck: any, projectRoot: string): void {
+function splitSlideRefs(deck: any, projectRoot: string, cache?: Map<string, string>): void {
   if (!Array.isArray(deck.slides)) return;
   for (let i = 0; i < deck.slides.length; i++) {
     const slide = deck.slides[i];
@@ -773,19 +789,16 @@ function splitSlideRefs(deck: any, projectRoot: string): void {
       const refPath = path.resolve(projectRoot, slide._ref);
       const refDir = path.dirname(refPath);
       if (!fs.existsSync(refDir)) fs.mkdirSync(refDir, { recursive: true });
-      // Write the slide without _ref to the external file
       const { _ref, ...slideData } = slide;
       const serialized = JSON.stringify(slideData, null, 2);
-      // Skip write if file content is identical
-      if (fs.existsSync(refPath)) {
-        const existing = fs.readFileSync(refPath, "utf-8");
-        if (existing === serialized) {
-          deck.slides[i] = { $ref: _ref };
-          continue;
-        }
+      const slideId = slideData.id ?? _ref;
+      // Compare against cache (fast) or fall back to disk read
+      const cached = cache?.get(slideId);
+      if (cached !== serialized) {
+        fs.writeFileSync(refPath, serialized, "utf-8");
       }
-      fs.writeFileSync(refPath, serialized, "utf-8");
-      // Replace in-array with a $ref pointer
+      // Update cache
+      cache?.set(slideId, serialized);
       deck.slides[i] = { $ref: _ref };
     }
   }
