@@ -238,9 +238,9 @@ export function CommentList({ slideId, elementId }: Props) {
         <div className="flex gap-1">
           <textarea
             ref={textareaRef}
-            className="flex-1 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs resize-none border border-zinc-700 focus:border-zinc-500 focus:outline-none"
+            className="flex-1 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs resize-y border border-zinc-700 focus:border-zinc-500 focus:outline-none min-h-[28px]"
             value={draft}
-            rows={1}
+            rows={3}
             placeholder="Add comment..."
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
