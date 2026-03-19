@@ -178,7 +178,8 @@
           "duration": 500,
           "delay": 400
         }
-      ]
+      ],
+      "bookmark": "Title"
     },
     {
       "id": "text-math",
@@ -186,7 +187,7 @@
         "type": "slide",
         "duration": 400
       },
-      "notes": "Text/Markdown rendering with inline and display KaTeX math.",
+      "notes": "// This line is a comment — hidden in presenter mode.\nText/Markdown rendering with inline and display KaTeX math.",
       "elements": [
         {
           "id": "tm-title",
@@ -347,7 +348,8 @@
             "lineHeight": 1.4
           }
         }
-      ]
+      ],
+      "bookmark": "Text & Math"
     },
     {
       "id": "shapes",
@@ -835,7 +837,8 @@
             "lineHeight": 1.8
           }
         }
-      ]
+      ],
+      "bookmark": "Code"
     },
     {
       "id": "tables",
@@ -1199,7 +1202,8 @@
             "textAlign": "center"
           }
         }
-      ]
+      ],
+      "bookmark": "TikZ Diagrams"
     },
     {
       "id": "video",
@@ -1706,7 +1710,7 @@
         "type": "fade",
         "duration": 300
       },
-      "notes": "onEnter animation effects: fadeIn, slideInRight, scaleIn, slideInUp, typewriter, fadeOut, scaleOut.",
+      "notes": "onEnter animation effects: fadeIn, slideInRight, scaleIn, slideInUp, typewriter, fadeOut, scaleOut.\n// TODO: add more animation examples later",
       "elements": [
         {
           "id": "ae-title",
@@ -2084,7 +2088,8 @@
           "duration": 800,
           "delay": 3000
         }
-      ]
+      ],
+      "bookmark": "Animations"
     },
     {
       "id": "anim-onclick",
@@ -3420,7 +3425,8 @@
           "duration": 400,
           "delay": 600
         }
-      ]
+      ],
+      "bookmark": "End"
     }
   ]
 }

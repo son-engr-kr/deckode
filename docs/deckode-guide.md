@@ -138,9 +138,10 @@ A Deckode presentation is a single `deck.json` file (with optional `$ref` splits
 {
   "id": "s1",
   "layout": "blank",
+  "bookmark": "Introduction",
   "background": { "color": "#0f172a" },
   "transition": { "type": "fade", "duration": 300 },
-  "notes": "Speaker notes for this slide",
+  "notes": "Speaker notes for this slide\n// This line is hidden in presenter mode",
   "elements": [ ... ],
   "animations": [ ... ]
 }
@@ -1442,6 +1443,55 @@ The optional top-level `pageNumbers` object enables a page number overlay on all
 | `opacity` | number | `1` | Opacity (0–1) |
 
 Individual slides can opt out by setting `"hidePageNumber": true` in the slide object. Page numbers appear in the editor, presentation mode, and all exports (PDF, PPTX).
+
+---
+
+## Bookmarks
+
+Slides can be bookmarked with a title for quick navigation in presenter mode. Set the `bookmark` field on a slide:
+
+```json
+{
+  "id": "s3",
+  "bookmark": "Key Results",
+  "elements": [ ... ]
+}
+```
+
+Bookmarked slides appear in the presenter console as a clickable list sorted by slide order. Bookmark positions are also shown as markers on the slide navigation slider — hovering a marker shows the bookmark title.
+
+The **Skip Anim** toggle in the presenter bottom bar controls whether jumping via bookmark or slider skips to the end of all animations on the target slide, or starts from step 0.
+
+In the editor, bookmarks are managed via the Slide Properties panel (checkbox + title input) and shown as a blue badge on slide thumbnails.
+
+---
+
+## Presenter Notes
+
+Speaker notes support the following features:
+
+### Step-aware highlighting
+
+Wrap text in `[step:N]...[/step]` markers to highlight it when the presenter reaches that animation step:
+
+```
+Introduction text always visible.
+[step:1]This appears highlighted at step 1.[/step]
+[step:2]This appears highlighted at step 2.[/step]
+```
+
+### Comments
+
+Lines prefixed with `// ` are hidden from the presenter display but preserved in the source. Use **Ctrl+/** in the notes editor to toggle comments on selected lines.
+
+```
+Key talking point here.
+// TODO: add statistics from Q3 report
+// This line won't show during presentation
+Another visible point.
+```
+
+Comments are useful for personal reminders, draft notes, or temporarily hiding content without deleting it.
 
 ---
 
