@@ -107,12 +107,29 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
     if (!video || videoStep === undefined) return;
 
     if (videoStep >= 1) {
-      video.play().catch(() => {});
+      const tryPlay = () => { video.play().catch(() => {}); };
+      tryPlay();
+      // Retry when video becomes playable (handles race with src loading)
+      video.addEventListener("canplay", tryPlay, { once: true });
+      return () => video.removeEventListener("canplay", tryPlay);
     } else {
       video.pause();
       video.currentTime = element.trimStart ?? 0;
     }
   }, [videoStep, element.trimStart]);
+
+  // Fallback: ensure autoplay videos start playing
+  // (browser may not honor autoPlay attribute in pop-out windows)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || videoStep !== undefined || editorMode) return;
+    if (element.autoplay === false) return;
+
+    const tryPlay = () => { if (video.paused) video.play().catch(() => {}); };
+    video.addEventListener("canplay", tryPlay, { once: true });
+    if (video.readyState >= 3) tryPlay();
+    return () => video.removeEventListener("canplay", tryPlay);
+  }, [videoStep, editorMode, element.autoplay]);
 
   // Enforce trim boundaries during playback
   useEffect(() => {
@@ -169,7 +186,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   const commonStyle: React.CSSProperties = {
     width: w,
     height: h,
-    objectFit: (style.objectFit ?? "fill") as React.CSSProperties["objectFit"],
+    objectFit: (style.objectFit ?? "contain") as React.CSSProperties["objectFit"],
     borderRadius: style.borderRadius ?? 0,
     clipPath,
     willChange: "transform",

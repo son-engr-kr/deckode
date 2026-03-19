@@ -105,7 +105,7 @@ A Deckode presentation is a single `deck.json` file (with optional `$ref` splits
     "code": { "theme": "github-dark", "fontSize": 16 },
     "shape": { "stroke": "#ffffff", "strokeWidth": 1 },
     "image": { "objectFit": "fill" },
-    "video": { "objectFit": "fill" },
+    "video": { "objectFit": "contain" },
     "tikz": { "backgroundColor": "#1e1e2e" },
     "table": { "headerBackground": "#1e293b", "borderColor": "#334155" }
   },
@@ -880,7 +880,7 @@ Renders a video player. Supports local MP4/WebM files, YouTube URLs, and Vimeo U
   "muted": false,
   "controls": true,
   "style": {
-    "objectFit": "fill",
+    "objectFit": "contain",
     "borderRadius": 8
   }
 }
@@ -898,7 +898,7 @@ Renders a video player. Supports local MP4/WebM files, YouTube URLs, and Vimeo U
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `objectFit` | `"contain"` \| `"cover"` \| `"fill"` | `"fill"` | Video fit behavior. With `"fill"`, the video stretches to exactly fill the element boundary. Use "Reset ratio" in Property Panel to restore the original aspect ratio. |
+| `objectFit` | `"contain"` \| `"cover"` \| `"fill"` | `"contain"` | Video fit behavior. `"contain"` preserves aspect ratio with letterboxing; `"cover"` fills and crops; `"fill"` stretches ignoring aspect ratio. |
 | `borderRadius` | number | `0` | Corner radius in px |
 
 **Source URL handling**:
@@ -1399,7 +1399,7 @@ Each key in the theme object corresponds to an element type and accepts the same
 | `theme.code` | `theme`, `fontSize`, `lineNumbers`, `borderRadius` | `theme: "github-dark"`, `fontSize: 16`, `borderRadius: 8` |
 | `theme.shape` | `fill`, `stroke`, `strokeWidth`, `borderRadius`, `opacity`, `markerStart`, `markerEnd`, `path`, `waypoints` | `stroke: "#ffffff"`, `strokeWidth: 1` |
 | `theme.image` | `objectFit`, `borderRadius`, `opacity` | `objectFit: "fill"` |
-| `theme.video` | `objectFit`, `borderRadius` | `objectFit: "fill"` |
+| `theme.video` | `objectFit`, `borderRadius` | `objectFit: "contain"` |
 | `theme.tikz` | `backgroundColor`, `borderRadius` | `backgroundColor: "#1e1e2e"` |
 | `theme.table` | `fontSize`, `color`, `headerBackground`, `headerColor`, `borderColor`, `striped`, `borderRadius` | `fontSize: 14`, `headerBackground: "#1e293b"` |
 

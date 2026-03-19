@@ -76,7 +76,7 @@ export function PresenterView() {
       setCurrentSlide(slideIndex);
       setActiveStep(step);
     },
-    onSyncDeck: (syncDeck, project, slideIndex, step, assetMap) => {
+    onSyncDeck: (syncDeck, project, slideIndex, step, assetMap, assetBaseUrl) => {
       const state = useDeckStore.getState();
       if (!state.currentProject) {
         state.openProject(project, syncDeck);
@@ -85,10 +85,9 @@ export function PresenterView() {
         setPopoutAdapter(
           ReadOnlyAdapter.fromAssetMap(project, syncDeck, assetMap),
         );
-      } else {
-        // ViteApiAdapter mode: create adapter with Vite-style asset URL rewriting
+      } else if (assetBaseUrl) {
         setPopoutAdapter(
-          new ReadOnlyAdapter(project, syncDeck, `/assets/${project}`),
+          new ReadOnlyAdapter(project, syncDeck, assetBaseUrl),
         );
       }
       setCurrentSlide(slideIndex);

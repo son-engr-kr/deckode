@@ -12,6 +12,7 @@ export type PresentMessage =
       slideIndex: number;
       activeStep: number;
       assetMap: Record<string, string>;
+      assetBaseUrl: string;
     }
   | { type: "pointer"; x: number; y: number; visible: boolean };
 
@@ -25,6 +26,7 @@ interface Callbacks {
     slideIndex: number,
     activeStep: number,
     assetMap: Record<string, string>,
+    assetBaseUrl: string,
   ) => void;
   onPointer?: (x: number, y: number, visible: boolean) => void;
 }
@@ -54,6 +56,7 @@ export function usePresentationChannel(callbacks: Callbacks) {
           msg.slideIndex,
           msg.activeStep,
           msg.assetMap,
+          msg.assetBaseUrl,
         );
       } else if (msg.type === "pointer") {
         cbRef.current.onPointer?.(msg.x, msg.y, msg.visible);
@@ -90,6 +93,7 @@ export function usePresentationChannel(callbacks: Callbacks) {
     slideIndex: number,
     activeStep: number,
     assetMap: Record<string, string>,
+    assetBaseUrl: string,
   ) => {
     channelRef.current?.postMessage({
       type: "sync-deck",
@@ -98,6 +102,7 @@ export function usePresentationChannel(callbacks: Callbacks) {
       slideIndex,
       activeStep,
       assetMap,
+      assetBaseUrl,
     } satisfies PresentMessage);
   };
 

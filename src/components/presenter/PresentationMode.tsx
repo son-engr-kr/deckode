@@ -9,6 +9,7 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { Deck, Slide, SlideTransition, DeckTheme, PageNumberConfig } from "@/types/deck";
 import { getPageNumberInfo } from "@/utils/pageNumbers";
 import type { FsAccessAdapter } from "@/adapters/fsAccess";
+import { ReadOnlyAdapter } from "@/adapters/readOnly";
 import { AnimatePresence, motion } from "framer-motion";
 import { MorphTransition } from "@/components/renderer/MorphTransition";
 
@@ -245,10 +246,15 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
         const state = useDeckStore.getState();
         if (state.deck && state.currentProject) {
           const assetMap: Record<string, string> = {};
+          let assetBaseUrl = "";
           if (adapter.mode === "fs-access") {
             for (const [k, v] of (adapter as FsAccessAdapter).blobUrlCache) {
               assetMap[k] = v;
             }
+          } else if (adapter.mode === "vite") {
+            assetBaseUrl = `/assets/${adapter.projectName}`;
+          } else if (adapter.mode === "readonly") {
+            assetBaseUrl = (adapter as ReadOnlyAdapter).assetBaseUrl;
           }
           postSyncDeck(
             state.deck,
@@ -256,6 +262,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
             state.currentSlideIndex,
             activeStepRef.current,
             assetMap,
+            assetBaseUrl,
           );
         }
       },
