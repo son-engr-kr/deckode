@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { usePreviewStore } from "@/stores/previewStore";
 import type { Animation, AnimationEffect, AnimationTrigger } from "@/types/deck";
@@ -23,7 +24,11 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
   const addAnimation = useDeckStore((s) => s.addAnimation);
   const updateAnimation = useDeckStore((s) => s.updateAnimation);
   const deleteAnimation = useDeckStore((s) => s.deleteAnimation);
+  const moveAnimation = useDeckStore((s) => s.moveAnimation);
   const startPreview = usePreviewStore((s) => s.startPreview);
+
+  const dragIndexRef = useRef<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<number | null>(null);
 
   // Build list of (globalIndex, animation) for entries targeting this element
   const entries: { globalIndex: number; animation: Animation }[] = [];
@@ -77,7 +82,21 @@ export function AnimationEditor({ slideId, elementId, animations }: AnimationEdi
         {entries.map(({ globalIndex, animation }, localIndex) => (
           <div
             key={globalIndex}
-            className="bg-zinc-800/50 border border-zinc-700 rounded p-2 space-y-1.5"
+            draggable
+            onDragStart={() => { dragIndexRef.current = globalIndex; }}
+            onDragOver={(e) => { e.preventDefault(); setDropTarget(globalIndex); }}
+            onDragLeave={() => { if (dropTarget === globalIndex) setDropTarget(null); }}
+            onDrop={() => {
+              if (dragIndexRef.current !== null && dragIndexRef.current !== globalIndex) {
+                moveAnimation(slideId, dragIndexRef.current, globalIndex);
+              }
+              dragIndexRef.current = null;
+              setDropTarget(null);
+            }}
+            onDragEnd={() => { dragIndexRef.current = null; setDropTarget(null); }}
+            className={`bg-zinc-800/50 border rounded p-2 space-y-1.5 cursor-grab active:cursor-grabbing ${
+              dropTarget === globalIndex ? "border-blue-500" : "border-zinc-700"
+            }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-zinc-400 text-xs font-mono">
