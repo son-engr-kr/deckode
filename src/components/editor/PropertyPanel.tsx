@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import type { Slide, SlideElement, TikZElement, MermaidElement, TableElement, CustomElement, Scene3DElement, ImageElement, VideoElement, ShapeElement, CropRect, DeckTheme, ReferenceElement } from "@/types/deck";
 import { resolveStyle } from "@/contexts/ThemeContext";
+import { computeBounds } from "@/utils/bounds";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { AnimationEditor } from "./AnimationEditor";
 import { CommentList } from "./CommentList";
@@ -272,6 +273,138 @@ function multiStyleVal<T>(elements: SlideElement[], prop: string): { value: T | 
   });
 }
 
+// -- Group bounding-box position/size --
+
+function GroupTransformFields({
+  elements,
+  slideId,
+  updateElement,
+}: {
+  elements: SlideElement[];
+  slideId: string;
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+}) {
+  const bounds = computeBounds(elements);
+
+  const moveGroup = (axis: "x" | "y", target: number) => {
+    const delta = target - bounds[axis];
+    for (const el of elements) {
+      updateElement(slideId, el.id, {
+        position: {
+          ...el.position,
+          [axis]: el.position[axis] + delta,
+        },
+      } as Partial<SlideElement>);
+    }
+  };
+
+  const resizeGroup = (dim: "w" | "h", target: number) => {
+    if (bounds[dim] === 0) return;
+    const scale = target / bounds[dim];
+    const origin = dim === "w" ? bounds.x : bounds.y;
+    const posAxis = dim === "w" ? "x" : "y";
+    const sizeAxis = dim;
+    for (const el of elements) {
+      updateElement(slideId, el.id, {
+        position: {
+          ...el.position,
+          [posAxis]: Math.round(origin + (el.position[posAxis] - origin) * scale),
+        },
+        size: {
+          ...el.size,
+          [sizeAxis]: Math.round(el.size[sizeAxis] * scale),
+        },
+      } as Partial<SlideElement>);
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <FieldLabel>Position</FieldLabel>
+        <div className="grid grid-cols-2 gap-2">
+          <NumberInput label="X" value={Math.round(bounds.x)} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) moveGroup("x", num);
+          }} />
+          <NumberInput label="Y" value={Math.round(bounds.y)} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) moveGroup("y", num);
+          }} />
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Size</FieldLabel>
+        <div className="grid grid-cols-2 gap-2">
+          <NumberInput label="W" value={Math.round(bounds.w)} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num) && num > 0) resizeGroup("w", num);
+          }} />
+          <NumberInput label="H" value={Math.round(bounds.h)} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num) && num > 0) resizeGroup("h", num);
+          }} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+// -- Loose multi-select position/size/rotation --
+
+function LooseTransformFields({
+  elements,
+  slideId,
+  updateElement,
+  patchAll,
+}: {
+  elements: SlideElement[];
+  slideId: string;
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+  patchAll: (patch: Partial<SlideElement>) => void;
+}) {
+  const px = multiVal(elements, (el) => el.position.x);
+  const py = multiVal(elements, (el) => el.position.y);
+  const sw = multiVal(elements, (el) => el.size.w);
+  const sh = multiVal(elements, (el) => el.size.h);
+  const rot = multiVal(elements, (el) => el.rotation ?? 0);
+
+  return (
+    <>
+      <div>
+        <FieldLabel>Position</FieldLabel>
+        <div className="grid grid-cols-2 gap-2">
+          <NumberInput label="X" value={px.value ?? 0} mixed={px.mixed} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) for (const el of elements) updateElement(slideId, el.id, { position: { ...el.position, x: num } } as Partial<SlideElement>);
+          }} />
+          <NumberInput label="Y" value={py.value ?? 0} mixed={py.mixed} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) for (const el of elements) updateElement(slideId, el.id, { position: { ...el.position, y: num } } as Partial<SlideElement>);
+          }} />
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Size</FieldLabel>
+        <div className="grid grid-cols-2 gap-2">
+          <NumberInput label="W" value={sw.value ?? 0} mixed={sw.mixed} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) for (const el of elements) updateElement(slideId, el.id, { size: { ...el.size, w: num } } as Partial<SlideElement>);
+          }} />
+          <NumberInput label="H" value={sh.value ?? 0} mixed={sh.mixed} onChange={(v) => {
+            const num = parseInt(v, 10);
+            if (!isNaN(num)) for (const el of elements) updateElement(slideId, el.id, { size: { ...el.size, h: num } } as Partial<SlideElement>);
+          }} />
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Rotation</FieldLabel>
+        <NumberField label="Angle" value={rot.value} mixed={rot.mixed} onChange={(v) => patchAll({ rotation: v } as Partial<SlideElement>)} min={-360} max={360} />
+      </div>
+    </>
+  );
+}
+
 // -- Multi-element panel --
 
 function MultiElementPanel({
@@ -332,65 +465,12 @@ function MultiElementPanel({
         )}
       </div>
 
-      {/* Position */}
-      {(() => {
-        const px = multiVal(selectedElements, (el) => el.position.x);
-        const py = multiVal(selectedElements, (el) => el.position.y);
-        return (
-          <div>
-            <FieldLabel>Position</FieldLabel>
-            <div className="grid grid-cols-2 gap-2">
-              <NumberInput label="X" value={px.value ?? 0} mixed={px.mixed} onChange={(v) => {
-                const num = parseInt(v, 10);
-                if (!isNaN(num)) for (const el of selectedElements) updateElement(slide.id, el.id, { position: { ...el.position, x: num } } as Partial<SlideElement>);
-              }} />
-              <NumberInput label="Y" value={py.value ?? 0} mixed={py.mixed} onChange={(v) => {
-                const num = parseInt(v, 10);
-                if (!isNaN(num)) for (const el of selectedElements) updateElement(slide.id, el.id, { position: { ...el.position, y: num } } as Partial<SlideElement>);
-              }} />
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Size */}
-      {(() => {
-        const sw = multiVal(selectedElements, (el) => el.size.w);
-        const sh = multiVal(selectedElements, (el) => el.size.h);
-        return (
-          <div>
-            <FieldLabel>Size</FieldLabel>
-            <div className="grid grid-cols-2 gap-2">
-              <NumberInput label="W" value={sw.value ?? 0} mixed={sw.mixed} onChange={(v) => {
-                const num = parseInt(v, 10);
-                if (!isNaN(num)) for (const el of selectedElements) updateElement(slide.id, el.id, { size: { ...el.size, w: num } } as Partial<SlideElement>);
-              }} />
-              <NumberInput label="H" value={sh.value ?? 0} mixed={sh.mixed} onChange={(v) => {
-                const num = parseInt(v, 10);
-                if (!isNaN(num)) for (const el of selectedElements) updateElement(slide.id, el.id, { size: { ...el.size, h: num } } as Partial<SlideElement>);
-              }} />
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Rotation */}
-      {(() => {
-        const rot = multiVal(selectedElements, (el) => el.rotation ?? 0);
-        return (
-          <div>
-            <FieldLabel>Rotation</FieldLabel>
-            <NumberField
-              label="Angle"
-              value={rot.value}
-              mixed={rot.mixed}
-              onChange={(v) => patchAll({ rotation: v } as Partial<SlideElement>)}
-              min={-360}
-              max={360}
-            />
-          </div>
-        );
-      })()}
+      {/* Position & Size — group: bounding box; loose multi-select: per-element mixed */}
+      {isGroup ? (
+        <GroupTransformFields elements={selectedElements} slideId={slide.id} updateElement={updateElement} />
+      ) : (
+        <LooseTransformFields elements={selectedElements} slideId={slide.id} updateElement={updateElement} patchAll={patchAll} />
+      )}
 
       {/* Type-specific style editing */}
       {singleType && singleType !== "custom" && singleType !== "scene3d" && singleType !== "reference" && (
