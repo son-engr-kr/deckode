@@ -8,6 +8,8 @@ export interface Position {
 export interface Size {
   w: number;
   h: number;
+  /** Width / height ratio. When present in JSON and h is 0 or omitted, h is derived as w / aspectRatio at load time. */
+  aspectRatio?: number;
 }
 
 // ----- Slide Background -----

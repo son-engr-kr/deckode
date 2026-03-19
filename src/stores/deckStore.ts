@@ -122,6 +122,27 @@ export function setDeckDragging(active: boolean) {
 
 // computeBounds is imported from @/utils/bounds
 
+/** Resolve aspectRatio → h for all elements at load time so runtime always has h. */
+function normalizeSizes(deck: Deck): void {
+  for (const slide of deck.slides) {
+    for (const el of slide.elements) {
+      if (el.size.aspectRatio && !el.size.h) {
+        el.size.h = Math.round(el.size.w / el.size.aspectRatio);
+      }
+    }
+  }
+  // Also normalize component elements
+  if (deck.components) {
+    for (const comp of Object.values(deck.components)) {
+      for (const el of comp.elements) {
+        if (el.size.aspectRatio && !el.size.h) {
+          el.size.h = Math.round(el.size.w / el.size.aspectRatio);
+        }
+      }
+    }
+  }
+}
+
 function assertNoLineRotation(el: { type?: string; rotation?: number }) {
   assert(
     !((el.type === "line" || el.type === "arrow") && el.rotation),
@@ -156,6 +177,7 @@ export const useDeckStore = create<DeckState>()(
           set((state) => { state.savePaused = paused; }),
 
         openProject: (project, deck) => {
+          normalizeSizes(deck);
           syncCounters(deck);
           setTabProject(project);
           _lastSavedDeck = structuredClone(deck);
@@ -189,6 +211,7 @@ export const useDeckStore = create<DeckState>()(
         },
 
         loadDeck: (deck) => {
+          normalizeSizes(deck);
           syncCounters(deck);
           _lastSavedDeck = structuredClone(deck);
           set((state) => {

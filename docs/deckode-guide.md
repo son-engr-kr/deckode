@@ -211,7 +211,7 @@ Every element has these common fields:
 | `id` | string | yes | Unique element ID within the slide. Convention: `"e1"`, `"e2"`, ... |
 | `type` | string | yes | Element type (see below) |
 | `position` | object | yes | `{ "x": number, "y": number }` in virtual coordinates |
-| `size` | object | yes | `{ "w": number, "h": number }` in virtual coordinates |
+| `size` | object | yes | `{ "w": number, "h": number }` in virtual coordinates. `h` can be omitted if `aspectRatio` is provided: `{ "w": 400, "aspectRatio": 1.778 }` → h is computed as `w / aspectRatio` (400 / 1.778 ≈ 225). Common ratios: 16:9 = `1.778`, 4:3 = `1.333`, 1:1 = `1`. **Recommended for images** to preserve original ratio. |
 | `style` | object | no | Type-specific styling |
 | `rotation` | number | no | Rotation in degrees (clockwise) |
 | `groupId` | string | no | Group identifier. Elements sharing the same `groupId` form a group — they move and scale together. |
@@ -364,7 +364,7 @@ Renders an image.
   "src": "./assets/diagram.png",
   "alt": "System architecture diagram showing client-server interaction",
   "position": { "x": 500, "y": 100 },
-  "size": { "w": 400, "h": 300 },
+  "size": { "w": 400, "aspectRatio": 1.333 },
   "style": {
     "objectFit": "fill",
     "borderRadius": 8,
@@ -372,6 +372,8 @@ Renders an image.
   }
 }
 ```
+
+**Tip**: Use `aspectRatio` instead of `h` for images to preserve the original ratio. If you know the image is 4:3, use `"size": { "w": 400, "aspectRatio": 1.333 }`. The height is computed automatically at load time. This prevents AI agents from accidentally distorting images.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
