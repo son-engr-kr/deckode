@@ -99,6 +99,15 @@ export function PresenterView() {
     onPointer: (x, y, visible) => {
       setPointer({ x, y, visible });
     },
+    onVideoControl: (elementId, action, currentTime) => {
+      const video = document.querySelector<HTMLVideoElement>(
+        `[data-element-id="${elementId}"] video`,
+      );
+      if (!video) return;
+      video.currentTime = currentTime;
+      if (action === "play") video.play().catch(() => {});
+      else video.pause();
+    },
   });
 
   // Request sync on mount to get current state from presenter

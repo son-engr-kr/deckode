@@ -230,7 +230,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
 
   const skipNextBroadcast = useRef(false);
 
-  const { postNavigate, postExit, postPointer, postSyncDeck } =
+  const { postNavigate, postExit, postPointer, postSyncDeck, postVideoControl } =
     usePresentationChannel({
       onNavigate: (slideIndex, step) => {
         skipNextBroadcast.current = true;
@@ -285,6 +285,16 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
     }
     postNavigate(currentSlideIndex, activeStep);
   }, [currentSlideIndex, activeStep, postNavigate]);
+
+  // Forward video play/pause from presenter to pop-out
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { elementId, action, currentTime } = (e as CustomEvent).detail;
+      postVideoControl(elementId, action, currentTime);
+    };
+    window.addEventListener("deckode:video-control", handler);
+    return () => window.removeEventListener("deckode:video-control", handler);
+  }, [postVideoControl]);
 
   // ── Audience popup ──
 
@@ -860,7 +870,7 @@ function PresenterConsole({
                 className="absolute top-0 group"
                 style={{ left: `${pct}%`, transform: "translateX(-50%)" }}
               >
-                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full cursor-pointer"
+                <div className="w-2 h-2 bg-blue-400 cursor-pointer rotate-45"
                   onClick={() => onJumpTo(b.visibleIdx, skipAnim)}
                 />
                 <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded bg-zinc-700 text-[10px] text-zinc-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">

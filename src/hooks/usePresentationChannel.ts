@@ -14,7 +14,8 @@ export type PresentMessage =
       assetMap: Record<string, string>;
       assetBaseUrl: string;
     }
-  | { type: "pointer"; x: number; y: number; visible: boolean };
+  | { type: "pointer"; x: number; y: number; visible: boolean }
+  | { type: "video-control"; elementId: string; action: "play" | "pause"; currentTime: number };
 
 interface Callbacks {
   onNavigate?: (slideIndex: number, activeStep: number) => void;
@@ -29,6 +30,7 @@ interface Callbacks {
     assetBaseUrl: string,
   ) => void;
   onPointer?: (x: number, y: number, visible: boolean) => void;
+  onVideoControl?: (elementId: string, action: "play" | "pause", currentTime: number) => void;
 }
 
 export function usePresentationChannel(callbacks: Callbacks) {
@@ -60,6 +62,8 @@ export function usePresentationChannel(callbacks: Callbacks) {
         );
       } else if (msg.type === "pointer") {
         cbRef.current.onPointer?.(msg.x, msg.y, msg.visible);
+      } else if (msg.type === "video-control") {
+        cbRef.current.onVideoControl?.(msg.elementId, msg.action, msg.currentTime);
       }
     };
 
@@ -115,5 +119,14 @@ export function usePresentationChannel(callbacks: Callbacks) {
     } satisfies PresentMessage);
   };
 
-  return { postNavigate, postExit, postSyncRequest, postSyncDeck, postPointer };
+  const postVideoControl = (elementId: string, action: "play" | "pause", currentTime: number) => {
+    channelRef.current?.postMessage({
+      type: "video-control",
+      elementId,
+      action,
+      currentTime,
+    } satisfies PresentMessage);
+  };
+
+  return { postNavigate, postExit, postSyncRequest, postSyncDeck, postPointer, postVideoControl };
 }

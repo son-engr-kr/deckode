@@ -253,6 +253,25 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   const hasPlayVideoEffect = videoStep !== undefined;
   const shouldAutoPlay = editorMode ? false : (hasPlayVideoEffect ? false : (element.autoplay ?? true));
 
+  // Broadcast play/pause/seek for pop-out sync (listened by PresentationMode)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || editorMode) return;
+    const emit = (action: "play" | "pause") => {
+      window.dispatchEvent(new CustomEvent("deckode:video-control", {
+        detail: { elementId: element.id, action, currentTime: video.currentTime },
+      }));
+    };
+    const onPlay = () => emit("play");
+    const onPause = () => emit("pause");
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+    return () => {
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
+    };
+  }, [element.id, editorMode]);
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const video = videoRef.current;
