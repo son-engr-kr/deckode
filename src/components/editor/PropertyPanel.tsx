@@ -41,19 +41,13 @@ export function PropertyPanel() {
   }
 
   if (selectedElementIds.length > 1) {
-    const selectedElements = slide?.elements.filter((e) => selectedElementIds.includes(e.id)) ?? [];
-    const groupIds = new Set(selectedElements.map((e) => e.groupId).filter(Boolean));
-    const isGrouped = groupIds.size === 1 && selectedElements.every((e) => e.groupId);
-
     return (
-      <div className="p-4 text-zinc-400 text-sm space-y-1">
-        <div>{selectedElementIds.length} elements selected</div>
-        {isGrouped && (
-          <div className="text-purple-400 text-xs font-mono">
-            Group: {[...groupIds][0]}
-          </div>
-        )}
-      </div>
+      <MultiElementPanel
+        slide={slide!}
+        selectedElementIds={selectedElementIds}
+        updateElement={updateElement}
+        theme={theme}
+      />
     );
   }
 
@@ -258,6 +252,272 @@ export function PropertyPanel() {
       {/* Comments */}
       <CommentList slideId={slide.id} elementId={element.id} />
     </div>
+  );
+}
+
+// -- Helpers for multi-element editing --
+
+/** Get a property value from multiple elements. Returns { value, mixed }. */
+function multiVal<T>(elements: SlideElement[], getter: (el: SlideElement) => T | undefined): { value: T | undefined; mixed: boolean } {
+  const values = elements.map(getter);
+  const first = values[0];
+  const allSame = values.every((v) => v === first);
+  return { value: allSame ? first : undefined, mixed: !allSame };
+}
+
+function multiStyleVal<T>(elements: SlideElement[], prop: string): { value: T | undefined; mixed: boolean } {
+  return multiVal(elements, (el) => {
+    const style = "style" in el ? (el.style as Record<string, unknown> | undefined) : undefined;
+    return style?.[prop] as T | undefined;
+  });
+}
+
+// -- Multi-element panel --
+
+function MultiElementPanel({
+  slide,
+  selectedElementIds,
+  updateElement,
+  theme,
+}: {
+  slide: Slide;
+  selectedElementIds: string[];
+  updateElement: (slideId: string, elementId: string, patch: Partial<SlideElement>) => void;
+  theme?: DeckTheme;
+}) {
+  const selectedElements = slide.elements.filter((e) => selectedElementIds.includes(e.id));
+  const groupIds = new Set(selectedElements.map((e) => e.groupId).filter(Boolean));
+  const isGroup = groupIds.size === 1 && selectedElements.every((e) => e.groupId);
+  const groupId = isGroup ? [...groupIds][0] : undefined;
+
+  // Determine common type(s)
+  const types = new Set(selectedElements.map((e) => e.type));
+  const singleType = types.size === 1 ? [...types][0]! : null;
+
+  // Type counts for info display
+  const typeCounts = new Map<string, number>();
+  for (const el of selectedElements) {
+    typeCounts.set(el.type, (typeCounts.get(el.type) ?? 0) + 1);
+  }
+
+  const patchAll = (patch: Partial<SlideElement>) => {
+    for (const el of selectedElements) {
+      updateElement(slide.id, el.id, patch);
+    }
+  };
+
+  const patchAllStyle = (prop: string, value: unknown) => {
+    for (const el of selectedElements) {
+      const style = "style" in el ? el.style : undefined;
+      updateElement(slide.id, el.id, {
+        style: { ...style, [prop]: value },
+      } as Partial<SlideElement>);
+    }
+  };
+
+  return (
+    <div className="p-3 space-y-4 text-sm overflow-y-auto overflow-x-hidden">
+      {/* Selection info */}
+      <div>
+        <FieldLabel>Selection</FieldLabel>
+        <div className="text-zinc-300 text-xs">
+          {selectedElements.length} elements
+          {isGroup && <span className="text-purple-400 ml-1">(group)</span>}
+        </div>
+        <div className="text-zinc-500 text-[10px] font-mono mt-0.5">
+          {[...typeCounts.entries()].map(([t, c]) => `${t}${c > 1 ? ` ×${c}` : ""}`).join(", ")}
+        </div>
+        {groupId && (
+          <div className="text-zinc-600 text-[10px] font-mono mt-0.5">{groupId}</div>
+        )}
+      </div>
+
+      {/* Rotation (common to all) */}
+      {(() => {
+        const rot = multiVal(selectedElements, (el) => el.rotation ?? 0);
+        return (
+          <div>
+            <FieldLabel>Rotation</FieldLabel>
+            <NumberField
+              label="Angle"
+              value={rot.value}
+              mixed={rot.mixed}
+              onChange={(v) => patchAll({ rotation: v } as Partial<SlideElement>)}
+              min={-360}
+              max={360}
+            />
+          </div>
+        );
+      })()}
+
+      {/* Type-specific style editing */}
+      {singleType && singleType !== "custom" && singleType !== "scene3d" && singleType !== "reference" && (
+        <div>
+          <FieldLabel>Style</FieldLabel>
+          <div className="space-y-2">
+            {singleType === "text" && (
+              <MultiTextStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} theme={theme} />
+            )}
+            {singleType === "code" && (
+              <MultiCodeStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} />
+            )}
+            {singleType === "shape" && (
+              <MultiShapeStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} theme={theme} />
+            )}
+            {singleType === "image" && (
+              <MultiImageStyleFields elements={selectedElements} patchAll={patchAll} patchAllStyle={patchAllStyle} />
+            )}
+            {singleType === "video" && (
+              <MultiVideoStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} />
+            )}
+            {singleType === "tikz" && (
+              <MultiTikZStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} />
+            )}
+            {singleType === "mermaid" && (
+              <MultiMermaidStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} />
+            )}
+            {singleType === "table" && (
+              <MultiTableStyleFields elements={selectedElements} patchAllStyle={patchAllStyle} />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Comments (group or multi-select) */}
+      {isGroup && <CommentList slideId={slide.id} elementId={selectedElements[0]?.id} />}
+    </div>
+  );
+}
+
+// -- Multi-element style field sets --
+
+function MultiTextStyleFields({ elements, patchAllStyle, theme }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void; theme?: DeckTheme }) {
+  const color = multiStyleVal<string>(elements, "color");
+  const fontFamily = multiStyleVal<string>(elements, "fontFamily");
+  const fontSize = multiStyleVal<number>(elements, "fontSize");
+  const textSizing = multiStyleVal<string>(elements, "textSizing");
+  const textAlign = multiStyleVal<string>(elements, "textAlign");
+  const lineHeight = multiStyleVal<number>(elements, "lineHeight");
+  const verticalAlign = multiStyleVal<string>(elements, "verticalAlign");
+
+  // For inherited color display
+  const themeColor = theme?.text?.color;
+  const effectiveColor = color.mixed ? undefined : (color.value ?? themeColor);
+  const colorInherited = !color.mixed && color.value === undefined && themeColor !== undefined;
+
+  return (
+    <>
+      <ColorField label="Color" value={effectiveColor} mixed={color.mixed} inherited={colorInherited} onChange={(v) => patchAllStyle("color", v)} />
+      <TextField label="Font Family" value={fontFamily.mixed ? undefined : fontFamily.value} onChange={(v) => patchAllStyle("fontFamily", v)} placeholder={fontFamily.mixed ? "\u2014" : "sans-serif"} />
+      <NumberField label="Font Size" value={fontSize.value} mixed={fontSize.mixed} onChange={(v) => patchAllStyle("fontSize", v)} min={8} max={200} />
+      <SelectField label="Text Sizing" value={(textSizing.mixed ? undefined : textSizing.value) as "flexible" | "fixed" | undefined} options={TEXT_SIZING_OPTIONS} mixed={textSizing.mixed} onChange={(v) => patchAllStyle("textSizing", v)} />
+      <SelectField label="Text Align" value={(textAlign.mixed ? undefined : textAlign.value) as "left" | "center" | "right" | undefined} options={TEXT_ALIGN_OPTIONS} mixed={textAlign.mixed} onChange={(v) => patchAllStyle("textAlign", v)} />
+      <NumberField label="Line Height" value={lineHeight.value} mixed={lineHeight.mixed} onChange={(v) => patchAllStyle("lineHeight", v)} min={0.5} max={4} step={0.1} />
+      <SelectField label="Vertical Align" value={(verticalAlign.mixed ? undefined : verticalAlign.value) as "top" | "middle" | "bottom" | undefined} options={VERTICAL_ALIGN_OPTIONS} mixed={verticalAlign.mixed} onChange={(v) => patchAllStyle("verticalAlign", v)} />
+    </>
+  );
+}
+
+function MultiCodeStyleFields({ elements, patchAllStyle }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void }) {
+  const codeTheme = multiStyleVal<string>(elements, "theme");
+  const fontSize = multiStyleVal<number>(elements, "fontSize");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  return (
+    <>
+      <SelectField label="Theme" value={(codeTheme.mixed ? undefined : codeTheme.value) as typeof CODE_THEMES[number] | undefined} options={CODE_THEMES} mixed={codeTheme.mixed} onChange={(v) => patchAllStyle("theme", v)} />
+      <NumberField label="Font Size" value={fontSize.value} mixed={fontSize.mixed} onChange={(v) => patchAllStyle("fontSize", v)} min={8} max={48} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={32} />
+    </>
+  );
+}
+
+function MultiShapeStyleFields({ elements, patchAllStyle, theme }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void; theme?: DeckTheme }) {
+  const fill = multiStyleVal<string>(elements, "fill");
+  const fillOpacity = multiStyleVal<number>(elements, "fillOpacity");
+  const stroke = multiStyleVal<string>(elements, "stroke");
+  const strokeOpacity = multiStyleVal<number>(elements, "strokeOpacity");
+  const strokeWidth = multiStyleVal<number>(elements, "strokeWidth");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+
+  const themeFill = theme?.shape?.fill;
+  const themeStroke = theme?.shape?.stroke;
+
+  return (
+    <>
+      <ColorField label="Fill" value={fill.mixed ? undefined : (fill.value ?? themeFill)} mixed={fill.mixed} inherited={!fill.mixed && fill.value === undefined && themeFill !== undefined} onChange={(v) => patchAllStyle("fill", v)} />
+      <NumberField label="Fill Opacity" value={fillOpacity.value} mixed={fillOpacity.mixed} onChange={(v) => patchAllStyle("fillOpacity", v)} min={0} max={1} step={0.05} />
+      <ColorField label="Stroke" value={stroke.mixed ? undefined : (stroke.value ?? themeStroke)} mixed={stroke.mixed} inherited={!stroke.mixed && stroke.value === undefined && themeStroke !== undefined} onChange={(v) => patchAllStyle("stroke", v)} />
+      <NumberField label="Stroke Opacity" value={strokeOpacity.value} mixed={strokeOpacity.mixed} onChange={(v) => patchAllStyle("strokeOpacity", v)} min={0} max={1} step={0.05} />
+      <NumberField label="Stroke Width" value={strokeWidth.value} mixed={strokeWidth.mixed} onChange={(v) => patchAllStyle("strokeWidth", v)} min={0} max={20} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={100} />
+    </>
+  );
+}
+
+function MultiImageStyleFields({ elements, patchAll, patchAllStyle }: { elements: SlideElement[]; patchAll: (p: Partial<SlideElement>) => void; patchAllStyle: (p: string, v: unknown) => void }) {
+  const objectFit = multiStyleVal<string>(elements, "objectFit");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  const opacity = multiStyleVal<number>(elements, "opacity");
+  const alt = multiVal(elements, (el) => (el as ImageElement).alt);
+  return (
+    <>
+      <TextField label="Alt Text" value={alt.mixed ? undefined : alt.value} onChange={(v) => patchAll({ alt: v } as Partial<SlideElement>)} placeholder={alt.mixed ? "\u2014" : "Describe the image"} />
+      <SelectField label="Object Fit" value={(objectFit.mixed ? undefined : objectFit.value) as "contain" | "cover" | "fill" | undefined} options={OBJECT_FIT_OPTIONS} mixed={objectFit.mixed} onChange={(v) => patchAllStyle("objectFit", v)} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={100} />
+      <NumberField label="Opacity" value={opacity.value} mixed={opacity.mixed} onChange={(v) => patchAllStyle("opacity", v)} min={0} max={1} step={0.05} />
+    </>
+  );
+}
+
+function MultiVideoStyleFields({ elements, patchAllStyle }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void }) {
+  const objectFit = multiStyleVal<string>(elements, "objectFit");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  return (
+    <>
+      <SelectField label="Object Fit" value={(objectFit.mixed ? undefined : objectFit.value) as "contain" | "cover" | "fill" | undefined} options={OBJECT_FIT_OPTIONS} mixed={objectFit.mixed} onChange={(v) => patchAllStyle("objectFit", v)} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={100} />
+    </>
+  );
+}
+
+function MultiTikZStyleFields({ elements, patchAllStyle }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void }) {
+  const backgroundColor = multiStyleVal<string>(elements, "backgroundColor");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  return (
+    <>
+      <ColorField label="Background" value={backgroundColor.mixed ? undefined : backgroundColor.value} mixed={backgroundColor.mixed} onChange={(v) => patchAllStyle("backgroundColor", v)} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={32} />
+    </>
+  );
+}
+
+function MultiMermaidStyleFields({ elements, patchAllStyle }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void }) {
+  const backgroundColor = multiStyleVal<string>(elements, "backgroundColor");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  return (
+    <>
+      <ColorField label="Background" value={backgroundColor.mixed ? undefined : backgroundColor.value} mixed={backgroundColor.mixed} onChange={(v) => patchAllStyle("backgroundColor", v)} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={32} />
+    </>
+  );
+}
+
+function MultiTableStyleFields({ elements, patchAllStyle }: { elements: SlideElement[]; patchAllStyle: (p: string, v: unknown) => void }) {
+  const fontSize = multiStyleVal<number>(elements, "fontSize");
+  const color = multiStyleVal<string>(elements, "color");
+  const headerBackground = multiStyleVal<string>(elements, "headerBackground");
+  const headerColor = multiStyleVal<string>(elements, "headerColor");
+  const borderColor = multiStyleVal<string>(elements, "borderColor");
+  const borderRadius = multiStyleVal<number>(elements, "borderRadius");
+  return (
+    <>
+      <NumberField label="Font Size" value={fontSize.value} mixed={fontSize.mixed} onChange={(v) => patchAllStyle("fontSize", v)} min={8} max={48} />
+      <ColorField label="Color" value={color.mixed ? undefined : color.value} mixed={color.mixed} onChange={(v) => patchAllStyle("color", v)} />
+      <ColorField label="Header BG" value={headerBackground.mixed ? undefined : headerBackground.value} mixed={headerBackground.mixed} onChange={(v) => patchAllStyle("headerBackground", v)} />
+      <ColorField label="Header Color" value={headerColor.mixed ? undefined : headerColor.value} mixed={headerColor.mixed} onChange={(v) => patchAllStyle("headerColor", v)} />
+      <ColorField label="Border Color" value={borderColor.mixed ? undefined : borderColor.value} mixed={borderColor.mixed} onChange={(v) => patchAllStyle("borderColor", v)} />
+      <NumberField label="Border Radius" value={borderRadius.value} mixed={borderRadius.mixed} onChange={(v) => patchAllStyle("borderRadius", v)} min={0} max={32} />
+    </>
   );
 }
 

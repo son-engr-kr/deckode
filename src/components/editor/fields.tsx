@@ -57,6 +57,7 @@ export function NumberField({
   min,
   max,
   step,
+  mixed,
 }: {
   label: string;
   value: number | undefined;
@@ -64,14 +65,15 @@ export function NumberField({
   min?: number;
   max?: number;
   step?: number;
+  mixed?: boolean;
 }) {
   return (
     <label className="flex items-center gap-2">
       <span className="text-zinc-400 text-xs flex-1">{label}</span>
       <input
         type="number"
-        value={value ?? ""}
-        placeholder="\u2014"
+        value={mixed ? "" : (value ?? "")}
+        placeholder={mixed ? "\u2014" : "\u2014"}
         min={min}
         max={max}
         step={step}
@@ -79,7 +81,9 @@ export function NumberField({
           const num = parseFloat(e.target.value);
           if (!isNaN(num)) onChange(num);
         }}
-        className="w-20 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs font-mono border border-zinc-700 focus:border-blue-500 focus:outline-none"
+        className={`w-20 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs font-mono border focus:border-blue-500 focus:outline-none ${
+          mixed ? "border-dashed border-zinc-600 placeholder:text-zinc-600" : "border-zinc-700"
+        }`}
       />
     </label>
   );
@@ -90,21 +94,25 @@ export function SelectField<T extends string>({
   value,
   options,
   onChange,
+  mixed,
 }: {
   label: string;
   value: T | undefined;
   options: readonly T[];
   onChange: (v: T) => void;
+  mixed?: boolean;
 }) {
   return (
     <label className="flex items-center gap-2">
       <span className="text-zinc-400 text-xs flex-1">{label}</span>
       <select
-        value={value ?? ""}
+        value={mixed ? "" : (value ?? "")}
         onChange={(e) => onChange(e.target.value as T)}
-        className="w-28 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs border border-zinc-700 focus:border-blue-500 focus:outline-none"
+        className={`w-28 bg-zinc-800 text-zinc-200 rounded px-2 py-1 text-xs border focus:border-blue-500 focus:outline-none ${
+          mixed ? "border-dashed border-zinc-600" : "border-zinc-700"
+        }`}
       >
-        <option value="">{"\u2014"}</option>
+        <option value="">{mixed ? "\u2014" : "\u2014"}</option>
         {options.map((o) => (
           <option key={o} value={o}>
             {o}
