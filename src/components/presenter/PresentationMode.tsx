@@ -6,12 +6,44 @@ import { useAdapter } from "@/contexts/AdapterContext";
 import { computeSteps } from "@/utils/animationSteps";
 import type { AnimationStep } from "@/utils/animationSteps";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
-import type { Deck, Slide, SlideTransition, DeckTheme, PageNumberConfig } from "@/types/deck";
+import type { Deck, Slide, SlideElement, SlideTransition, DeckTheme, PageNumberConfig } from "@/types/deck";
 import { getPageNumberInfo } from "@/utils/pageNumbers";
-import type { FsAccessAdapter } from "@/adapters/fsAccess";
+import { FsAccessAdapter } from "@/adapters/fsAccess";
 import { ReadOnlyAdapter } from "@/adapters/readOnly";
 import { AnimatePresence, motion } from "framer-motion";
 import { MorphTransition } from "@/components/renderer/MorphTransition";
+
+/** Collect all local asset paths (./assets/...) from every element in a deck. */
+function collectAssetPaths(deck: Deck): string[] {
+  const paths = new Set<string>();
+  const addFromElement = (el: SlideElement) => {
+    if ((el.type === "image" || el.type === "video") && el.src?.startsWith("./")) {
+      paths.add(el.src);
+    }
+  };
+  for (const slide of deck.slides) {
+    for (const el of slide.elements) addFromElement(el);
+  }
+  if (deck.components) {
+    for (const comp of Object.values(deck.components)) {
+      for (const el of comp.elements) addFromElement(el);
+    }
+  }
+  return [...paths];
+}
+
+/** Resolve all asset paths via FsAccessAdapter, returning the complete blob URL map. */
+async function resolveAllAssets(
+  adapter: FsAccessAdapter,
+  paths: string[],
+): Promise<Record<string, string>> {
+  await Promise.allSettled(paths.map((p) => adapter.resolveAssetUrl(p)));
+  const map: Record<string, string> = {};
+  for (const [k, v] of adapter.blobUrlCache) {
+    map[k] = v;
+  }
+  return map;
+}
 
 function useVisibleSlides(deck: Deck | null) {
   return useMemo(() => {
@@ -230,7 +262,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
 
   const skipNextBroadcast = useRef(false);
 
-  const { postNavigate, postExit, postPointer, postSyncDeck, postVideoControl } =
+  const { postNavigate, postExit, postPointer, postSyncDeck, postAssetUpdate, postVideoControl } =
     usePresentationChannel({
       onNavigate: (slideIndex, step) => {
         skipNextBroadcast.current = true;
@@ -245,12 +277,22 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
       onSyncRequest: () => {
         const state = useDeckStore.getState();
         if (state.deck && state.currentProject) {
-          const assetMap: Record<string, string> = {};
           let assetBaseUrl = "";
           if (adapter.mode === "fs-access") {
-            for (const [k, v] of (adapter as FsAccessAdapter).blobUrlCache) {
-              assetMap[k] = v;
-            }
+            // Pre-resolve ALL asset paths in the deck, then send
+            const fsAdapter = adapter as FsAccessAdapter;
+            const paths = collectAssetPaths(state.deck);
+            resolveAllAssets(fsAdapter, paths).then((assetMap) => {
+              postSyncDeck(
+                state.deck!,
+                state.currentProject!,
+                state.currentSlideIndex,
+                activeStepRef.current,
+                assetMap,
+                "",
+              );
+            });
+            return;
           } else if (adapter.mode === "vite") {
             assetBaseUrl = `/assets/${adapter.projectName}`;
           } else if (adapter.mode === "readonly") {
@@ -261,7 +303,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
             state.currentProject,
             state.currentSlideIndex,
             activeStepRef.current,
-            assetMap,
+            {},
             assetBaseUrl,
           );
         }
@@ -284,7 +326,27 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
       return;
     }
     postNavigate(currentSlideIndex, activeStep);
-  }, [currentSlideIndex, activeStep, postNavigate]);
+
+    // After navigating, send any newly resolved assets to the popup (fs-access only)
+    if (adapter.mode === "fs-access") {
+      const fsAdapter = adapter as FsAccessAdapter;
+      const state = useDeckStore.getState();
+      const currentSlide = state.deck?.slides[currentSlideIndex];
+      if (currentSlide) {
+        const paths: string[] = [];
+        for (const el of currentSlide.elements) {
+          if ((el.type === "image" || el.type === "video") && el.src?.startsWith("./")) {
+            paths.push(el.src);
+          }
+        }
+        if (paths.length > 0) {
+          resolveAllAssets(fsAdapter, paths).then((assetMap) => {
+            if (Object.keys(assetMap).length > 0) postAssetUpdate(assetMap);
+          });
+        }
+      }
+    }
+  }, [currentSlideIndex, activeStep, postNavigate, adapter, postAssetUpdate]);
 
   // Forward video play/pause from presenter to pop-out
   useEffect(() => {

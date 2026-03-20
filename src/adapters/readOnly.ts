@@ -10,7 +10,7 @@ export class ReadOnlyAdapter implements FileSystemAdapter {
 
   private deck: Deck;
   readonly assetBaseUrl: string;
-  private assetMap?: Record<string, string>;
+  assetMap?: Record<string, string>;
 
   constructor(projectName: string, deck: Deck, assetBaseUrl: string) {
     this.projectName = projectName;

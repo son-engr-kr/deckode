@@ -99,6 +99,17 @@ export function PresenterView() {
     onPointer: (x, y, visible) => {
       setPointer({ x, y, visible });
     },
+    onAssetUpdate: (assetMap) => {
+      setPopoutAdapter((prev) => {
+        if (!prev) return prev;
+        // Merge new assets into the existing adapter
+        return ReadOnlyAdapter.fromAssetMap(
+          prev.projectName,
+          useDeckStore.getState().deck!,
+          { ...(prev as ReadOnlyAdapter).assetMap, ...assetMap },
+        );
+      });
+    },
     onVideoControl: (elementId, action, currentTime) => {
       const video = document.querySelector<HTMLVideoElement>(
         `[data-element-id="${elementId}"] video`,

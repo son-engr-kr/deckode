@@ -14,6 +14,7 @@ export type PresentMessage =
       assetMap: Record<string, string>;
       assetBaseUrl: string;
     }
+  | { type: "asset-update"; assetMap: Record<string, string> }
   | { type: "pointer"; x: number; y: number; visible: boolean }
   | { type: "video-control"; elementId: string; action: "play" | "pause"; currentTime: number };
 
@@ -29,6 +30,7 @@ interface Callbacks {
     assetMap: Record<string, string>,
     assetBaseUrl: string,
   ) => void;
+  onAssetUpdate?: (assetMap: Record<string, string>) => void;
   onPointer?: (x: number, y: number, visible: boolean) => void;
   onVideoControl?: (elementId: string, action: "play" | "pause", currentTime: number) => void;
 }
@@ -60,6 +62,8 @@ export function usePresentationChannel(callbacks: Callbacks) {
           msg.assetMap,
           msg.assetBaseUrl,
         );
+      } else if (msg.type === "asset-update") {
+        cbRef.current.onAssetUpdate?.(msg.assetMap);
       } else if (msg.type === "pointer") {
         cbRef.current.onPointer?.(msg.x, msg.y, msg.visible);
       } else if (msg.type === "video-control") {
@@ -110,6 +114,13 @@ export function usePresentationChannel(callbacks: Callbacks) {
     } satisfies PresentMessage);
   }, []);
 
+  const postAssetUpdate = useCallback((assetMap: Record<string, string>) => {
+    channelRef.current?.postMessage({
+      type: "asset-update",
+      assetMap,
+    } satisfies PresentMessage);
+  }, []);
+
   const postPointer = useCallback((x: number, y: number, visible: boolean) => {
     channelRef.current?.postMessage({
       type: "pointer",
@@ -128,5 +139,5 @@ export function usePresentationChannel(callbacks: Callbacks) {
     } satisfies PresentMessage);
   }, []);
 
-  return { postNavigate, postExit, postSyncRequest, postSyncDeck, postPointer, postVideoControl };
+  return { postNavigate, postExit, postSyncRequest, postSyncDeck, postAssetUpdate, postPointer, postVideoControl };
 }
