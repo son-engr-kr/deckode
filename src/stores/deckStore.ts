@@ -120,6 +120,10 @@ export function setDeckDragging(active: boolean) {
   isDragging = active;
 }
 
+export function getDeckDragging(): boolean {
+  return isDragging;
+}
+
 // computeBounds is imported from @/utils/bounds
 
 /** Resolve aspectRatio → h for all elements at load time so runtime always has h. */
@@ -927,18 +931,27 @@ useDeckStore.subscribe(
   },
 );
 
-// Auto-save: debounce 1s after any mutation
+// Auto-save: debounce 1s after any mutation, skip during drag
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleAutoSave() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    if (isDragging) {
+      // Defer save until drag ends
+      scheduleAutoSave();
+      return;
+    }
+    useDeckStore.getState().saveToDisk();
+  }, 1000);
+}
 
 useDeckStore.subscribe(
   (s) => s.isDirty,
-  (isDirty) => {
-    if (!isDirty) return;
+  (dirty) => {
+    if (!dirty) return;
     if (useDeckStore.getState().savePaused) return;
-    if (saveTimeout) clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-      useDeckStore.getState().saveToDisk();
-    }, 1000);
+    scheduleAutoSave();
   },
 );
 

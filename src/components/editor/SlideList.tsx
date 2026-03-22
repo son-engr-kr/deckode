@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback, memo } from "react";
+import { useRef, useEffect, useState, useCallback, memo, useMemo } from "react";
 import {
   DndContext,
   closestCenter,
@@ -112,9 +112,26 @@ function createBlankSlide(): Slide {
   };
 }
 
+const THUMB_DEBOUNCE_MS = 300;
+
 export function SlideList({ showDiff = false }: { showDiff?: boolean }) {
-  const slides = useDeckStore((s) => s.deck?.slides);
+  const liveSlides = useDeckStore((s) => s.deck?.slides);
   const theme = useDeckStore((s) => s.deck?.theme);
+
+  // Debounce slides for thumbnails: prevents re-rendering during drag/typing
+  // But update immediately when slide count/order changes
+  const [slides, setSlides] = useState(liveSlides);
+  const liveIds = useMemo(() => liveSlides?.map((s) => s.id).join(","), [liveSlides]);
+  const slidesIds = useMemo(() => slides?.map((s) => s.id).join(","), [slides]);
+  useEffect(() => {
+    if (liveIds !== slidesIds) {
+      // Structural change (add/remove/reorder) → update immediately
+      setSlides(liveSlides);
+      return;
+    }
+    const timer = setTimeout(() => setSlides(liveSlides), THUMB_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [liveSlides, liveIds, slidesIds]);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const selectedSlideIds = useDeckStore((s) => s.selectedSlideIds);
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);

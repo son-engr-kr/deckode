@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useDeckStore, getLastSavedDeck } from "@/stores/deckStore";
+import { useDeckStore, getLastSavedDeck, getDeckDragging } from "@/stores/deckStore";
 import { setStoreAdapter } from "@/stores/deckStore";
 import { mergeDeck } from "@/utils/deckDiff";
 import { EditorLayout } from "@/components/editor/EditorLayout";
@@ -217,6 +217,8 @@ export function App() {
     const fsAdapter = adapter as FsAccessAdapter;
 
     const poll = async () => {
+      // Skip polling during drag to avoid I/O lag
+      if (getDeckDragging()) return;
       // Check deck.json
       let deckChanged = false;
       const fileHandle = await fsAdapter.dirHandle.getFileHandle("deck.json");
