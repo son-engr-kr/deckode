@@ -66,9 +66,18 @@ export function useGitDiff(): GitDiffResult {
   return useContext(GitDiffContext);
 }
 
+const DIFF_DEBOUNCE_MS = 500;
+
 export function GitDiffProvider({ children }: { children: ReactNode }) {
   const slides = useDeckStore((s) => s.deck?.slides);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
+
+  // Debounce slides to avoid recomputing diff on every keystroke/drag frame
+  const [debouncedSlides, setDebouncedSlides] = useState(slides);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSlides(slides), DIFF_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [slides]);
   const adapter = useAdapter();
   const [baseDeck, setBaseDeck] = useState<Deck | null>(null);
   const [unavailableReason, setUnavailableReason] = useState<"no-path" | "no-git" | undefined>();
@@ -161,7 +170,7 @@ export function GitDiffProvider({ children }: { children: ReactNode }) {
   const value = useMemo((): GitDiffResult => {
     const base = { refetch, unavailableReason };
 
-    if (unavailableReason || !baseDeck || !slides || !baseSlideHashMap) {
+    if (unavailableReason || !baseDeck || !debouncedSlides || !baseSlideHashMap) {
       return {
         changedSlideIds: EMPTY_SLIDES,
         elementChanges: EMPTY_ELEMENTS,
@@ -173,7 +182,7 @@ export function GitDiffProvider({ children }: { children: ReactNode }) {
     }
 
     const changedSlideIds = new Set<string>();
-    for (const slide of slides) {
+    for (const slide of debouncedSlides) {
       const baseHash = baseSlideHashMap.get(slide.id);
       if (!baseHash) {
         changedSlideIds.add(slide.id);
@@ -183,7 +192,7 @@ export function GitDiffProvider({ children }: { children: ReactNode }) {
     }
 
     const elementChanges = new Map<string, ChangeType>();
-    const currentSlide = slides[currentSlideIndex];
+    const currentSlide = debouncedSlides[currentSlideIndex];
     const baseSlideMap = new Map(baseDeck.slides.map((s) => [s.id, s]));
 
     if (currentSlide) {
@@ -210,7 +219,7 @@ export function GitDiffProvider({ children }: { children: ReactNode }) {
       available: true,
       ...base,
     };
-  }, [unavailableReason, baseDeck, slides, currentSlideIndex, baseSlideHashMap, refetch]);
+  }, [unavailableReason, baseDeck, debouncedSlides, currentSlideIndex, baseSlideHashMap, refetch]);
 
   return (
     <GitDiffContext.Provider value={value}>
