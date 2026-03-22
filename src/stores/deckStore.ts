@@ -36,7 +36,7 @@ export function setStoreAdapter(adapter: FileSystemAdapter | null) {
 }
 
 // Serialize disk writes: at most one in-flight, one queued.
-let _activeSave: Promise<void> | null = null;
+let _activeSave: Promise<Deck | null> | null = null;
 let _pendingSave = false;
 
 interface DeckState {
@@ -279,15 +279,42 @@ export const useDeckStore = create<DeckState>()(
 
           set((state) => { state.isSaving = true; });
           _activeSave = _adapter.saveDeck(deckToSave);
+          let conflictDeck: Deck | null = null;
           try {
-            await _activeSave;
+            conflictDeck = await _activeSave;
           } catch (err) {
             console.error("[deckStore] saveToDisk failed:", err);
           } finally {
             _activeSave = null;
-            const currentDeck = get().deck;
-            if (currentDeck) _lastSavedDeck = structuredClone(currentDeck);
-            set((state) => { state.isSaving = false; state.isDirty = false; });
+            if (!conflictDeck) {
+              const currentDeck = get().deck;
+              if (currentDeck) _lastSavedDeck = structuredClone(currentDeck);
+              set((state) => { state.isSaving = false; state.isDirty = false; });
+            } else {
+              set((state) => { state.isSaving = false; });
+            }
+          }
+
+          // External modification detected — attempt three-way merge
+          if (conflictDeck) {
+            const local = get().deck;
+            if (_lastSavedDeck && local) {
+              const { mergeDeck } = await import("@/utils/deckDiff");
+              const result = mergeDeck(_lastSavedDeck, local, conflictDeck);
+              // Update base to what's actually on disk now
+              _lastSavedDeck = structuredClone(conflictDeck);
+              if (result.merged) {
+                // Auto-merge succeeded — apply merged deck and retry save
+                normalizeSizes(result.merged);
+                syncCounters(result.merged);
+                set((state) => { state.deck = result.merged!; });
+                return get().saveToDisk();
+              } else {
+                // Unresolvable conflicts — pause and let fs.watch / polling show dialog
+                set((state) => { state.savePaused = true; });
+              }
+            }
+            return;
           }
 
           // A mutation happened while we were writing — save once more.

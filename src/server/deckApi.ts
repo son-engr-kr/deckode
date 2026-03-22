@@ -503,6 +503,24 @@ export function deckApiPlugin(): Plugin {
         const dp = deckPath(project);
         const dir = path.dirname(dp);
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+        // Detect external modifications before writing
+        const savedHash = lastSaveHash.get(project);
+        if (savedHash !== undefined && fs.existsSync(dp)) {
+          const currentContent = fs.readFileSync(dp, "utf-8");
+          const currentHash = fnv1aHash(currentContent);
+          if (currentHash !== savedHash) {
+            // File was modified externally — return current disk version for client-side merge
+            // Acknowledge the external change so the retry won't 409 again
+            lastSaveHash.set(project, currentHash);
+            const result = loadDeck(dp);
+            if (result.ok) {
+              jsonResponse(res, 409, { conflict: true, deck: result.deck });
+              return;
+            }
+          }
+        }
+
         // Get or create slide cache for this project
         if (!slideCache.has(project)) slideCache.set(project, new Map());
         const cache = slideCache.get(project)!;

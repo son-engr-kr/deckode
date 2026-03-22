@@ -153,7 +153,24 @@ export class FsAccessAdapter implements FileSystemAdapter {
     }
   }
 
-  async saveDeck(deck: Deck): Promise<void> {
+  async saveDeck(deck: Deck): Promise<Deck | null> {
+    // Detect external modification before writing
+    if (this._lastSaveHash !== null) {
+      try {
+        const fileHandle = await this.dirHandle.getFileHandle("deck.json");
+        const file = await fileHandle.getFile();
+        const currentContent = await file.text();
+        const currentHash = fnv1aHash(currentContent);
+        if (currentHash !== this._lastSaveHash) {
+          // File was modified externally — return current disk version for merge
+          const diskDeck = JSON.parse(currentContent) as Deck;
+          return diskDeck;
+        }
+      } catch {
+        // File doesn't exist yet — proceed with save
+      }
+    }
+
     // Shallow-copy to avoid mutating frozen state (Immer/Zustand)
     const mutableDeck = { ...deck, slides: [...deck.slides] };
     await this.splitSlideRefs(mutableDeck);
@@ -163,6 +180,7 @@ export class FsAccessAdapter implements FileSystemAdapter {
     await writable.write(serialized);
     await writable.close();
     this._lastSaveHash = fnv1aHash(serialized);
+    return null;
   }
 
   /** Write slides with `_ref` to their external files and replace them with `{ "$ref": "..." }`. */

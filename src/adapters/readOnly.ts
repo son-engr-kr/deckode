@@ -22,7 +22,7 @@ export class ReadOnlyAdapter implements FileSystemAdapter {
     return this.deck;
   }
 
-  async saveDeck(_deck: Deck): Promise<void> {
+  async saveDeck(_deck: Deck): Promise<Deck | null> {
     assert(false, "ReadOnlyAdapter: saveDeck is not supported");
   }
 

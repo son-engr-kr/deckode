@@ -27,8 +27,8 @@ export class ViteApiAdapter implements FileSystemAdapter {
     return deck;
   }
 
-  async saveDeck(deck: Deck): Promise<void> {
-    await saveDeckToDisk(deck, this.projectName);
+  async saveDeck(deck: Deck): Promise<Deck | null> {
+    return saveDeckToDisk(deck, this.projectName);
   }
 
   async listProjects(): Promise<ProjectInfo[]> {

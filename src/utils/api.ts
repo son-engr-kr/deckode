@@ -40,13 +40,22 @@ export async function loadDeckFromDisk(project: string): Promise<Deck | null> {
   return res.json() as Promise<Deck>;
 }
 
-export async function saveDeckToDisk(deck: Deck, project: string): Promise<void> {
+/**
+ * Save deck to disk. Returns null on success, or the current disk Deck on 409
+ * conflict (external modification detected — caller should merge and retry).
+ */
+export async function saveDeckToDisk(deck: Deck, project: string): Promise<Deck | null> {
   const res = await fetch(`/api/save-deck?project=${encodeURIComponent(project)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(deck, null, 2),
   });
+  if (res.status === 409) {
+    const data = await res.json();
+    return data.deck as Deck;
+  }
   assert(res.ok, `Failed to save deck: ${res.status}`);
+  return null;
 }
 
 export async function uploadAsset(file: File, project: string): Promise<string> {

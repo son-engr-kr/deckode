@@ -19,7 +19,8 @@ export interface LayoutInfo {
 
 export interface FileSystemAdapter {
   loadDeck(): Promise<Deck>;
-  saveDeck(deck: Deck): Promise<void>;
+  /** Save deck. Returns null on success, or the current disk Deck on conflict. */
+  saveDeck(deck: Deck): Promise<Deck | null>;
   listProjects(): Promise<ProjectInfo[]>;
   createProject(name: string, config: NewProjectConfig): Promise<void>;
   deleteProject(name: string): Promise<void>;
