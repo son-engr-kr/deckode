@@ -428,12 +428,15 @@ const SortableSlideItem = memo(function SortableSlideItem({
       {hasComments && (
         <div className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-amber-500 border border-amber-400" />
       )}
-      {/* Bookmark badge */}
+      {/* Bookmark badge — ribbon shape to distinguish from comment dot */}
       {slide.bookmark && (
-        <div
-          className="absolute top-0.5 left-0.5 w-2 h-2 rounded-sm bg-blue-500 border border-blue-400"
-          title={slide.bookmark}
-        />
+        <svg
+          className="absolute top-0 left-0.5 w-2.5 h-3.5 drop-shadow-sm"
+          viewBox="0 0 10 14"
+          aria-label={slide.bookmark}
+        >
+          <path d="M1 0h8v14l-4-3-4 3z" fill="#3b82f6" />
+        </svg>
       )}
     </div>
   );
