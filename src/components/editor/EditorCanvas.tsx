@@ -369,6 +369,34 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
 
   if (!slide) return null;
 
+  if (slide._missing) {
+    return (
+      <div
+        ref={containerRef}
+        className="flex-1 relative bg-zinc-900 overflow-hidden flex items-center justify-center"
+      >
+        <div
+          style={{
+            width: CANVAS_WIDTH * scale,
+            height: CANVAS_HEIGHT * scale,
+            backgroundColor: "#fef2f2",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 8,
+          }}
+        >
+          <div style={{ fontSize: 48 * scale }}>⚠</div>
+          <div style={{ fontSize: 24 * scale, fontWeight: 700, color: "#991b1b" }}>Missing file</div>
+          <div style={{ fontSize: 14 * scale, color: "#b91c1c", marginTop: 8 * scale, fontFamily: "monospace" }}>
+            {slide._ref}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ---- Compute canvas position (centered + pan, clamped) ----
   const canvasW = CANVAS_WIDTH * scale;
   const canvasH = CANVAS_HEIGHT * scale;

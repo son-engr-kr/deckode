@@ -332,6 +332,8 @@ export interface Slide {
   comments?: Comment[];
   /** Tracks external file origin when loaded from a $ref pointer */
   _ref?: string;
+  /** Set when the $ref file is missing on disk */
+  _missing?: boolean;
 }
 
 // ----- Page Numbers -----

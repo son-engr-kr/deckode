@@ -107,7 +107,23 @@ export const SlideRenderer = memo(function SlideRenderer({ slide, scale, animate
           cursor: onAdvance ? "default" : undefined,
         }}
       >
-        {slide.elements.map((element) => (
+        {slide._missing ? (
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#fef2f2",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>⚠</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#991b1b" }}>Missing file</div>
+            <div style={{ fontSize: 14, color: "#b91c1c", marginTop: 8, fontFamily: "monospace" }}>{slide._ref}</div>
+          </div>
+        ) : slide.elements.map((element) => (
           <ElementRenderer
             key={element.id}
             element={element}

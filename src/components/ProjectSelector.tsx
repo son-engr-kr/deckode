@@ -91,11 +91,16 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
   };
 
   const handleOpenFolder = async () => {
-    const adapter = await FsAccessAdapter.openDirectory();
-    await addRecentProject(adapter.dirHandle);
-    const deck = await adapter.loadDeck();
-    onAdapterReady(adapter);
-    useDeckStore.getState().openProject(adapter.projectName, deck);
+    try {
+      const adapter = await FsAccessAdapter.openDirectory();
+      await addRecentProject(adapter.dirHandle);
+      const deck = await adapter.loadDeck();
+      onAdapterReady(adapter);
+      useDeckStore.getState().openProject(adapter.projectName, deck);
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      alert(e instanceof Error ? e.message : "Failed to open folder");
+    }
   };
 
   const handleOpenRecentFolder = async (entry: RecentProject) => {

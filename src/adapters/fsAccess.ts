@@ -141,26 +141,36 @@ export class FsAccessAdapter implements FileSystemAdapter {
   }
 
   /** Resolve `{ "$ref": "./slides/foo.json" }` entries by reading from the directory handle.
-   *  Also populates _slideRefCache with raw disk content for external change detection. */
+   *  Also populates _slideRefCache with raw disk content for external change detection.
+   *  Missing files are replaced with a placeholder slide instead of throwing. */
   private async resolveSlideRefs(deck: Deck): Promise<void> {
     this._slideRefCache.clear();
     for (let i = 0; i < deck.slides.length; i++) {
       const entry = deck.slides[i] as any;
       if (entry.$ref && typeof entry.$ref === "string") {
-        const refParts = entry.$ref.replace(/^\.\//, "").split("/");
-        let dir = this.dirHandle;
-        for (let j = 0; j < refParts.length - 1; j++) {
-          dir = await dir.getDirectoryHandle(refParts[j]!);
+        try {
+          const refParts = entry.$ref.replace(/^\.\//, "").split("/");
+          let dir = this.dirHandle;
+          for (let j = 0; j < refParts.length - 1; j++) {
+            dir = await dir.getDirectoryHandle(refParts[j]!);
+          }
+          const fh = await dir.getFileHandle(refParts[refParts.length - 1]!);
+          const f = await fh.getFile();
+          const rawText = await f.text();
+          const slide = JSON.parse(rawText);
+          slide._ref = entry.$ref;
+          deck.slides[i] = slide;
+          const slideId = slide.id ?? entry.$ref;
+          this._slideRefCache.set(slideId, rawText);
+        } catch {
+          console.warn(`[FsAccessAdapter] Missing slide ref: ${entry.$ref}`);
+          deck.slides[i] = {
+            id: `missing-${i}`,
+            _ref: entry.$ref,
+            _missing: true,
+            elements: [],
+          };
         }
-        const fh = await dir.getFileHandle(refParts[refParts.length - 1]!);
-        const f = await fh.getFile();
-        const rawText = await f.text();
-        const slide = JSON.parse(rawText);
-        slide._ref = entry.$ref;
-        deck.slides[i] = slide;
-        // Cache raw disk content (not re-serialized) for exact comparison
-        const slideId = slide.id ?? entry.$ref;
-        this._slideRefCache.set(slideId, rawText);
       }
     }
   }
@@ -205,7 +215,7 @@ export class FsAccessAdapter implements FileSystemAdapter {
   /** Check if any $ref slide files were modified externally since last save/load. */
   private async checkSlideRefChanges(deck: Deck): Promise<boolean> {
     for (const slide of deck.slides) {
-      if (!slide._ref) continue;
+      if (!slide._ref || slide._missing) continue;
       const { _ref, ...slideData } = slide as any;
       const slideId = slideData.id ?? _ref;
       const cached = this._slideRefCache.get(slideId);
@@ -232,6 +242,11 @@ export class FsAccessAdapter implements FileSystemAdapter {
   private async splitSlideRefs(deck: Deck): Promise<void> {
     for (let i = 0; i < deck.slides.length; i++) {
       const slide = deck.slides[i]!;
+      if (slide._missing) {
+        // Preserve the $ref pointer but don't write the missing file
+        deck.slides[i] = { $ref: slide._ref } as any;
+        continue;
+      }
       if (slide._ref) {
         const refParts = slide._ref.replace(/^\.\//, "").split("/");
         let dir = this.dirHandle;
