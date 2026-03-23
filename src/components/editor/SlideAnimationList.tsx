@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { usePreviewStore } from "@/stores/previewStore";
 import { computeSteps } from "@/utils/animationSteps";
@@ -24,10 +24,21 @@ export function SlideAnimationList({ onSelectElement }: Props) {
   const updateAnimation = useDeckStore((s) => s.updateAnimation);
   const deleteAnimation = useDeckStore((s) => s.deleteAnimation);
   const moveAnimation = useDeckStore((s) => s.moveAnimation);
+  const highlightedTarget = useDeckStore((s) => s.highlightedAnimationTarget);
   const startPreview = usePreviewStore((s) => s.startPreview);
 
   const dragIndexRef = useRef<number | null>(null);
   const [dropTarget, setDropTarget] = useState<number | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to highlighted animation and clear after delay
+  useEffect(() => {
+    if (!highlightedTarget || !listRef.current) return;
+    const card = listRef.current.querySelector(`[data-anim-target="${highlightedTarget}"]`);
+    card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    const timer = setTimeout(() => useDeckStore.setState({ highlightedAnimationTarget: null }), 2000);
+    return () => clearTimeout(timer);
+  }, [highlightedTarget]);
 
   if (!slide) return null;
   const animations = slide.animations ?? [];
@@ -117,10 +128,13 @@ export function SlideAnimationList({ onSelectElement }: Props) {
         <div className="text-zinc-600 text-xs">No animations on this slide</div>
       )}
 
-      <div className="space-y-2">
-        {animations.map((anim, index) => (
+      <div className="space-y-2" ref={listRef}>
+        {animations.map((anim, index) => {
+          const isHighlighted = highlightedTarget === anim.target;
+          return (
           <div
             key={index}
+            data-anim-target={anim.target}
             draggable
             onDragStart={() => { dragIndexRef.current = index; }}
             onDragOver={(e) => { e.preventDefault(); setDropTarget(index); }}
@@ -133,8 +147,8 @@ export function SlideAnimationList({ onSelectElement }: Props) {
               setDropTarget(null);
             }}
             onDragEnd={() => { dragIndexRef.current = null; setDropTarget(null); }}
-            className={`bg-zinc-800/50 border rounded p-2 space-y-1.5 cursor-grab active:cursor-grabbing ${
-              dropTarget === index ? "border-blue-500" : "border-zinc-700"
+            className={`bg-zinc-800/50 border rounded p-2 space-y-1.5 cursor-grab active:cursor-grabbing transition-colors ${
+              isHighlighted ? "border-blue-400 bg-blue-900/20" : dropTarget === index ? "border-blue-500" : "border-zinc-700"
             }`}
           >
             {/* Header: index + target + actions */}
@@ -274,7 +288,8 @@ export function SlideAnimationList({ onSelectElement }: Props) {
               <span className="text-zinc-600 text-xs">ms</span>
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       <button

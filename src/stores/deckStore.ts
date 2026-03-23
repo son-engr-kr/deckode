@@ -46,6 +46,8 @@ interface DeckState {
   selectedSlideIds: string[];
   selectedElementIds: string[];
   highlightedElementIds: string[];
+  showAnimationOrder: boolean;
+  highlightedAnimationTarget: string | null;
   cropElementId: string | null;
   trimElementId: string | null;
   editingComponentId: string | null;
@@ -185,6 +187,8 @@ export const useDeckStore = create<DeckState>()(
         selectedSlideIds: [],
         selectedElementIds: [],
         highlightedElementIds: [],
+        showAnimationOrder: false,
+        highlightedAnimationTarget: null,
         cropElementId: null,
         trimElementId: null,
         editingComponentId: null,

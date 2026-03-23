@@ -31,6 +31,7 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
   const addElement = useDeckStore((s) => s.addElement);
   const trimElementId = useDeckStore((s) => s.trimElementId);
   const editingComponentId = useDeckStore((s) => s.editingComponentId);
+  const showAnimationOrder = useDeckStore((s) => s.showAnimationOrder);
   const adapter = useAdapter();
   const gitDiff = useGitDiff();
 
@@ -794,6 +795,47 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
           </div>
         );
       })()}
+      {/* Animation order overlay */}
+      {showAnimationOrder && slide?.animations && slide.animations.length > 0 && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}
+        >
+          {slide.animations.map((anim, idx) => {
+            const el = slide.elements.find((e) => e.id === anim.target);
+            if (!el) return null;
+            return (
+              <div
+                key={`anim-order-${idx}`}
+                style={{
+                  position: "absolute",
+                  left: el.position.x - 4,
+                  top: el.position.y - 4,
+                }}
+              >
+                <div
+                  className="flex items-center justify-center rounded-full bg-blue-600 text-white font-bold shadow-md"
+                  style={{ width: 20, height: 20, fontSize: 10 }}
+                >
+                  {idx + 1}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {/* Animation order toggle */}
+      <button
+        onClick={() => useDeckStore.setState((s) => ({ showAnimationOrder: !s.showAnimationOrder }))}
+        className={`absolute bottom-3 left-3 px-2 py-1 rounded text-xs transition-colors ${
+          showAnimationOrder
+            ? "bg-blue-600 text-white"
+            : "bg-black/50 text-zinc-400 hover:text-zinc-200"
+        }`}
+        title="Show animation order"
+      >
+        #
+      </button>
       {/* Zoom indicator */}
       {zoom !== 1 && (
         <div className="absolute bottom-3 right-3 px-2 py-1 rounded bg-black/50 text-zinc-300 text-xs tabular-nums pointer-events-none">

@@ -83,6 +83,8 @@ export function SelectionOverlay({ slide, scale }: Props) {
       if (!currentSlide) return;
       const element = currentSlide.elements.find((el) => el.id === elementId);
       if (!element) return;
+      // Highlight matching animation in the list
+      useDeckStore.setState({ highlightedAnimationTarget: elementId });
       const sel = state.selectedElementIds;
 
       if (e.shiftKey) {
