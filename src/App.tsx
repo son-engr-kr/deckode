@@ -183,7 +183,9 @@ export function App() {
 
     const result = mergeDeck(base, local, remoteDeck);
     if (result.merged) {
-      // No conflicts → apply merged deck and trigger auto-save
+      // Skip if merged result is identical to current store (avoids cursor reset in text inputs)
+      if (JSON.stringify(result.merged) === JSON.stringify(local)) return;
+      console.log("[deckode] External change merged");
       useDeckStore.getState().replaceDeck(result.merged);
     } else {
       // Conflicts exist → show dialog
