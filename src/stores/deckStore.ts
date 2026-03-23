@@ -291,9 +291,11 @@ export const useDeckStore = create<DeckState>()(
           } finally {
             _activeSave = null;
             if (!conflictDeck) {
-              const currentDeck = get().deck;
-              if (currentDeck) _lastSavedDeck = structuredClone(currentDeck);
-              set((state) => { state.isSaving = false; state.isDirty = false; });
+              // Use the snapshot that was actually written, not current store
+              // (user may have typed more during the async save)
+              _lastSavedDeck = structuredClone(deckToSave);
+              const hasNewChanges = get().deck !== deckToSave;
+              set((state) => { state.isSaving = false; state.isDirty = hasNewChanges; });
             } else {
               set((state) => { state.isSaving = false; });
             }
