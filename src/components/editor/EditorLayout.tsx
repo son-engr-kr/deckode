@@ -490,10 +490,8 @@ export function EditorLayout() {
           {pdfMenuOpen && (
             <div className="absolute right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded shadow-lg z-50 min-w-[140px]">
               {([
-                ["PDF (Image)", {} as const],
-                ["PDF (Image High)", { scale: 2, format: "jpeg" as const, quality: 0.92 }],
-                ["PDF (Image Balanced)", { scale: 2, format: "jpeg" as const, quality: 0.8 }],
-                ["PDF (Image Light)", { scale: 1, format: "jpeg" as const, quality: 0.7 }],
+                ["PDF (Image HD)", { scale: 4, format: "jpeg" as const, quality: 0.92 }],
+                ["PDF (Image)", { scale: 2, format: "jpeg" as const, quality: 0.92 }],
               ] as const).map(([label, opts]) => (
                 <button
                   key={label}
