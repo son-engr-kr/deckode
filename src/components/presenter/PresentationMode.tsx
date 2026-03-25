@@ -154,7 +154,14 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
   const deck = useDeckStore((s) => s.deck);
   const currentSlideIndex = useDeckStore((s) => s.currentSlideIndex);
   const setCurrentSlide = useDeckStore((s) => s.setCurrentSlide);
+  const setSavePaused = useDeckStore((s) => s.setSavePaused);
   const adapter = useAdapter();
+
+  // Pause auto-save in presenter mode; watcher still reloads external changes
+  useEffect(() => {
+    setSavePaused(true);
+    return () => setSavePaused(false);
+  }, [setSavePaused]);
 
   const [viewMode, setViewMode] = useState<ViewMode>("presenter");
   const [activeStep, setActiveStep] = useState(0);
@@ -455,6 +462,13 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
     onExit();
   }, [postExit, onExit]);
 
+  /** Save notes while auto-save is paused: temporarily unpause → save → re-pause */
+  const saveNotes = useCallback((slideId: string, notes: string) => {
+    useDeckStore.getState().updateSlide(slideId, { notes });
+    setSavePaused(false);
+    useDeckStore.getState().saveToDisk().finally(() => setSavePaused(true));
+  }, [setSavePaused]);
+
   // ── Laser pointer ──
 
   const handlePointerMove = useCallback(
@@ -587,6 +601,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
       onToggleTts={() => setTtsPlaying((p) => !p)}
       ttsRate={ttsRate}
       onTtsRateChange={setTtsRate}
+      onSaveNotes={saveNotes}
     />
   );
 }
@@ -621,6 +636,7 @@ function PresenterConsole({
   onToggleTts,
   ttsRate,
   onTtsRateChange,
+  onSaveNotes,
 }: {
   slide: Slide;
   nextSlide: Slide | null;
@@ -649,6 +665,7 @@ function PresenterConsole({
   onToggleTts: () => void;
   ttsRate: number;
   onTtsRateChange: (rate: number) => void;
+  onSaveNotes: (slideId: string, notes: string) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const slideAreaRef = useRef<HTMLDivElement>(null);
@@ -680,21 +697,21 @@ function PresenterConsole({
   }, [slide.notes]);
 
   const handleSaveNotes = useCallback(() => {
-    useDeckStore.getState().updateSlide(slide.id, { notes: noteDraft });
+    onSaveNotes(slide.id, noteDraft);
     setEditingNotes(false);
-  }, [slide.id, noteDraft]);
+  }, [slide.id, noteDraft, onSaveNotes]);
 
   // Close editor on slide change, saving any pending edits
   const prevSlideIdRef = useRef(slide.id);
   useEffect(() => {
     if (slide.id !== prevSlideIdRef.current) {
       if (editingNotes) {
-        useDeckStore.getState().updateSlide(prevSlideIdRef.current, { notes: noteDraft });
+        onSaveNotes(prevSlideIdRef.current, noteDraft);
         setEditingNotes(false);
       }
       prevSlideIdRef.current = slide.id;
     }
-  }, [slide.id, editingNotes, noteDraft]);
+  }, [slide.id, editingNotes, noteDraft, onSaveNotes]);
 
   const updateScales = useCallback(() => {
     if (!containerRef.current) return;
