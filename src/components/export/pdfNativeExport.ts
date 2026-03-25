@@ -1320,6 +1320,7 @@ async function renderSlide(
 export async function buildNativePdf(
   deck: Deck,
   adapter: FileSystemAdapter,
+  onProgress?: (current: number, total: number) => void,
 ): Promise<jsPDF> {
   const doc = new jsPDF({
     orientation: "landscape",
@@ -1334,6 +1335,7 @@ export async function buildNativePdf(
   for (let i = 0; i < slides.length; i++) {
     if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "landscape");
     await renderSlide(doc, slides[i]!, deck, adapter, i + 1, totalPages);
+    onProgress?.(i + 1, slides.length);
   }
 
   return doc;
@@ -1342,8 +1344,9 @@ export async function buildNativePdf(
 export async function exportToNativePdf(
   deck: Deck,
   adapter: FileSystemAdapter,
+  onProgress?: (current: number, total: number) => void,
 ): Promise<void> {
-  const doc = await buildNativePdf(deck, adapter);
+  const doc = await buildNativePdf(deck, adapter, onProgress);
   const name = (deck.meta.title || "presentation").replace(
     /[^a-zA-Z0-9_-]/g,
     "_",

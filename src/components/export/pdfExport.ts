@@ -50,6 +50,8 @@ import { resolveMarkers } from "@/utils/lineMarkers";
 const MIN_FONT_SIZE = 6;
 const CAPTURE_SCALE = 2;
 
+export type ExportProgressCallback = (current: number, total: number) => void;
+
 export interface PdfImageOptions {
   /** Pixel ratio for capture (default: 2) */
   scale?: number;
@@ -57,6 +59,8 @@ export interface PdfImageOptions {
   format?: "png" | "jpeg";
   /** JPEG quality 0-1 (default: 0.75) */
   quality?: number;
+  /** Progress callback, called after each slide is rendered */
+  onProgress?: ExportProgressCallback;
 }
 
 // ---- HTML escape ----
@@ -198,6 +202,7 @@ export async function exportToPdf(
   for (let i = 0; i < slides.length; i++) {
     if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "landscape");
     await renderSlide(doc, slides[i]!, deck, adapter, i + 1, totalPages, captureScale, imgFormat, jpegQuality);
+    opts?.onProgress?.(i + 1, slides.length);
   }
 
   const name = (deck.meta.title || "presentation").replace(
@@ -258,7 +263,10 @@ async function renderSlide(
       node.style.top = `${el.position.y}px`;
       node.style.width = `${el.size.w}px`;
       node.style.height = `${el.size.h}px`;
-      node.style.overflow = "hidden";
+      // Line/arrow SVGs need overflow:visible so markers & strokes aren't clipped
+      const isLineShape =
+        el.type === "shape" && ((el as ShapeElement).shape === "line" || (el as ShapeElement).shape === "arrow");
+      node.style.overflow = isLineShape ? "visible" : "hidden";
       ctr.appendChild(node);
 
       // Flexible text sizing: shrink font to fit (needs DOM attachment)
@@ -690,9 +698,9 @@ function buildShape(el: ShapeElement, deck: Deck): HTMLElement {
     } else {
       const line = document.createElementNS(ns, "line");
       line.setAttribute("x1", String(shortenStart));
-      line.setAttribute("y1", String(h / 2));
+      line.setAttribute("y1", "0");
       line.setAttribute("x2", String(w - shortenEnd));
-      line.setAttribute("y2", String(h / 2));
+      line.setAttribute("y2", "0");
       line.setAttribute("stroke", stroke);
       line.setAttribute("stroke-opacity", String(sOp));
       line.setAttribute("stroke-width", String(sw));

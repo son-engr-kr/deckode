@@ -61,6 +61,7 @@ export function EditorLayout() {
   const [pdfMenuOpen, setPdfMenuOpen] = useState(false);
   const [shareToast, setShareToast] = useState(false);
   const [showProjectSettings, setShowProjectSettings] = useState(false);
+  const [exportProgress, setExportProgress] = useState<{ current: number; total: number; label: string } | null>(null);
   const pdfMenuRef = useRef<HTMLDivElement>(null);
   const isDirty = useDeckStore((s) => s.isDirty);
   const isSaving = useDeckStore((s) => s.isSaving);
@@ -488,53 +489,39 @@ export function EditorLayout() {
           </button>
           {pdfMenuOpen && (
             <div className="absolute right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded shadow-lg z-50 min-w-[140px]">
+              {([
+                ["PDF (Image)", {} as const],
+                ["PDF (Image High)", { scale: 2, format: "jpeg" as const, quality: 0.92 }],
+                ["PDF (Image Balanced)", { scale: 2, format: "jpeg" as const, quality: 0.8 }],
+                ["PDF (Image Light)", { scale: 1, format: "jpeg" as const, quality: 0.7 }],
+              ] as const).map(([label, opts]) => (
+                <button
+                  key={label}
+                  disabled={!!exportProgress}
+                  onClick={() => {
+                    setPdfMenuOpen(false);
+                    const deck = useDeckStore.getState().deck;
+                    if (!deck) return;
+                    const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label });
+                    setExportProgress({ current: 0, total: deck.slides.length, label });
+                    exportToPdf(deck, adapter, { ...opts, onProgress }).finally(() => setExportProgress(null));
+                  }}
+                  className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
+                >
+                  {label}
+                </button>
+              ))}
               <button
+                disabled={!!exportProgress}
                 onClick={() => {
                   setPdfMenuOpen(false);
                   const deck = useDeckStore.getState().deck;
-                  if (deck) exportToPdf(deck, adapter);
+                  if (!deck) return;
+                  const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label: "PDF (Native)" });
+                  setExportProgress({ current: 0, total: deck.slides.length, label: "PDF (Native)" });
+                  exportToNativePdf(deck, adapter, onProgress).finally(() => setExportProgress(null));
                 }}
-                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
-              >
-                PDF (Image)
-              </button>
-              <button
-                onClick={() => {
-                  setPdfMenuOpen(false);
-                  const deck = useDeckStore.getState().deck;
-                  if (deck) exportToPdf(deck, adapter, { scale: 2, format: "jpeg", quality: 0.92 });
-                }}
-                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
-              >
-                PDF (Image High)
-              </button>
-              <button
-                onClick={() => {
-                  setPdfMenuOpen(false);
-                  const deck = useDeckStore.getState().deck;
-                  if (deck) exportToPdf(deck, adapter, { scale: 2, format: "jpeg", quality: 0.8 });
-                }}
-                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
-              >
-                PDF (Image Balanced)
-              </button>
-              <button
-                onClick={() => {
-                  setPdfMenuOpen(false);
-                  const deck = useDeckStore.getState().deck;
-                  if (deck) exportToPdf(deck, adapter, { scale: 1, format: "jpeg", quality: 0.7 });
-                }}
-                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
-              >
-                PDF (Image Light)
-              </button>
-              <button
-                onClick={() => {
-                  setPdfMenuOpen(false);
-                  const deck = useDeckStore.getState().deck;
-                  if (deck) exportToNativePdf(deck, adapter);
-                }}
-                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
+                className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
               >
                 PDF (Native)
               </button>
@@ -542,11 +529,15 @@ export function EditorLayout() {
           )}
         </div>
         <button
+          disabled={!!exportProgress}
           onClick={() => {
             const deck = useDeckStore.getState().deck;
-            if (deck) exportToPptx(deck, adapter);
+            if (!deck) return;
+            const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label: "PPTX" });
+            setExportProgress({ current: 0, total: deck.slides.length, label: "PPTX" });
+            exportToPptx(deck, adapter, onProgress).finally(() => setExportProgress(null));
           }}
-          className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
         >
           PPTX
         </button>
@@ -685,6 +676,21 @@ export function EditorLayout() {
           )}
         </div>
       </div>
+      {exportProgress && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl px-5 py-3 flex items-center gap-3 min-w-[280px]">
+          <div className="flex-1">
+            <div className="text-xs text-zinc-300 mb-1.5">
+              {exportProgress.label} — {exportProgress.current}/{exportProgress.total} slides
+            </div>
+            <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 rounded-full transition-all duration-200"
+                style={{ width: `${exportProgress.total > 0 ? (exportProgress.current / exportProgress.total) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {showProjectSettings && (
         <ProjectSettingsDialog
           projectName={useDeckStore.getState().currentProject ?? ""}

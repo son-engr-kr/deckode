@@ -58,6 +58,7 @@ const PX_TO_PT = 0.75;
 export async function exportToPptx(
   deck: Deck,
   adapter: FileSystemAdapter,
+  onProgress?: (current: number, total: number) => void,
 ): Promise<void> {
   const pres = new PptxGenJS();
   pres.defineLayout({ name: "DECKODE", width: SLIDE_W, height: SLIDE_H });
@@ -141,6 +142,7 @@ export async function exportToPptx(
         .replace(/\[\/step\]/g, "");
       pptSlide.addNotes(clean);
     }
+    onProgress?.(si + 1, visibleSlides.length);
   }
 
   const filename = (deck.meta.title || "presentation").replace(
