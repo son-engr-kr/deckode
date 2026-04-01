@@ -2,6 +2,12 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useDeckStore } from "./deckStore";
 import type { Animation, Deck, Slide, SlideElement } from "@/types/deck";
 
+/** Helper: check dirty state via version counters */
+function isDirty(): boolean {
+  const s = useDeckStore.getState();
+  return s.versionId !== s.savedVersionId;
+}
+
 // -- Test fixtures --
 
 function makeElement(id: string, x = 100, y = 100): SlideElement {
@@ -36,7 +42,8 @@ beforeEach(() => {
     deck: null,
     currentSlideIndex: 0,
     selectedElementIds: [],
-    isDirty: false,
+    versionId: 0,
+    savedVersionId: 0,
     isSaving: false,
   });
 });
@@ -56,7 +63,7 @@ describe("deckStore - openProject / closeProject", () => {
     expect(state.deck.slides).toHaveLength(3);
     expect(state.currentSlideIndex).toBe(0);
     expect(state.selectedElementIds).toEqual([]);
-    expect(state.isDirty).toBe(false);
+    expect(state.versionId).toBe(state.savedVersionId);
   });
 
   it("closeProject clears all state", () => {
@@ -71,7 +78,7 @@ describe("deckStore - openProject / closeProject", () => {
     expect(state.deck).toBeNull();
     expect(state.currentSlideIndex).toBe(0);
     expect(state.selectedElementIds).toEqual([]);
-    expect(state.isDirty).toBe(false);
+    expect(state.versionId).toBe(state.savedVersionId);
   });
 });
 
@@ -89,7 +96,7 @@ describe("deckStore - basic actions", () => {
     expect(state.deck.slides).toHaveLength(3);
     expect(state.currentSlideIndex).toBe(0);
     expect(state.selectedElementIds).toEqual([]);
-    expect(state.isDirty).toBe(false);
+    expect(state.versionId).toBe(state.savedVersionId);
   });
 
   it("setCurrentSlide changes slide index and clears selection", () => {
@@ -274,10 +281,10 @@ describe("deckStore - replaceDeck vs loadDeck", () => {
 
   it("replaceDeck sets isDirty to true", () => {
     useDeckStore.getState().loadDeck(makeDeck(3));
-    expect(useDeckStore.getState().isDirty).toBe(false);
+    expect(isDirty()).toBe(false);
 
     useDeckStore.getState().replaceDeck(makeDeck(3));
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 });
 
@@ -288,7 +295,7 @@ describe("deckStore - replaceDeck vs loadDeck", () => {
 describe("deckStore - isDirty tracking", () => {
   it("loadDeck sets isDirty to false", () => {
     useDeckStore.getState().loadDeck(makeDeck());
-    expect(useDeckStore.getState().isDirty).toBe(false);
+    expect(isDirty()).toBe(false);
   });
 
   it("updateElement sets isDirty to true", () => {
@@ -296,31 +303,31 @@ describe("deckStore - isDirty tracking", () => {
     useDeckStore.getState().updateElement("s0", "e0-0", {
       position: { x: 1, y: 1 },
     });
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("addSlide sets isDirty to true", () => {
     useDeckStore.getState().loadDeck(makeDeck());
     useDeckStore.getState().addSlide(makeSlide("new"));
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("deleteSlide sets isDirty to true", () => {
     useDeckStore.getState().loadDeck(makeDeck());
     useDeckStore.getState().deleteSlide("s0");
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("addElement sets isDirty to true", () => {
     useDeckStore.getState().loadDeck(makeDeck());
     useDeckStore.getState().addElement("s0", makeElement("new"));
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("deleteElement sets isDirty to true", () => {
     useDeckStore.getState().loadDeck(makeDeck());
     useDeckStore.getState().deleteElement("s0", "e0-0");
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 });
 
@@ -398,7 +405,7 @@ describe("deckStore - animation CRUD", () => {
     const updated = useDeckStore.getState().deck!.slides[0]!;
     expect(updated.animations).toHaveLength(1);
     expect(updated.animations![0]!.effect).toBe("fadeIn");
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("addAnimation appends to existing animations", () => {
@@ -467,11 +474,12 @@ describe("deckStore - moveAnimation", () => {
     useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onEnter", effect: "fadeIn" });
     useDeckStore.getState().addAnimation("s0", { target: "e0-0", trigger: "onClick", effect: "scaleIn" });
 
-    // Reset isDirty
-    useDeckStore.setState({ isDirty: false });
+    // Reset version counters to mark as clean
+    const v = useDeckStore.getState().versionId;
+    useDeckStore.setState({ savedVersionId: v });
 
     useDeckStore.getState().moveAnimation("s0", 0, 1);
-    expect(useDeckStore.getState().isDirty).toBe(true);
+    expect(isDirty()).toBe(true);
   });
 
   it("throws on out-of-bounds indices", () => {

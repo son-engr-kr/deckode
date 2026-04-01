@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useDeckStore } from "@/stores/deckStore";
+import { useDeckStore, selectIsDirty } from "@/stores/deckStore";
 import type { SlideElement } from "@/types/deck";
 import type { ReferenceElement, SharedComponent } from "@/types/deck";
 import { findUndoChanges } from "@/utils/deckDiff";
@@ -63,7 +63,7 @@ export function EditorLayout() {
   const [showProjectSettings, setShowProjectSettings] = useState(false);
   const [exportProgress, setExportProgress] = useState<{ current: number; total: number; label: string } | null>(null);
   const pdfMenuRef = useRef<HTMLDivElement>(null);
-  const isDirty = useDeckStore((s) => s.isDirty);
+  const isDirty = useDeckStore(selectIsDirty);
   const isSaving = useDeckStore((s) => s.isSaving);
   const saveToDisk = useDeckStore((s) => s.saveToDisk);
 

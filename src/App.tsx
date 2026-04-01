@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useDeckStore, getLastSavedDeck, getDeckDragging, getLastSaveTime } from "@/stores/deckStore";
+import { useDeckStore, getLastSavedDeck, setLastSavedDeck, getDeckDragging, getLastSaveTime } from "@/stores/deckStore";
 import { setStoreAdapter } from "@/stores/deckStore";
 import { mergeDeck } from "@/utils/deckDiff";
 import { EditorLayout } from "@/components/editor/EditorLayout";
@@ -183,7 +183,10 @@ export function App() {
 
     const result = mergeDeck(base, local, remoteDeck);
     if (result.merged) {
-      // Skip if merged result is identical to current store (avoids cursor reset in text inputs)
+      // Always update base to disk state — even if merged result equals local,
+      // the disk changed and future merges need the correct base.
+      setLastSavedDeck(remoteDeck);
+      // Skip store update if merged result is identical to current (avoids cursor reset in text inputs)
       if (JSON.stringify(result.merged) === JSON.stringify(local)) return;
       console.log("[deckode] External change merged");
       useDeckStore.getState().replaceDeck(result.merged);

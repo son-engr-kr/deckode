@@ -489,6 +489,10 @@ export function deckApiPlugin(): Plugin {
           }
         }
         slideCache.set(project, cache);
+        // Seed hash on first load so conflict detection works after server restart
+        if (!lastSaveHash.has(project)) {
+          lastSaveHash.set(project, fnv1aHash(raw));
+        }
         watchProject(project);
         jsonResponse(res, 200, deck);
       });
@@ -528,11 +532,13 @@ export function deckApiPlugin(): Plugin {
         splitSlideRefs(deck, path.dirname(dp), cache);
         const serialized = JSON.stringify(deck, null, 2);
         const hash = fnv1aHash(serialized);
+        const prevHash = lastSaveHash.get(project);
+        // Set hash BEFORE disk write so fs.watch handler sees our hash
+        lastSaveHash.set(project, hash);
         // Skip disk write if content is identical
-        if (hash !== lastSaveHash.get(project)) {
+        if (hash !== prevHash) {
           fs.writeFileSync(dp, serialized, "utf-8");
         }
-        lastSaveHash.set(project, hash);
         jsonResponse(res, 200, { ok: true });
       });
 

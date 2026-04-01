@@ -51,7 +51,8 @@ interface DeckState {
   cropElementId: string | null;
   trimElementId: string | null;
   editingComponentId: string | null;
-  isDirty: boolean;
+  versionId: number;
+  savedVersionId: number;
   isSaving: boolean;
   savePaused: boolean;
 
@@ -112,6 +113,11 @@ let isDragging = false;
 // Snapshot of the deck at last save/load — used for three-way merge
 let _lastSavedDeck: Deck | null = null;
 export function getLastSavedDeck(): Deck | null { return _lastSavedDeck; }
+export function setLastSavedDeck(deck: Deck): void { _lastSavedDeck = structuredClone(deck); }
+
+export function selectIsDirty(state: { versionId: number; savedVersionId: number }): boolean {
+  return state.versionId !== state.savedVersionId;
+}
 
 // Hoisted so we can cancel the pending batch on project switch
 let batchTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -197,7 +203,8 @@ export const useDeckStore = create<DeckState>()(
         cropElementId: null,
         trimElementId: null,
         editingComponentId: null,
-        isDirty: false,
+        versionId: 0,
+        savedVersionId: 0,
         isSaving: false,
         savePaused: false,
 
@@ -220,7 +227,8 @@ export const useDeckStore = create<DeckState>()(
               : [];
             state.selectedElementIds = [];
             state.editingComponentId = null;
-            state.isDirty = false;
+            state.versionId = 0;
+            state.savedVersionId = 0;
             state.savePaused = false;
           });
         },
@@ -234,7 +242,8 @@ export const useDeckStore = create<DeckState>()(
             state.selectedSlideIds = [];
             state.selectedElementIds = [];
             state.editingComponentId = null;
-            state.isDirty = false;
+            state.versionId = 0;
+            state.savedVersionId = 0;
             state.savePaused = false;
           });
         },
@@ -257,7 +266,8 @@ export const useDeckStore = create<DeckState>()(
               : [];
             state.selectedElementIds = [];
             state.editingComponentId = null;
-            state.isDirty = false;
+            state.versionId = 0;
+            state.savedVersionId = 0;
           });
         },
 
@@ -269,7 +279,7 @@ export const useDeckStore = create<DeckState>()(
               state.currentSlideIndex = Math.max(0, deck.slides.length - 1);
             }
             saveSlideIndex(state.currentProject, state.currentSlideIndex);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         saveToDisk: async () => {
@@ -283,6 +293,11 @@ export const useDeckStore = create<DeckState>()(
             _pendingSave = true;
             return;
           }
+
+          // Capture versionId before async save — mutations during save stay dirty
+          const snapshotVersionId = get().versionId;
+          // Capture base ref so we don't overwrite a concurrent tryMerge update
+          const baseBeforeSave = _lastSavedDeck;
 
           // GC: remove unused components + strip legacy `size` field before serialization
           let deckToSave = get().deck!;
@@ -317,9 +332,12 @@ export const useDeckStore = create<DeckState>()(
           } finally {
             _activeSave = null;
             if (!conflictDeck) {
-              _lastSavedDeck = structuredClone(deckToSave);
+              // Only update base if tryMerge hasn't set a newer one during our save
+              if (_lastSavedDeck === baseBeforeSave) {
+                _lastSavedDeck = structuredClone(deckToSave);
+              }
               _lastSaveTime = Date.now();
-              set((state) => { state.isSaving = false; state.isDirty = false; });
+              set((state) => { state.isSaving = false; state.savedVersionId = snapshotVersionId; });
             } else {
               set((state) => { state.isSaving = false; });
             }
@@ -349,7 +367,7 @@ export const useDeckStore = create<DeckState>()(
           }
 
           // A mutation happened while we were writing — save once more.
-          if (_pendingSave) {
+          if (_pendingSave || get().versionId !== get().savedVersionId) {
             _pendingSave = false;
             return get().saveToDisk();
           }
@@ -437,7 +455,7 @@ export const useDeckStore = create<DeckState>()(
               const el = slide.elements.find((e) => e.id === elId);
               if (el) el.groupId = groupId;
             }
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         ungroupElements: (slideId, groupId) =>
@@ -447,7 +465,7 @@ export const useDeckStore = create<DeckState>()(
             for (const el of slide.elements) {
               if (el.groupId === groupId) delete el.groupId;
             }
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updateElement: (slideId, elementId, patch) =>
@@ -458,7 +476,7 @@ export const useDeckStore = create<DeckState>()(
             assert(element !== undefined, `Element ${elementId} not found in slide ${slideId}`);
             Object.assign(element, patch);
             assertNoLineRotation(element);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         patchElementById: (elementId, patch) =>
@@ -469,7 +487,7 @@ export const useDeckStore = create<DeckState>()(
               if (element) {
                 Object.assign(element, patch);
                 assertNoLineRotation(element);
-                state.isDirty = true;
+                state.versionId += 1;
                 return;
               }
             }
@@ -480,7 +498,7 @@ export const useDeckStore = create<DeckState>()(
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
             Object.assign(slide, patch);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         addSlide: (slide, afterIndex) =>
@@ -489,7 +507,7 @@ export const useDeckStore = create<DeckState>()(
             const idx = afterIndex ?? state.deck.slides.length;
             slide._ref = `./slides/${slide.id}.json`;
             state.deck.slides.splice(idx + 1, 0, slide);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         deleteSlide: (slideId) =>
@@ -503,7 +521,7 @@ export const useDeckStore = create<DeckState>()(
               state.currentSlideIndex = Math.max(0, state.deck.slides.length - 1);
             }
             saveSlideIndex(state.currentProject, state.currentSlideIndex);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         moveSlide: (fromIndex, toIndex) =>
@@ -523,7 +541,7 @@ export const useDeckStore = create<DeckState>()(
               state.currentSlideIndex += 1;
             }
             saveSlideIndex(state.currentProject, state.currentSlideIndex);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         addElement: (slideId, element) =>
@@ -532,7 +550,7 @@ export const useDeckStore = create<DeckState>()(
             assertNoLineRotation(element);
             const slide = getSlide(state.deck.slides, slideId);
             slide.elements.push(element);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         deleteElement: (slideId, elementId) =>
@@ -558,7 +576,7 @@ export const useDeckStore = create<DeckState>()(
                 for (const el of remaining) delete el.groupId;
               }
             }
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         duplicateElement: (slideId, elementId) =>
@@ -572,7 +590,7 @@ export const useDeckStore = create<DeckState>()(
             clone.position = { x: element.position.x + 20, y: element.position.y + 20 };
             slide.elements.push(clone);
             state.selectedElementIds = [clone.id];
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         addAnimation: (slideId, animation) =>
@@ -581,7 +599,7 @@ export const useDeckStore = create<DeckState>()(
             const slide = getSlide(state.deck.slides, slideId);
             if (!slide.animations) slide.animations = [];
             slide.animations.push(animation);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updateAnimation: (slideId, index, patch) =>
@@ -590,7 +608,7 @@ export const useDeckStore = create<DeckState>()(
             const slide = getSlide(state.deck.slides, slideId);
             assert(slide.animations !== undefined && index >= 0 && index < slide.animations.length, `Animation index ${index} out of bounds`);
             Object.assign(slide.animations[index]!, patch);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         deleteAnimation: (slideId, index) =>
@@ -599,7 +617,7 @@ export const useDeckStore = create<DeckState>()(
             const slide = getSlide(state.deck.slides, slideId);
             assert(slide.animations !== undefined && index >= 0 && index < slide.animations.length, `Animation index ${index} out of bounds`);
             slide.animations.splice(index, 1);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         moveAnimation: (slideId, fromIndex, toIndex) =>
@@ -612,7 +630,7 @@ export const useDeckStore = create<DeckState>()(
             assert(toIndex >= 0 && toIndex < anims.length, `toIndex ${toIndex} out of bounds`);
             const [moved] = anims.splice(fromIndex, 1);
             anims.splice(toIndex, 0, moved!);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         addComment: (slideId, comment) =>
@@ -621,7 +639,7 @@ export const useDeckStore = create<DeckState>()(
             const slide = getSlide(state.deck.slides, slideId);
             if (!slide.comments) slide.comments = [];
             slide.comments.push(comment);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updateComment: (slideId, commentId, patch) =>
@@ -633,7 +651,7 @@ export const useDeckStore = create<DeckState>()(
             assert(comment !== undefined, `Comment ${commentId} not found`);
             if (patch.text !== undefined) comment.text = patch.text;
             if ("category" in patch) comment.category = patch.category || undefined;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         deleteComment: (slideId, commentId) =>
@@ -645,7 +663,7 @@ export const useDeckStore = create<DeckState>()(
             assert(idx !== -1, `Comment ${commentId} not found`);
             slide.comments.splice(idx, 1);
             if (slide.comments.length === 0) delete slide.comments;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updateTheme: (patch) =>
@@ -657,14 +675,14 @@ export const useDeckStore = create<DeckState>()(
               merged[key] = { ...prev[key], ...patch[key] } as never;
             }
             state.deck.theme = merged;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updatePageNumbers: (patch) =>
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
             state.deck.pageNumbers = { ...state.deck.pageNumbers, ...patch } as PageNumberConfig;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         toggleSlideHidden: (slideId) =>
@@ -672,7 +690,7 @@ export const useDeckStore = create<DeckState>()(
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
             slide.hidden = !slide.hidden;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         highlightElements: (ids) => {
@@ -699,7 +717,7 @@ export const useDeckStore = create<DeckState>()(
             if (idx === slide.elements.length - 1) return; // already front
             const [el] = slide.elements.splice(idx, 1);
             slide.elements.push(el!);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         sendToBack: (slideId, elementId) =>
@@ -711,7 +729,7 @@ export const useDeckStore = create<DeckState>()(
             if (idx === 0) return; // already back
             const [el] = slide.elements.splice(idx, 1);
             slide.elements.unshift(el!);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         // ── Shared Component Actions ────────────────────────────────
@@ -760,7 +778,7 @@ export const useDeckStore = create<DeckState>()(
             };
             slide.elements.push(refEl);
             state.selectedElementIds = [refEl.id];
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         detachReference: (slideId, elementId) =>
@@ -797,7 +815,7 @@ export const useDeckStore = create<DeckState>()(
             // Replace the reference element with inlined elements
             slide.elements.splice(idx, 1, ...inlined);
             state.selectedElementIds = newIds;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         pasteReference: (slideId, componentId, position) =>
@@ -817,7 +835,7 @@ export const useDeckStore = create<DeckState>()(
             };
             slide.elements.push(refEl);
             state.selectedElementIds = [refEl.id];
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         enterComponentEditMode: (componentId) =>
@@ -848,7 +866,7 @@ export const useDeckStore = create<DeckState>()(
 
             state.editingComponentId = null;
             state.selectedElementIds = [];
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         updateComponentElement: (componentId, elementId, patch) =>
@@ -859,7 +877,7 @@ export const useDeckStore = create<DeckState>()(
             const element = comp.elements.find((e) => e.id === elementId);
             assert(element !== undefined, `Element ${elementId} not found in component`);
             Object.assign(element, patch);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         addComponentElement: (componentId, element) =>
@@ -868,7 +886,7 @@ export const useDeckStore = create<DeckState>()(
             const comp = state.deck.components?.[componentId];
             assert(comp !== undefined, `Component ${componentId} not found`);
             comp.elements.push(element);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         deleteComponentElement: (componentId, elementId) =>
@@ -880,7 +898,7 @@ export const useDeckStore = create<DeckState>()(
             assert(idx !== -1, `Element ${elementId} not found in component`);
             comp.elements.splice(idx, 1);
             state.selectedElementIds = state.selectedElementIds.filter((id) => id !== elementId);
-            state.isDirty = true;
+            state.versionId += 1;
           }),
 
         renameComponent: (componentId, name) =>
@@ -889,7 +907,7 @@ export const useDeckStore = create<DeckState>()(
             const comp = state.deck.components?.[componentId];
             assert(comp !== undefined, `Component ${componentId} not found`);
             comp.name = name;
-            state.isDirty = true;
+            state.versionId += 1;
           }),
       })),
       {
@@ -974,7 +992,7 @@ function scheduleAutoSave() {
 }
 
 useDeckStore.subscribe(
-  (s) => s.isDirty,
+  (s) => s.versionId !== s.savedVersionId,
   (dirty) => {
     if (!dirty) return;
     if (useDeckStore.getState().savePaused) return;

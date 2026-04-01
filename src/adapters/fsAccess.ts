@@ -206,9 +206,9 @@ export class FsAccessAdapter implements FileSystemAdapter {
     const fileHandle = await this.dirHandle.getFileHandle("deck.json", { create: true });
     const writable = await fileHandle.createWritable();
     const serialized = JSON.stringify(mutableDeck, null, 2);
+    this._lastSaveHash = fnv1aHash(serialized);
     await writable.write(serialized);
     await writable.close();
-    this._lastSaveHash = fnv1aHash(serialized);
     return null;
   }
 
