@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { useDeckStore, selectIsDirty } from "@/stores/deckStore";
 import type { SlideElement } from "@/types/deck";
 import type { ReferenceElement, SharedComponent } from "@/types/deck";
@@ -25,6 +26,61 @@ import {
   setElementClipboard,
   setSlideClipboard,
 } from "./clipboard";
+
+// ── Error boundary for PropertyPanel ──
+
+class PropertyPanelErrorBoundary extends Component<
+  { elementId: string | null; elementType: string | null; children: ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(`[PropertyPanel] Crash for element "${this.props.elementId}" (${this.props.elementType}):`, error, info.componentStack);
+  }
+
+  componentDidUpdate(prevProps: { elementId: string | null; elementType: string | null }) {
+    if (prevProps.elementId !== this.props.elementId && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="p-3">
+          <div
+            style={{
+              backgroundColor: "#2a1215",
+              border: "1px solid #7f1d1d",
+              borderRadius: 6,
+              padding: "10px 12px",
+              color: "#f87171",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            PropertyPanel crashed
+            {this.props.elementType && (
+              <div style={{ fontWeight: 400, marginTop: 4, color: "#fca5a5" }}>
+                {this.props.elementType}
+                {this.props.elementId ? ` / ${this.props.elementId}` : ""}
+              </div>
+            )}
+            <div style={{ fontWeight: 400, marginTop: 6, color: "#ef4444", fontSize: 11 }}>
+              {this.state.error.message}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function performUndoRedo(direction: "undo" | "redo") {
   const temporal = useDeckStore.temporal.getState();
@@ -66,6 +122,13 @@ export function EditorLayout() {
   const isDirty = useDeckStore(selectIsDirty);
   const isSaving = useDeckStore((s) => s.isSaving);
   const saveToDisk = useDeckStore((s) => s.saveToDisk);
+  const selectedElementId = useDeckStore((s) => s.selectedElementIds?.[0] ?? null);
+  const selectedElement = useDeckStore((s) => {
+    const id = s.selectedElementIds?.[0];
+    if (!id) return null;
+    const slide = s.deck?.slides?.[s.currentSlideIndex];
+    return slide?.elements?.find((e) => e.id === id) ?? null;
+  });
 
   // Resizable panel widths
   const [leftWidth, setLeftWidth] = useState(170);
@@ -660,7 +723,12 @@ export function EditorLayout() {
             <>
               {/* Properties — top half */}
               <div className="flex-1 overflow-y-auto border-b border-zinc-800">
-                <PropertyPanel />
+                <PropertyPanelErrorBoundary
+                  elementId={selectedElementId}
+                  elementType={selectedElement?.type ?? null}
+                >
+                  <PropertyPanel />
+                </PropertyPanelErrorBoundary>
               </div>
               {/* Animations — bottom half */}
               <div className="flex-1 overflow-y-auto">
