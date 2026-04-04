@@ -448,6 +448,10 @@ export function deckApiPlugin(): Plugin {
         if (fs.existsSync(guideSource)) {
           fs.copyFileSync(guideSource, path.resolve(docsDir, "deckode-guide.md"));
         }
+        const guideDir = path.resolve(process.cwd(), "docs", "guide");
+        if (fs.existsSync(guideDir)) {
+          fs.cpSync(guideDir, path.resolve(docsDir, "guide"), { recursive: true });
+        }
 
         jsonResponse(res, 200, { ok: true, name });
       });
