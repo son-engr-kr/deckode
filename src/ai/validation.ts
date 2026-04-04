@@ -30,6 +30,68 @@ export function validateDeck(deck: Deck): ValidationResult {
     }
     slideIds.add(slide.id);
 
+    // Forbidden element types (not supported / cause rendering issues)
+    const FORBIDDEN_TYPES = ["mermaid", "video", "iframe", "audio"];
+    for (const el of slide.elements) {
+      if (FORBIDDEN_TYPES.includes(el.type)) {
+        issues.push({
+          severity: "error",
+          slideId: slide.id,
+          elementId: el.id,
+          message: `Forbidden element type "${el.type}" — use shape+text for diagrams, code for code`,
+          autoFixable: false,
+        });
+      }
+    }
+
+    // Overlap detection: check all pairs with significant area
+    const measurableEls = slide.elements.filter(
+      (e) => e.position && e.size && e.size.w > 5 && e.size.h > 5,
+    );
+    for (let a = 0; a < measurableEls.length; a++) {
+      for (let b = a + 1; b < measurableEls.length; b++) {
+        const ea = measurableEls[a]!;
+        const eb = measurableEls[b]!;
+        // Skip if they share a groupId (intentionally stacked)
+        const gaGroup = (ea as { groupId?: string }).groupId;
+        const gbGroup = (eb as { groupId?: string }).groupId;
+        if (gaGroup && gaGroup === gbGroup) continue;
+        const ax1 = ea.position.x, ay1 = ea.position.y;
+        const ax2 = ax1 + ea.size.w,  ay2 = ay1 + ea.size.h;
+        const bx1 = eb.position.x, by1 = eb.position.y;
+        const bx2 = bx1 + eb.size.w,  by2 = by1 + eb.size.h;
+        const overlapW = Math.min(ax2, bx2) - Math.max(ax1, bx1);
+        const overlapH = Math.min(ay2, by2) - Math.max(ay1, by1);
+        if (overlapW > 20 && overlapH > 20) {
+          const areaA = ea.size.w * ea.size.h;
+          const areaB = eb.size.w * eb.size.h;
+          const overlapArea = overlapW * overlapH;
+          const overlapPct = overlapArea / Math.min(areaA, areaB);
+          // Skip label-on-box pattern: smaller element fully inside larger (area ratio > 3x)
+          const isLabelOnBox = overlapPct > 0.9 && Math.max(areaA, areaB) / Math.min(areaA, areaB) > 3;
+          if (!isLabelOnBox) {
+            if (overlapPct > 0.5) {
+              issues.push({
+                severity: "error",
+                slideId: slide.id,
+                elementId: ea.id,
+                message: `Elements "${ea.id}" and "${eb.id}" overlap by ${Math.round(overlapPct * 100)}% — move one to a different position`,
+                autoFixable: false,
+              });
+            } else if (overlapPct > 0.15) {
+              issues.push({
+                severity: "warning",
+                slideId: slide.id,
+                elementId: ea.id,
+                message: `Elements "${ea.id}" and "${eb.id}" overlap by ${Math.round(overlapPct * 100)}% (${overlapW}×${overlapH}px)`,
+                autoFixable: false,
+              });
+            }
+          }
+        }
+      }
+    }
+
     for (const el of slide.elements) {
       // Duplicate element ID
       if (elementIds.has(el.id)) {
@@ -104,6 +166,89 @@ export function validateDeck(deck: Deck): ValidationResult {
         });
       }
 
+      // Arrow/line with rotation field (causes assert fail in renderer)
+      if (el.type === "shape") {
+        const shape = el as { shape?: string; rotation?: unknown };
+        if ((shape.shape === "arrow" || shape.shape === "line") && shape.rotation !== undefined) {
+          issues.push({
+            severity: "error",
+            slideId: slide.id,
+            elementId: el.id,
+            message: `Arrow/line element has rotation field (must be removed — use waypoints instead)`,
+            autoFixable: false,
+          });
+        }
+      }
+
+      // scene3d: orbitControls in slide context interferes with navigation
+      if (el.type === "scene3d") {
+        const s3d = el as { scene?: { orbitControls?: boolean; camera?: { position?: number[] } } };
+        if (s3d.scene?.orbitControls === true) {
+          issues.push({
+            severity: "warning",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "scene3d has orbitControls:true — this grabs mouse events and breaks slide navigation",
+            autoFixable: false,
+          });
+        }
+      }
+
+      // TikZ missing bounding box \path ... rectangle
+      if (el.type === "tikz") {
+        const tikz = el as { content?: string };
+        if (tikz.content && !tikz.content.includes("\\path") && !tikz.content.includes("rectangle")) {
+          issues.push({
+            severity: "warning",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "TikZ element missing bounding box (\\path ... rectangle)",
+            autoFixable: false,
+          });
+        }
+      }
+
+      // Text: double backslash in non-TikZ text (LaTeX line-break error)
+      if (el.type === "text") {
+        const txt = el as { content?: string };
+        if (txt.content && /\\\\/.test(txt.content)) {
+          issues.push({
+            severity: "warning",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "Text element contains \\\\ (LaTeX line break outside TikZ — may break rendering)",
+            autoFixable: false,
+          });
+        }
+        // Bold markers inside math delimiters
+        if (txt.content && /\$[^$]*\*\*[^$]*\$/.test(txt.content)) {
+          issues.push({
+            severity: "warning",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "Text element has **bold** inside $math$ (use \\mathbf{} instead)",
+            autoFixable: false,
+          });
+        }
+      }
+
+      // Code element: too many lines
+      if (el.type === "code") {
+        const code = el as { content?: string };
+        if (code.content) {
+          const lineCount = code.content.split("\n").length;
+          if (lineCount > 25) {
+            issues.push({
+              severity: "warning",
+              slideId: slide.id,
+              elementId: el.id,
+              message: `Code element has ${lineCount} lines (max 25 recommended)`,
+              autoFixable: false,
+            });
+          }
+        }
+      }
+
       // Empty text content
       if (el.type === "text" && !(el as { content: string }).content?.trim()) {
         issues.push({
@@ -139,6 +284,43 @@ export function validateDeck(deck: Deck): ValidationResult {
           }
         }
       }
+
+      // Table: missing or empty columns/rows (causes PropertyPanel crash)
+      if (el.type === "table") {
+        const tbl = el as { columns?: unknown; rows?: unknown };
+        if (!Array.isArray(tbl.columns) || tbl.columns.length === 0) {
+          issues.push({
+            severity: "error",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "Table element missing or empty columns array",
+            autoFixable: false,
+          });
+        }
+        if (!Array.isArray(tbl.rows) || tbl.rows.length === 0) {
+          issues.push({
+            severity: "error",
+            slideId: slide.id,
+            elementId: el.id,
+            message: "Table element missing or empty rows array",
+            autoFixable: false,
+          });
+        }
+      }
+    }
+
+    // Step marker vs onClick animation count
+    if (slide.notes && slide.animations) {
+      const stepMatches = [...slide.notes.matchAll(/\[step:\d+\]/g)];
+      const onClickCount = slide.animations.filter((a) => a.trigger === "onClick").length;
+      if (stepMatches.length > 0 && stepMatches.length !== onClickCount) {
+        issues.push({
+          severity: "warning",
+          slideId: slide.id,
+          message: `Step marker count (${stepMatches.length}) does not match onClick animation count (${onClickCount})`,
+          autoFixable: false,
+        });
+      }
     }
   }
 
@@ -146,30 +328,34 @@ export function validateDeck(deck: Deck): ValidationResult {
 }
 
 export function buildFixInstructions(result: ValidationResult): string {
-  const fixable = result.issues.filter((i) => i.autoFixable);
-  if (fixable.length === 0) return "";
+  if (result.issues.length === 0) return "";
 
-  const lines = fixable.map((i) => {
-    if (i.message.includes("overflows right")) {
-      return `- [${i.slideId}/${i.elementId}] Reduce width or move left to fit within 960px`;
-    }
-    if (i.message.includes("overflows bottom")) {
-      return `- [${i.slideId}/${i.elementId}] Reduce height or move up to fit within 540px`;
-    }
-    if (i.message.includes("negative")) {
-      return `- [${i.slideId}/${i.elementId}] Move position to positive coordinates`;
-    }
-    if (i.message.includes("Font size too small")) {
-      return `- [${i.slideId}/${i.elementId}] Increase font size to at least 12`;
-    }
-    if (i.message.includes("Font size too large")) {
-      return `- [${i.slideId}/${i.elementId}] Decrease font size to at most 60`;
-    }
-    if (i.message.includes("zero or missing size")) {
-      return `- [${i.slideId}/${i.elementId}] Set reasonable width and height`;
-    }
-    return `- [${i.slideId}/${i.elementId}] ${i.message}`;
-  });
+  const lines: string[] = [];
 
-  return `Fix the following issues:\n${lines.join("\n")}`;
+  for (const i of result.issues) {
+    const loc = i.elementId ? `[${i.slideId}/${i.elementId}]` : `[${i.slideId}]`;
+    if (i.autoFixable) {
+      if (i.message.includes("overflows right")) {
+        lines.push(`- FIX ${loc} Reduce width or move left to fit within 960px`);
+      } else if (i.message.includes("overflows bottom")) {
+        lines.push(`- FIX ${loc} Reduce height or move up to fit within 540px`);
+      } else if (i.message.includes("negative")) {
+        lines.push(`- FIX ${loc} Move position to positive coordinates`);
+      } else if (i.message.includes("Font size too small")) {
+        lines.push(`- FIX ${loc} Increase font size to at least 12`);
+      } else if (i.message.includes("Font size too large")) {
+        lines.push(`- FIX ${loc} Decrease font size to at most 60`);
+      } else if (i.message.includes("zero or missing size")) {
+        lines.push(`- FIX ${loc} Set reasonable width and height`);
+      } else {
+        lines.push(`- FIX ${loc} ${i.message}`);
+      }
+    } else if (i.severity === "error") {
+      // Critical non-auto-fixable: report so reviewer is aware
+      lines.push(`- CRITICAL ${loc} ${i.message}`);
+    }
+  }
+
+  if (lines.length === 0) return "";
+  return `Issues found:\n${lines.join("\n")}`;
 }

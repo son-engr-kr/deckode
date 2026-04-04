@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { PlanResult } from "@/ai/pipeline";
+import type { PlanResult, StylePreferences } from "@/ai/pipeline";
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -16,6 +16,10 @@ export interface PendingApproval {
   resolve: (approved: boolean) => void;
 }
 
+export interface PendingStyleInquiry {
+  resolve: (prefs: StylePreferences) => void;
+}
+
 export interface ChatSession {
   id: string;
   name: string;
@@ -28,6 +32,7 @@ interface ChatState {
   isProcessing: boolean;
   currentStage: string | null;
   pendingApproval: PendingApproval | null;
+  pendingStyleInquiry: PendingStyleInquiry | null;
   logs: string[];
   currentSessionId: string;
   sessions: ChatSession[];
@@ -36,6 +41,7 @@ interface ChatState {
   setProcessing: (processing: boolean) => void;
   setCurrentStage: (stage: string | null) => void;
   setPendingApproval: (approval: PendingApproval | null) => void;
+  setPendingStyleInquiry: (inquiry: PendingStyleInquiry | null) => void;
   addLog: (log: string) => void;
   clearLogs: () => void;
   clearMessages: () => void;
@@ -88,6 +94,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
   isProcessing: false,
   currentStage: null,
   pendingApproval: null,
+  pendingStyleInquiry: null,
   logs: [],
   currentSessionId: "",
   sessions: [],
@@ -115,6 +122,8 @@ export const useChatStore = create<ChatState>()((set, get) => ({
   setCurrentStage: (stage) => set({ currentStage: stage }),
 
   setPendingApproval: (approval) => set({ pendingApproval: approval }),
+
+  setPendingStyleInquiry: (inquiry) => set({ pendingStyleInquiry: inquiry }),
 
   addLog: (log) =>
     set((state) => ({

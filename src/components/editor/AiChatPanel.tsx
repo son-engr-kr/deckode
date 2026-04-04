@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useChatStore } from "@/stores/chatStore";
 import { useDeckStore } from "@/stores/deckStore";
-import { runPipeline, type PipelineCallbacks, type PlanResult } from "@/ai/pipeline";
+import { runPipeline, type PipelineCallbacks, type PlanResult, type StylePreferences } from "@/ai/pipeline";
 import { getApiKey, setApiKey, clearApiKey, getAgentModels, setAgentModel, AVAILABLE_MODELS, type AgentRole } from "@/ai/geminiClient";
 
 export function AiChatPanel() {
@@ -10,6 +10,7 @@ export function AiChatPanel() {
   const isProcessing = useChatStore((s) => s.isProcessing);
   const currentStage = useChatStore((s) => s.currentStage);
   const pendingApproval = useChatStore((s) => s.pendingApproval);
+  const pendingStyleInquiry = useChatStore((s) => s.pendingStyleInquiry);
   const logs = useChatStore((s) => s.logs);
   const sessions = useChatStore((s) => s.sessions);
   const currentSessionId = useChatStore((s) => s.currentSessionId);
@@ -47,7 +48,7 @@ export function AiChatPanel() {
     if (!text || isProcessing) return;
     setInput("");
 
-    const { addMessage, setProcessing, setCurrentStage, setPendingApproval, addLog, clearLogs } =
+    const { addMessage, setProcessing, setCurrentStage, setPendingApproval, setPendingStyleInquiry, addLog, clearLogs } =
       useChatStore.getState();
 
     addMessage("user", text);
@@ -60,11 +61,21 @@ export function AiChatPanel() {
       },
       onLog: (message) => {
         addLog(message);
+        // Surface guide reads as chat messages so the user can see them in history
+        if (message.startsWith("[guide]")) {
+          addMessage("assistant", message.replace("[guide] ", "📖 "));
+        }
       },
       onPlanReady: (plan: PlanResult) => {
         return new Promise<boolean>((resolve) => {
           addMessage("assistant", formatPlan(plan), "plan");
           setPendingApproval({ plan, resolve });
+        });
+      },
+      onStyleInquiry: () => {
+        return new Promise<StylePreferences>((resolve) => {
+          addMessage("assistant", "Before creating your deck, please choose your style preferences:", "plan");
+          setPendingStyleInquiry({ resolve });
         });
       },
       onComplete: (summary) => {
@@ -79,7 +90,13 @@ export function AiChatPanel() {
       },
     };
 
-    await runPipeline(text, callbacks);
+    // Pass recent chat history so planner can see style preference answers
+    const recentMessages = useChatStore.getState().messages
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .slice(-10)
+      .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+
+    await runPipeline(text, callbacks, recentMessages);
   }, [input, isProcessing]);
 
   const handleApprove = (approved: boolean) => {
@@ -240,15 +257,6 @@ export function AiChatPanel() {
           </div>
         ))}
 
-        {/* Live logs */}
-        {isProcessing && logs.length > 0 && (
-          <div className="text-[10px] text-zinc-500 bg-zinc-900/50 rounded px-2 py-1.5 space-y-0.5">
-            {logs.slice(-5).map((log, i) => (
-              <div key={i} className="truncate">{log}</div>
-            ))}
-          </div>
-        )}
-
         {/* Approval gate */}
         {pendingApproval && (
           <div className="flex gap-2 mt-2">
@@ -267,11 +275,24 @@ export function AiChatPanel() {
           </div>
         )}
 
+        {/* Style preference form */}
+        {pendingStyleInquiry && <StylePreferenceForm />}
+
         {/* Processing indicator */}
-        {isProcessing && !pendingApproval && (
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            Processing...
+        {isProcessing && !pendingApproval && !pendingStyleInquiry && (
+          <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-3 py-2 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shrink-0" />
+              <span className="text-[11px] font-medium text-zinc-300">
+                {currentStage ? stageLabel(currentStage) : "Processing"}
+              </span>
+              <span className="text-[10px] text-zinc-600 ml-auto">{logs.length} ops</span>
+            </div>
+            {logs.length > 0 && (
+              <div className="text-[10px] text-zinc-500 font-mono leading-relaxed break-all">
+                {logs[logs.length - 1]}
+              </div>
+            )}
           </div>
         )}
 
@@ -319,6 +340,84 @@ function stageLabel(stage: string): string {
     case "notes": return "Writing Notes";
     default: return stage;
   }
+}
+
+function StylePreferenceForm() {
+  const [theme, setTheme] = useState<"dark" | "light" | "custom">("light");
+  const [animations, setAnimations] = useState<"rich" | "minimal" | "none">("rich");
+  const [highlightBoxes, setHighlightBoxes] = useState(true);
+  const [notesTone, setNotesTone] = useState<"narrative" | "telegraphic" | "scripted">("narrative");
+
+  const handleSubmit = () => {
+    const { pendingStyleInquiry, setPendingStyleInquiry, addMessage } = useChatStore.getState();
+    if (!pendingStyleInquiry) return;
+    const prefs: StylePreferences = { theme, animations, highlightBoxes, notesTone };
+    const summary = `Theme: ${theme} | Animations: ${animations} | Highlights: ${highlightBoxes ? "yes" : "no"} | Notes: ${notesTone}`;
+    addMessage("user", summary);
+    pendingStyleInquiry.resolve(prefs);
+    setPendingStyleInquiry(null);
+  };
+
+  const radioGroup = (
+    label: string,
+    options: { value: string; label: string; desc?: string }[],
+    current: string,
+    onChange: (v: any) => void,
+  ) => (
+    <div className="space-y-1">
+      <div className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">{label}</div>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`text-[10px] px-2 py-1 rounded border transition-colors ${
+              current === opt.value
+                ? "border-blue-500 bg-blue-600/20 text-blue-400"
+                : "border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-500"
+            }`}
+            title={opt.desc}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2.5 space-y-2.5 mt-2">
+      {radioGroup("Theme", [
+        { value: "dark", label: "Dark", desc: "Dark background (#0f172a), light text" },
+        { value: "light", label: "Light", desc: "White background, dark text" },
+        { value: "custom", label: "Custom", desc: "Custom color scheme" },
+      ], theme, setTheme)}
+
+      {radioGroup("Animations", [
+        { value: "rich", label: "Rich", desc: "Per-element onClick fade-in for step-by-step reveal" },
+        { value: "minimal", label: "Minimal", desc: "Only onEnter fade for whole-slide transitions" },
+        { value: "none", label: "None", desc: "No animations" },
+      ], animations, setAnimations)}
+
+      {radioGroup("Highlight Boxes", [
+        { value: "yes", label: "Yes", desc: "Red-stroke emphasis rectangles with onClick fadeIn" },
+        { value: "no", label: "No", desc: "No highlight boxes" },
+      ], highlightBoxes ? "yes" : "no", (v: string) => setHighlightBoxes(v === "yes"))}
+
+      {radioGroup("Notes Tone", [
+        { value: "narrative", label: "Narrative", desc: "Conversational academic tone" },
+        { value: "telegraphic", label: "Telegraphic", desc: "Keyword reminders only" },
+        { value: "scripted", label: "Scripted", desc: "Full manuscript to read verbatim" },
+      ], notesTone, setNotesTone)}
+
+      <button
+        onClick={handleSubmit}
+        className="w-full text-xs py-1.5 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors mt-1"
+      >
+        Apply Preferences
+      </button>
+    </div>
+  );
 }
 
 function formatPlan(plan: PlanResult): string {

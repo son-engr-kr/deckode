@@ -145,6 +145,18 @@ export const deckodeTools: DeckodeTool[] = [
     },
   },
   {
+    name: "read_guide",
+    description:
+      "Read a specific section of the Deckode guide documentation. The guide index is already in your system prompt — use this to fetch detailed specs for element types, animations, theme, etc. Available sections: 01-overview, 02-slide-splitting, 03a-schema-deck, 03b-schema-elements, 04a-elem-text-code, 04b-elem-media, 04c-elem-shape, 04d-elem-tikz, 04e-elem-diagrams, 04f-elem-table-mermaid, 04g-elem-scene3d, 04h-elem-scene3d-examples, 05-animations, 06-theme, 07-slide-features, 08a-guidelines, 08b-style-preferences, 09-example",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        section: { type: SchemaType.STRING, description: "Section filename, e.g. '04c-elem-shape' or '05-animations'" },
+      },
+      required: ["section"],
+    },
+  },
+  {
     name: "create_deck",
     description:
       "Create a complete new deck, replacing the current one. Use only for full deck generation from scratch.",
@@ -162,14 +174,16 @@ export const deckodeTools: DeckodeTool[] = [
   },
 ];
 
-export const plannerTools: DeckodeTool[] = deckodeTools.filter((t) => t.name === "read_deck" || t.name === "read_slide");
+export const plannerTools: DeckodeTool[] = deckodeTools.filter(
+  (t) => t.name === "read_deck" || t.name === "read_slide" || t.name === "read_guide",
+);
 
-export const generatorTools: DeckodeTool[] = deckodeTools; // all tools
+export const generatorTools: DeckodeTool[] = deckodeTools; // all tools (includes read_guide)
 
 export const reviewerTools: DeckodeTool[] = deckodeTools.filter(
-  (t) => t.name === "read_deck" || t.name === "read_slide" || t.name === "update_element" || t.name === "update_slide" || t.name === "delete_element",
+  (t) => t.name === "read_deck" || t.name === "read_slide" || t.name === "read_guide" || t.name === "update_element" || t.name === "update_slide" || t.name === "delete_element",
 );
 
 export const writerTools: DeckodeTool[] = deckodeTools.filter(
-  (t) => t.name === "read_deck" || t.name === "read_slide" || t.name === "update_slide",
+  (t) => t.name === "read_deck" || t.name === "read_slide" || t.name === "read_guide" || t.name === "update_slide",
 );

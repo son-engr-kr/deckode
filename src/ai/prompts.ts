@@ -1,157 +1,59 @@
 import type { Deck } from "@/types/deck";
+import { GUIDE_INDEX, readGuide } from "./guides";
 
 // Layer 1: Role definition
-// Layer 2: Schema context (deckode-guide excerpt)
+// Layer 2: Guide index (deckode-guide.md) — lightweight for planner/reviewer/writer
 // Layer 3: Current state
-// Layer 4: Design guidelines + style reference
+// Layer 4: Design guidelines + style reference (from guide files)
 // Layer 5: Style context (for notes agent)
 // Layer 6: User request (injected at call time)
-// Layer 7: Constraints
+// Layer 7: Constraints (from guide files)
 
-const SCHEMA_CONTEXT = `
-## Deckode JSON Schema
+// Lightweight index for agents that just need to know what's available
+const GUIDE_OVERVIEW = GUIDE_INDEX;
 
-- Virtual canvas: 960 x 540 (16:9), origin top-left
-- Slide IDs: "s1", "s2", etc. Element IDs: "e1", "e2", etc.
-- Every element needs: id, type, position {x, y}, size {w, h}
-- Elements can be grouped with groupId (flat, 1-level only)
+// Pre-loaded essential schema for the generator — avoids wasting iterations on read_guide
+function getGeneratorSchema(): string {
+  return [
+    readGuide("03a-schema-deck"),
+    readGuide("03b-schema-elements"),
+    readGuide("04a-elem-text-code"),
+    readGuide("04c-elem-shape"),
+    readGuide("04d-elem-tikz"),
+    readGuide("04e-elem-diagrams"),
+    readGuide("05-animations"),
+    readGuide("08a-guidelines"),
+    readGuide("08c-visual-style"),
+  ].join("\n\n---\n\n");
+}
 
-### Element Types:
-- text: { type: "text", content: "**markdown**", style: { fontSize, color, textAlign, fontFamily, verticalAlign, lineHeight } }
-  Text supports Markdown: **bold**, *italic*, bullet lists with "- item"
-  Text supports KaTeX math: inline $E = mc^2$ or display $$\\sum_{i=1}^{n} x_i$$
-  Use actual newlines in content (not literal \\n). Multi-line example: "Line 1\nLine 2"
-- code: { type: "code", language: "python", content: "code", style: { theme, fontSize, lineNumbers } }
-- shape: { type: "shape", shape: "rectangle"|"ellipse"|"line"|"arrow", style: { fill, stroke, strokeWidth, borderRadius, opacity, fillOpacity, waypoints } }
-- table: { type: "table", columns: ["Col1"], rows: [["val"]], style: { headerBackground, headerColor, borderColor, fontSize, striped, borderRadius } }
-- mermaid: { type: "mermaid", content: "graph TD; A-->B" }
-- image: { type: "image", src: "./assets/file.png" } — only local assets, NEVER external URLs
+// Loaded from guide files — single source of truth in docs/guide/
+const CONSTRAINTS = readGuide("08a-guidelines");
 
-### Slide Object:
-{ id, background: { color }, notes, elements: [], animations: [], transition: { type: "fade"|"slide", duration } }
+// Content Agent schema: text, code, table elements
+function getContentAgentSchema(): string {
+  return [
+    readGuide("03a-schema-deck"),
+    readGuide("03b-schema-elements"),
+    readGuide("04a-elem-text-code"),
+    readGuide("04f-elem-table-mermaid"),
+    readGuide("05-animations"),
+    readGuide("08a-guidelines"),
+    readGuide("08c-visual-style"),
+  ].join("\n\n---\n\n");
+}
 
-### Animations:
-{ target: "elementId", trigger: "onEnter"|"onClick"|"afterPrevious"|"withPrevious", effect: "fadeIn"|"fadeOut"|"slideInLeft"|"slideInRight"|"scaleIn", duration: 400 }
-`;
-
-const STYLE_GUIDE = `
-## Visual Style Guide
-
-### Color Palette (Professional Academic Style)
-- Background: #ffffff (white)
-- Primary text: #1e293b (dark slate)
-- Secondary text: #475569 (medium slate)
-- Muted text: #94a3b8 (light gray, for labels and metadata)
-- Primary accent: #2c5282 (blue — titles, primary elements)
-- Secondary accent: #5b4a8a (purple — technical details)
-- Tertiary accent: #b45309 (orange — highlights, secondary topics)
-- Success: #3d7a5f (green — completed items, positive states)
-- Error: #dc2626 (red — problems, warnings)
-- Borders/arrows: #9ca3af (gray)
-- Light fills: Use accent colors at 4-8% opacity for container backgrounds (e.g., rgba(44,82,130,0.06))
-
-### Typography
-- Font family: Inter, system-ui, sans-serif
-- Slide title: fontSize 36-42, color #2c5282, bold (**title**)
-- Subtitle/section: fontSize 20-22, bold
-- Body text: fontSize 14-18, color #475569, lineHeight 1.5
-- Labels in boxes: fontSize 12-15, center-aligned
-- Small metadata: fontSize 9-11, color #94a3b8
-
-### Layout Rules
-- Top margin: y >= 25 for title area
-- Side margins: x >= 40, content should not exceed x+w > 920
-- Bottom margin: y+h < 510 (leave room for page numbers)
-- Title positioned at top: y: 25-40
-- Content starts below title: y: 80-100
-- Spacing between sections: 40-60px
-- Padding inside containers: 15-20px
-
-### Diagrams — USE SHAPES (not Mermaid/TikZ)
-Build all diagrams, flowcharts, and architecture illustrations using shape + text + arrow elements:
-
-**Container boxes:**
-- type: "shape", shape: "rectangle"
-- style: { fill: "rgba(44,82,130,0.06)", stroke: "#2c5282", strokeWidth: 2, borderRadius: 8 }
-- Size: 150-360px wide, 50-80px tall
-
-**Arrow connectors:**
-- type: "shape", shape: "arrow"
-- style: { stroke: "#9ca3af", strokeWidth: 2, waypoints: [{x:0,y:0},{x:W,y:0}] }
-- CRITICAL positioning: arrow position.x = source box right edge, position.y = source box vertical center
-- Size: { w: gap between boxes, h: 1 } for horizontal arrows
-- Waypoints are RELATIVE to the element position. For a horizontal arrow: [{x:0,y:0},{x:W,y:0}]
-- For vertical arrows: position.x = box horizontal center, size: { w: 1, h: gap }, waypoints: [{x:0,y:0},{x:0,y:H}]
-- For L-shaped paths: use 3 waypoints [{x:0,y:0},{x:W,y:0},{x:W,y:H}]
-
-**Text labels inside boxes:**
-- Position and size matching the parent box
-- style: { fontSize: 14, color: "#2c5282", textAlign: "center", verticalAlign: "middle" }
-
-**CRITICAL: Always group related elements:**
-- Box + its label text must share the same groupId
-- Arrow + its label must share the same groupId
-- Convention: groupId = "group-descriptive-name"
-
-**Status badges (small rectangles):**
-- Size: ~50x16px
-- style: { fill: "#3d7a5f", borderRadius: 3 } with white text at fontSize 9
-
-### Animations
-- Use fadeIn (300-400ms) for progressive content reveal
-- Build slides step by step: container first (onClick), then content (withPrevious/afterPrevious)
-- Use consistent trigger patterns across slides
-
-### Slide Transitions
-- Default: { type: "slide", duration: 300 }
-- Title/section slides: { type: "fade", duration: 500 }
-
-### TikZ for Complex Diagrams
-Use TikZ elements for neural network architectures, mathematical diagrams, and other complex technical illustrations:
-- Content: just the tikzpicture environment, no preamble
-- Example neural network:
-  \\begin{tikzpicture}[node distance=1.5cm]
-  \\foreach \\i in {1,...,3} \\node[circle,draw,fill=blue!20] (i\\i) at (0,-\\i) {};
-  \\foreach \\i in {1,...,4} \\node[circle,draw,fill=orange!20] (h\\i) at (2,-\\i+0.5) {};
-  \\foreach \\i in {1,...,2} \\node[circle,draw,fill=green!20] (o\\i) at (4,-\\i-0.5) {};
-  \\foreach \\i in {1,...,3} \\foreach \\j in {1,...,4} \\draw[->] (i\\i) -- (h\\j);
-  \\foreach \\i in {1,...,4} \\foreach \\j in {1,...,2} \\draw[->] (h\\i) -- (o\\j);
-  \\node[above] at (0,0) {Input};
-  \\node[above] at (2,0) {Hidden};
-  \\node[above] at (4,0) {Output};
-  \\end{tikzpicture}
-- Set style: { backgroundColor: "#ffffff" } to match slide background
-- Use for: neural nets, attention mechanisms, mathematical graphs, signal flow diagrams
-
-### Tables
-- headerBackground: light accent color (e.g., "rgba(61,122,95,0.08)")
-- headerColor: darker accent (e.g., "#2d5a42")
-- borderColor: "#d1d5db"
-- fontSize: 10-13
-- striped: true
-- borderRadius: 6
-`;
-
-const CONSTRAINTS = `
-## Constraints
-
-- Only use the provided tools to modify the deck. Never output raw JSON.
-- All element IDs must be unique across the entire deck.
-- All slide IDs must be unique.
-- Positions must be within bounds: 0 <= x <= 960, 0 <= y <= 540.
-- Element size + position must not exceed canvas: x + w <= 960, y + h <= 540.
-- Always include required fields: id, type, position, size for elements.
-- For text elements, content is Markdown-formatted (use ** for bold, * for italic).
-- For math/formulas, use KaTeX syntax: inline $x^2$ or display $$\\sum x_i$$. Do NOT use raw LaTeX outside of $ delimiters.
-- Use real newlines in text content, NOT literal \\n sequences.
-- DO NOT use external image URLs — they will not load.
-- DO NOT use Mermaid elements — build diagrams with shape + text + arrow elements instead.
-- USE TikZ for complex technical diagrams (neural networks, mathematical figures, circuit diagrams) that are hard to build with shapes alone.
-  TikZ content format: "\\begin{tikzpicture}...\\end{tikzpicture}" — no preamble needed, just the tikzpicture environment.
-  Set style: { backgroundColor: "#ffffff" } on TikZ elements to match the slide background.
-- ALWAYS generate presenter notes for every slide.
-- Prefer clean, professional designs with generous white space.
-`;
+// Visual Agent schema: shapes, arrows, TikZ, diagrams
+function getVisualAgentSchema(): string {
+  return [
+    readGuide("03b-schema-elements"),
+    readGuide("04c-elem-shape"),
+    readGuide("04d-elem-tikz"),
+    readGuide("04e-elem-diagrams"),
+    readGuide("08a-guidelines"),
+    readGuide("08c-visual-style"),
+  ].join("\n\n---\n\n");
+}
 
 export function buildPlannerPrompt(deck: Deck | null): string {
   const state = deck
@@ -164,13 +66,15 @@ You are the Planner agent for Deckode, a JSON-based slide platform. Your job is 
 2. For "create" intent: generate a detailed slide-by-slide outline
 3. For other intents: describe what actions are needed
 
-${SCHEMA_CONTEXT}
+${GUIDE_OVERVIEW}
+
+You have a read_guide tool to fetch detailed documentation sections listed above. Use it when you need specifics about element types, animations, or guidelines.
 ${state}
 
 ## Output Format
 Respond with a JSON object (no markdown code fences):
 {
-  "intent": "create" | "modify" | "notes" | "review" | "chat",
+  "intent": "create" | "modify" | "notes" | "review" | "chat" | "style_inquiry",
   "plan": {
     "topic": "presentation topic",
     "audience": "target audience",
@@ -201,24 +105,36 @@ For "review" intent:
 { "intent": "review", "reasoning": "..." }
 
 Important: For "create", always include a title slide first and plan diagrams using shape elements (not mermaid/tikz).
+
+## Style Preferences (MANDATORY for new decks)
+Before creating a new deck, you MUST check whether the user has already specified their style preferences in the conversation history.
+
+If preferences are NOT present, return:
+{ "intent": "style_inquiry", "response": "I need your style preferences before creating the deck.", "reasoning": "User wants to create a new deck but has not specified style preferences." }
+
+The UI will show an interactive form for the user to pick their choices. After they respond, you will receive the preferences and can proceed with "create" intent.
+
+If the user HAS already specified preferences (in previous messages), proceed directly with "create" intent. Include the chosen preferences in the plan's "reasoning" field so downstream agents can apply them.
+
+Once preferences are chosen, apply them consistently to all subsequent slides without asking again. If adding slides to an **existing deck**, infer the style from existing slides instead of asking.
 `;
 }
 
 export function buildGeneratorPrompt(deck: Deck | null): string {
   const state = deck ? formatDeckState(deck) : "No deck loaded.";
 
+  const schema = getGeneratorSchema();
+
   return `## Role
 You are the Generator agent for Deckode. You create and modify slides by calling tools. You receive an approved plan and execute it precisely.
 
-${SCHEMA_CONTEXT}
-${STYLE_GUIDE}
+${schema}
 
 ## Current Deck State
 ${state}
 
-${CONSTRAINTS}
-
 ## Instructions
+- You have a read_guide tool to fetch detailed specs for any element type, animations, theme, etc. Use it before creating unfamiliar element types (tikz, scene3d, table, etc.).
 - The current deck state is already provided above. Do NOT call read_deck unless you need to verify changes you just made.
 - Use read_slide only if you need full element details for a specific slide you're modifying.
 - Execute the plan by calling the appropriate tools (add_slide, add_element, update_slide, etc.)
@@ -226,16 +142,123 @@ ${CONSTRAINTS}
 - ALWAYS include presenter notes in every slide (notes field) — describe what the presenter should say
 - Use the style guide colors, fonts, and layout patterns consistently
 - For diagrams: build with shape (rectangle, arrow) + text elements, grouped with groupId
-- Add fadeIn animations for progressive content reveal
-- For new decks, start element IDs from "e1" and increment globally (never reuse)
+- Code elements: show only the essential 5-8 lines that illustrate the concept — never paste entire files
+- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- Element positioning: ensure no two elements overlap (check x/y/w/h of all other elements before placing)
+- Element IDs MUST be globally unique across ALL slides. Use slide-scoped IDs: for slide s1 use "s1-e1", "s1-e2"...; for slide s2 use "s2-e1", "s2-e2"... Never reuse an ID that appears in any other slide.
 - After creating all slides, briefly confirm what was created
+
+## Animations (MANDATORY)
+Apply the user's chosen animation style to EVERY content slide (non-title):
+
+rich: Include an "animations" array in the slide object with onClick + fadeIn for each non-title element. Example for a slide with elements s2-e2, s2-e3, s2-e4:
+\`\`\`json
+"animations": [
+  { "target": "s2-e2", "effect": "fadeIn", "trigger": "onClick", "duration": 300 },
+  { "target": "s2-e3", "effect": "fadeIn", "trigger": "withPrevious", "duration": 300 },
+  { "target": "s2-e4", "effect": "fadeIn", "trigger": "onClick", "duration": 300 }
+]
+\`\`\`
+Use onClick for each main reveal point, withPrevious for elements that should appear together with the previous.
+
+minimal: Add only one onEnter fadeIn for the slide (no onClick). No step markers in notes.
+
+none: No animations array. No step markers in notes.
 
 ## Presenter Notes Format
 Write notes that help the presenter deliver the content:
 - 2-4 sentences per slide
 - Professional, confident tone
-- If the slide has animations, use [step:N] markers to describe what each click reveals
+- ONLY use [step:N]...[/step] markers when the slide has onClick animations. Count the onClick animations in the slide's animations array — that number MUST equal the number of [step:N] markers. No onClick animations = no step markers.
 - Include key talking points and transitions to the next slide
+`;
+}
+
+const ANIMATIONS_SECTION = `## Animations (MANDATORY)
+Apply the user's chosen animation style to EVERY content slide (non-title):
+
+rich: Include an "animations" array in the slide object with onClick + fadeIn for each non-title element.
+Use onClick for each main reveal point, withPrevious for elements that appear together with the previous.
+
+minimal: Add only one onEnter fadeIn for the slide (no onClick). No step markers in notes.
+
+none: No animations array. No step markers in notes.`;
+
+const NOTES_SECTION = `## Presenter Notes Format
+Write notes that help the presenter deliver the content:
+- 2-4 sentences per slide
+- Professional, confident tone
+- ONLY use [step:N]...[/step] markers when the slide has onClick animations. The number of [step:N] markers MUST exactly match the number of onClick animations. No onClick animations = no step markers.
+- Include key talking points and transitions to the next slide`;
+
+export function buildContentAgentPrompt(deck: Deck | null): string {
+  const state = deck ? formatDeckState(deck) : "No deck loaded.";
+  const schema = getContentAgentSchema();
+
+  return `## Role
+You are the Content Agent for Deckode. You create text, code, and table elements for slides.
+You are one part of a two-agent system: after you create the slide structure, the Visual Agent will add shapes, diagrams, and TikZ elements.
+
+${schema}
+
+## Current Deck State
+${state}
+
+## Instructions
+- Create the slide with add_slide, including ALL text, code, and table elements
+- For this slide, use text elements for: title, bullet points, labels, captions, descriptions
+- For code slides, use the code element type with appropriate language — show only 5-8 key lines, no full files
+- For data slides, use the table element type (MUST include columns and rows arrays)
+- Element IDs must be slide-scoped: for slide s1 use "s1-e1", "s1-e2", etc.
+- ALWAYS include presenter notes (notes field) in the slide
+- Do NOT add shapes, TikZ, scene3d, or diagrams — the Visual Agent will handle those
+- If the slide plan says "diagram", "shape", "tikz", or "scene3d" in elementTypes:
+  - Use a SPLIT LAYOUT: left column (x:0–480) for text/code/table, right column (x:480–960) for the diagram placeholder
+  - OR top/bottom split: text in top half (y:0–250), diagram in bottom half (y:260–540) — only if no code element
+  - Add one placeholder element: { id: "[slideId]-diagram-placeholder", type: "text", position: {x:490, y:80}, size: {w:440, h:380}, content: "[Diagram placeholder — Visual Agent will fill this area]" }
+  - Keep ALL text/code/table elements strictly within x:0–480 when using split layout
+- If NO visual elements needed: elements may use the full 960×540 canvas
+- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- After adding the slide, briefly confirm what was created
+
+${ANIMATIONS_SECTION}
+
+${NOTES_SECTION}
+`;
+}
+
+export function buildVisualAgentPrompt(deck: Deck | null): string {
+  const state = deck ? formatDeckState(deck) : "No deck loaded.";
+  const schema = getVisualAgentSchema();
+
+  return `## Role
+You are the Visual Agent for Deckode. You add shapes, arrows, TikZ diagrams, and visual decorations to existing slides.
+The Content Agent has already created the slide with text/code/table elements. Your job is to enhance it visually.
+
+${schema}
+
+## Current Deck State
+${state}
+
+## Instructions
+- Call read_slide FIRST to inspect existing elements, their positions, and IDs before adding anything
+- Add shape (rectangle, arrow, ellipse) elements to create diagrams and flow charts
+- For mathematical diagrams, use tikz elements (MUST include \\path bounding box)
+- Group related shapes with the same groupId
+- Arrow/line elements MUST have style.waypoints (at least 2 points) — NEVER set rotation on arrows
+- Element IDs must be slide-scoped and not conflict with existing IDs on this slide
+- CRITICAL layout: Content Agent places text/code/table in the LEFT column (x:0–480). Place ALL visual elements in the RIGHT column (x:480–960, y:80–460). Canvas is 960×540.
+- If a slide already has a tikz element, do NOT add another tikz to the same slide
+- FIRST: call read_slide to find any element with id ending in "-diagram-placeholder". Delete it with delete_element BEFORE adding visual elements. This is mandatory.
+- After deleting the placeholder, fill the right column (x:490, y:80, w:440, h:380) with your diagram/tikz/scene3d
+- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- Use add_element to add each visual element to the slide
+- After adding all visual elements, briefly confirm what was created
+
+## Common Diagram Patterns
+- Flow chart: rectangle shapes for boxes + arrow shapes for connections, all grouped
+- Comparison: two rectangle shapes side by side, text labels inside
+- Process: horizontal arrow with rectangle steps above/below it
 `;
 }
 
@@ -245,7 +268,7 @@ export function buildReviewerPrompt(deck: Deck | null): string {
   return `## Role
 You are the Reviewer agent for Deckode. You validate the current deck for structural and design issues.
 
-${SCHEMA_CONTEXT}
+${GUIDE_OVERVIEW}
 
 ## Current Deck State
 ${state}
@@ -262,8 +285,13 @@ ${state}
 9. Every slide has presenter notes
 10. Reasonable font sizes (not too small < 10, not too large > 48)
 11. No mermaid or external image elements (should use shapes instead)
+12. Line/arrow elements have waypoints (at least 2 points) and NO rotation
+13. TikZ elements include a bounding box (\\path rectangle)
+14. [step:N]...[/step] markers in notes match the number of onClick animations
+15. No Markdown ** inside KaTeX math delimiters (use \\mathbf{} instead)
 
 ## Instructions
+- You have a read_guide tool to fetch detailed documentation. Use read_guide("08a-guidelines") to review common pitfalls before validating.
 - The current deck state is already provided above. Only call read_slide if you need full details for a specific slide.
 - Check each validation rule
 - For fixable issues, use update_element or update_slide to fix them
@@ -293,20 +321,21 @@ export function buildWriterPrompt(deck: Deck | null): string {
   return `## Role
 You are the Writer agent for Deckode. You generate speaker notes that match the user's existing writing style.
 
-${SCHEMA_CONTEXT}
+${GUIDE_OVERVIEW}
 
 ## Current Deck State
 ${state}
 ${styleContext}
 
 ## Instructions
+- You have a read_guide tool. Use read_guide("07-slide-features") for details on [step:N] markers and presenter notes format.
 - Analyze existing notes for: sentence length, tone (formal/casual), structure (bullet vs paragraph), vocabulary level
 - Generate notes for slides that lack them (or regenerate all if asked)
 - Use update_slide to set the notes field for each slide
 - Notes should help the presenter deliver the content effectively
-- If slides have animations, use [step:N] markers:
-  [step:1] First click reveals...
-  [step:2] Next, the diagram shows...
+- If slides have animations, use [step:N]...[/step] markers (closing tag is REQUIRED):
+  [step:1]First click reveals...[/step]
+  [step:2]Next, the diagram shows...[/step]
 - Include key talking points, transitions to next slide, and emphasis markers
 - Professional, confident tone that acknowledges complexity without being condescending
 

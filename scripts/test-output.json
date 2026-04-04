@@ -1,0 +1,397 @@
+{
+  "deckode": "1.0",
+  "meta": {
+    "title": "Reinforcement Learning Basics",
+    "author": "test-pipeline",
+    "aspectRatio": "16:9"
+  },
+  "theme": {
+    "slide": {
+      "background": {
+        "color": "#ffffff"
+      },
+      "color": "#1e293b"
+    }
+  },
+  "slides": [
+    {
+      "notes": "[step:1]Welcome to this introductory presentation on Reinforcement Learning. In this session, we will explore what reinforcement learning is, why it is increasingly important in the field of artificial intelligence, and some of the key applications where it is making a significant impact.[/step] [step:2]We'll start by defining reinforcement learning and differentiating it from other machine learning paradigms. We'll discuss its significance in creating intelligent agents that can learn through interaction with an environment. [/step][step:3]Finally, we will touch upon some of the real-world applications of reinforcement learning, providing a glimpse into the exciting possibilities this field offers.",
+      "id": "s1",
+      "elements": [
+        {
+          "position": {
+            "x": 40,
+            "y": 25
+          },
+          "id": "s1-e1",
+          "size": {
+            "w": 880,
+            "h": 80
+          },
+          "style": {
+            "textAlign": "center",
+            "fontSize": 42,
+            "color": "#2c5282"
+          },
+          "type": "text",
+          "content": "**Reinforcement Learning: An Introduction**"
+        },
+        {
+          "id": "s1-e2",
+          "position": {
+            "y": 140,
+            "x": 40
+          },
+          "content": "- What is Reinforcement Learning?\n- Why is it important?\n- Applications of Reinforcement Learning",
+          "type": "text",
+          "style": {
+            "lineHeight": 1.5,
+            "fontSize": 20,
+            "color": "#475569"
+          },
+          "size": {
+            "h": 360,
+            "w": 880
+          }
+        }
+      ]
+    },
+    {
+      "notes": "[step:1]Now, let's delve into the Markov Decision Process or MDP, which provides the mathematical framework for formalizing reinforcement learning problems. We'll define key components such as states, actions, rewards, and policies.[/step] [step:2]We'll also discuss transition probabilities, which describe the likelihood of moving from one state to another given a specific action. The slide includes a basic diagram illustrating state transitions.[/step] [step:3]Finally, we will touch upon the mathematical formulation that underpins the RL problem, setting the stage for understanding how we can algorithmically find optimal policies.",
+      "id": "s2",
+      "elements": [
+        {
+          "size": {
+            "w": 880,
+            "h": 60
+          },
+          "type": "text",
+          "style": {
+            "fontSize": 36,
+            "textAlign": "left",
+            "color": "#2c5282"
+          },
+          "position": {
+            "x": 40,
+            "y": 25
+          },
+          "content": "**Markov Decision Process (MDP) Framework**",
+          "id": "s2-e1"
+        },
+        {
+          "size": {
+            "w": 460,
+            "h": 240
+          },
+          "type": "text",
+          "id": "s2-e2",
+          "style": {
+            "fontSize": 18,
+            "lineHeight": 1.5,
+            "color": "#475569"
+          },
+          "position": {
+            "x": 40,
+            "y": 90
+          },
+          "content": "- States, Actions, Rewards, and Policies\n- Transition Probabilities\n- Mathematical Formulation of the RL problem\n- Diagram of state transitions"
+        },
+        {
+          "id": "s2-e3",
+          "style": {
+            "stroke": "#2c5282",
+            "fill": "rgba(44,82,130,0.06)",
+            "strokeWidth": 2,
+            "borderRadius": 8
+          },
+          "shape": "rectangle",
+          "position": {
+            "x": 520,
+            "y": 100
+          },
+          "size": {
+            "h": 100,
+            "w": 150
+          },
+          "type": "shape"
+        },
+        {
+          "id": "s2-e4",
+          "style": {
+            "fontSize": 14,
+            "verticalAlign": "middle",
+            "color": "#2c5282",
+            "textAlign": "center"
+          },
+          "position": {
+            "y": 100,
+            "x": 520
+          },
+          "content": "State (S)",
+          "size": {
+            "w": 150,
+            "h": 100
+          },
+          "type": "text"
+        },
+        {
+          "id": "s2-e5",
+          "style": {
+            "stroke": "#2c5282",
+            "fill": "rgba(44,82,130,0.06)",
+            "strokeWidth": 2,
+            "borderRadius": 8
+          },
+          "shape": "rectangle",
+          "position": {
+            "x": 720,
+            "y": 100
+          },
+          "size": {
+            "h": 100,
+            "w": 150
+          },
+          "type": "shape"
+        },
+        {
+          "id": "s2-e6",
+          "style": {
+            "fontSize": 14,
+            "verticalAlign": "middle",
+            "textAlign": "center",
+            "color": "#2c5282"
+          },
+          "content": "Action (A)",
+          "position": {
+            "x": 720,
+            "y": 100
+          },
+          "type": "text",
+          "size": {
+            "h": 100,
+            "w": 150
+          }
+        },
+        {
+          "shape": "arrow",
+          "style": {
+            "strokeWidth": 2,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 50,
+                "y": 0
+              }
+            ],
+            "stroke": "#9ca3af"
+          },
+          "position": {
+            "y": 150,
+            "x": 670
+          },
+          "id": "s2-e7",
+          "type": "shape",
+          "size": {
+            "w": 50,
+            "h": 1
+          }
+        },
+        {
+          "style": {
+            "waypoints": [
+              {
+                "y": 0,
+                "x": 0
+              },
+              {
+                "y": 0,
+                "x": 50
+              }
+            ],
+            "stroke": "#9ca3af",
+            "strokeWidth": 2
+          },
+          "shape": "arrow",
+          "position": {
+            "x": 870,
+            "y": 150
+          },
+          "id": "s2-e8",
+          "size": {
+            "w": 50,
+            "h": 1
+          },
+          "type": "shape"
+        }
+      ]
+    },
+    {
+      "elements": [
+        {
+          "size": {
+            "w": 880,
+            "h": 60
+          },
+          "content": "**Value Functions**",
+          "style": {
+            "fontSize": 36,
+            "color": "#2c5282",
+            "textAlign": "left"
+          },
+          "id": "s3-e1",
+          "position": {
+            "y": 25,
+            "x": 40
+          },
+          "type": "text"
+        },
+        {
+          "style": {
+            "lineHeight": 1.5,
+            "color": "#475569",
+            "fontSize": 18
+          },
+          "id": "s3-e2",
+          "position": {
+            "y": 90,
+            "x": 40
+          },
+          "type": "text",
+          "size": {
+            "w": 880,
+            "h": 240
+          },
+          "content": "- Value Function (V)\n- Q-Value Function (Q)\n- Bellman Equations\n- How value functions guide the learning process"
+        }
+      ],
+      "notes": "[step:1]Next, we will explore value functions, which are central to reinforcement learning as they help us quantify the desirability of being in a particular state or taking a specific action in a given state. We will cover both the Value Function, denoted as V, and the Q-Value Function, denoted as Q.[/step] [step:2]We'll then introduce the Bellman Equations, which provide a recursive relationship for calculating value functions, and are crucial for developing RL algorithms. [/step][step:3]Finally, we will discuss how value functions guide the learning process, enabling agents to make informed decisions and improve their strategies over time.",
+      "id": "s3"
+    },
+    {
+      "elements": [
+        {
+          "size": {
+            "w": 880,
+            "h": 60
+          },
+          "position": {
+            "y": 25,
+            "x": 40
+          },
+          "content": "**Q-Learning Algorithm**",
+          "type": "text",
+          "id": "s4-e1",
+          "style": {
+            "fontSize": 36,
+            "color": "#2c5282",
+            "textAlign": "left"
+          }
+        },
+        {
+          "style": {
+            "fontSize": 18,
+            "lineHeight": 1.5,
+            "color": "#475569"
+          },
+          "id": "s4-e2",
+          "content": "- Off-policy learning\n- Q-table representation\n- Update rule\n- Exploration vs. Exploitation\n- Example iteration",
+          "type": "text",
+          "position": {
+            "y": 90,
+            "x": 40
+          },
+          "size": {
+            "w": 460,
+            "h": 240
+          }
+        },
+        {
+          "columns": [
+            "State",
+            "Action",
+            "Q-Value"
+          ],
+          "style": {
+            "fontSize": 12,
+            "headerBackground": "rgba(61,122,95,0.08)",
+            "borderColor": "#d1d5db"
+          },
+          "size": {
+            "w": 400,
+            "h": 200
+          },
+          "type": "table",
+          "position": {
+            "y": 100,
+            "x": 500
+          },
+          "id": "s4-e3",
+          "rows": [
+            [
+              "S1",
+              "A1",
+              "0.5"
+            ],
+            [
+              "S1",
+              "A2",
+              "0.8"
+            ],
+            [
+              "S2",
+              "A1",
+              "0.2"
+            ]
+          ]
+        }
+      ],
+      "id": "s4",
+      "notes": "[step:1]Now, let's dive into the Q-Learning algorithm, a widely used technique in reinforcement learning. We will discuss its characteristics as an off-policy learning method. [/step][step:2]The slide introduces the concept of a Q-table, which is used to represent Q-values for state-action pairs, and we'll explain the update rule that iteratively improves these Q-values based on the agent's experiences. [/step][step:3]We'll also touch upon the critical balance between exploration and exploitation, as well as provide an example iteration to illustrate how the algorithm works in practice."
+    },
+    {
+      "notes": "[step:1]Finally, let's explore some prominent applications of reinforcement learning across various domains. We'll touch on its successes in game playing, as demonstrated by systems that have mastered Atari games and Go.[/step] [step:2]We'll also highlight its use in robotics for tasks such as autonomous navigation and manipulation, its role in powering recommendation systems, and its applications in finance for algorithmic trading and risk management. [/step][step:3]Finally, we will briefly address the challenges that the field currently faces and discuss potential future directions for reinforcement learning research and applications.",
+      "elements": [
+        {
+          "position": {
+            "y": 25,
+            "x": 40
+          },
+          "content": "**Applications of Reinforcement Learning**",
+          "style": {
+            "color": "#2c5282",
+            "textAlign": "left",
+            "fontSize": 36
+          },
+          "id": "s5-e1",
+          "size": {
+            "w": 880,
+            "h": 60
+          },
+          "type": "text"
+        },
+        {
+          "content": "- Game playing (e.g., Atari, Go)\n- Robotics\n- Recommendation systems\n- Finance\n- Challenges and Future Directions",
+          "style": {
+            "lineHeight": 1.5,
+            "color": "#475569",
+            "fontSize": 18
+          },
+          "id": "s5-e2",
+          "position": {
+            "x": 40,
+            "y": 90
+          },
+          "type": "text",
+          "size": {
+            "w": 460,
+            "h": 240
+          }
+        }
+      ],
+      "id": "s5"
+    }
+  ]
+}

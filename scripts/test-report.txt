@@ -1,0 +1,16 @@
+=== DECKODE TEST PIPELINE REPORT ===
+Generated: 2026-04-04T06:27:07.149Z
+Slides: 5
+Elements: 17
+
+CRITICAL ISSUES (0):
+  (none)
+
+WARNINGS (5):
+  [s1] Step markers in notes (3) != onClick animations (0)
+  [s2] Step markers in notes (3) != onClick animations (0)
+  [s3] Step markers in notes (3) != onClick animations (0)
+  [s4] Step markers in notes (3) != onClick animations (0)
+  [s5] Step markers in notes (3) != onClick animations (0)
+
+RESULT: PASS

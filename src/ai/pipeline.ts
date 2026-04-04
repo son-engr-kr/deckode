@@ -1,14 +1,15 @@
 import type { Deck, Slide, SlideElement } from "@/types/deck";
 import { useDeckStore } from "@/stores/deckStore";
 import { callGemini, buildFunctionDeclarations, type GeminiModel, type DeckodeTool, getModelForAgent } from "./geminiClient";
-import { buildPlannerPrompt, buildGeneratorPrompt, buildReviewerPrompt, buildWriterPrompt } from "./prompts";
+import { buildPlannerPrompt, buildGeneratorPrompt, buildContentAgentPrompt, buildVisualAgentPrompt, buildReviewerPrompt, buildWriterPrompt } from "./prompts";
 import { generatorTools, reviewerTools, writerTools } from "./tools";
+import { readGuide } from "./guides";
 import { validateDeck, buildFixInstructions } from "./validation";
 import type { Content } from "@google/generative-ai";
 
 // ---------- Types ----------
 
-export type PipelineIntent = "create" | "modify" | "notes" | "review" | "chat";
+export type PipelineIntent = "create" | "modify" | "notes" | "review" | "chat" | "style_inquiry";
 
 export interface SlidePlan {
   id: string;
@@ -31,15 +32,55 @@ export interface PlanResult {
   reasoning: string;
 }
 
+export interface StylePreferences {
+  theme: "dark" | "light" | "custom";
+  customColors?: { background: string; text: string; accent: string };
+  animations: "rich" | "minimal" | "none";
+  highlightBoxes: boolean;
+  notesTone: "narrative" | "telegraphic" | "scripted";
+}
+
 export interface PipelineCallbacks {
   onStageChange: (stage: string) => void;
   onLog: (message: string) => void;
   onPlanReady: (plan: PlanResult) => Promise<boolean>; // returns true if approved
+  onStyleInquiry: () => Promise<StylePreferences>; // returns user's style choices
   onComplete: (summary: string) => void;
   onError: (error: string) => void;
 }
 
 // ---------- Tool Execution ----------
+
+/**
+ * Restore backslashes in TikZ content lost during JSON parsing.
+ * JSON \n → LF(0x0A), \t → TAB(0x09), \f → FF(0x0C), \b → BS(0x08), \r → CR(0x0D)
+ * e.g. "\node" in JSON string → LF + "ode" after parsing
+ */
+function fixTikzBackslashes(content: string): string {
+  return content
+    // \n (LF 0x0A) prefix
+    .replace(/\x0aode(?=[\[{\s(;,])/g, "\\node")
+    .replace(/\x0aormalsize(?=[\s{])/g, "\\normalsize")
+    .replace(/\x0aewcommand(?=[\s{[\\])/g, "\\newcommand")
+    .replace(/\x0aoindent/g, "\\noindent")
+    // \f (FF 0x0C) prefix
+    .replace(/\x0coreach(?=[\s{[\\])/g, "\\foreach")
+    .replace(/\x0cilldraw(?=[\s{[\\])/g, "\\filldraw")
+    .replace(/\x0cill(?=[\s{[\\(])/g, "\\fill")
+    // \t (TAB 0x09) prefix
+    .replace(/\x09ikzset(?=[\s{[\\])/g, "\\tikzset")
+    .replace(/\x09extbf(?=[\s{[\\{])/g, "\\textbf")
+    .replace(/\x09extrm(?=[\s{[\\{])/g, "\\textrm")
+    .replace(/\x09he(?=[\s{[\\])/g, "\\the")
+    // \b (BS 0x08) prefix
+    .replace(/\x08egin(?=[\s{[\\])/g, "\\begin")
+    .replace(/\x08old(?=[\s{[\\])/g, "\\bold")
+    .replace(/\x08ar(?=[\s{[\\])/g, "\\bar")
+    // \r (CR 0x0D) prefix
+    .replace(/\x0delax(?=[\s{[\\])/g, "\\relax")
+    .replace(/\x0dight(?=[\s{[\\])/g, "\\right")
+    .replace(/\x0denewcommand(?=[\s{[\\])/g, "\\renewcommand");
+}
 
 /** Fix literal \n sequences in text content and auto-add missing waypoints to arrows */
 function sanitizeToolArgs(obj: unknown): void {
@@ -82,6 +123,10 @@ function executeTool(name: string, args: Record<string, unknown>): string {
   const deck = store.deck;
 
   switch (name) {
+    case "read_guide": {
+      const section = args.section as string;
+      return readGuide(section);
+    }
     case "read_deck": {
       if (!deck) return "No deck loaded.";
       // Return summary only — use read_slide for details
@@ -137,7 +182,11 @@ function executeTool(name: string, args: Record<string, unknown>): string {
     }
     case "add_element": {
       const slideId = args.slideId as string;
-      const element = args.element as SlideElement;
+      const element = args.element as SlideElement & { type?: string; content?: string };
+      // Auto-fix TikZ backslash escaping lost during JSON parsing (\node → newline + "ode")
+      if (element.type === "tikz" && typeof element.content === "string") {
+        element.content = fixTikzBackslashes(element.content);
+      }
       store.addElement(slideId, element);
       return `Element "${element.id}" added to slide "${slideId}".`;
     }
@@ -207,7 +256,11 @@ async function callAgentWithTools(
     toolCallsMade = true;
     const functionResponses: string[] = [];
     for (const fc of response.functionCalls) {
-      onLog(`  → ${fc.name}(${JSON.stringify(fc.args).slice(0, 120)}...)`);
+      if (fc.name === "read_guide") {
+        onLog(`[guide] Reading ${fc.args.section}...`);
+      } else {
+        onLog(`  → ${fc.name}(${JSON.stringify(fc.args).slice(0, 120)}...)`);
+      }
       try {
         const result = executeTool(fc.name, fc.args);
         functionResponses.push(`${fc.name} result: ${result}`);
@@ -235,6 +288,7 @@ async function callAgentWithTools(
 async function runPlanner(
   userMessage: string,
   cb: PipelineCallbacks,
+  chatHistory?: Array<{ role: "user" | "assistant"; content: string }>,
 ): Promise<PlanResult | null> {
   cb.onStageChange("plan");
   cb.onLog("Analyzing intent and creating plan...");
@@ -242,9 +296,16 @@ async function runPlanner(
   const deck = useDeckStore.getState().deck;
   const prompt = buildPlannerPrompt(deck);
 
+  // Convert chat history to Gemini Content format
+  const history: Content[] = (chatHistory ?? []).map((msg) => ({
+    role: msg.role === "user" ? "user" : "model",
+    parts: [{ text: msg.content }],
+  }));
+
   const response = await callGemini({
     model: getModelForAgent("planner"),
     systemInstruction: prompt,
+    history,
     message: userMessage,
   });
 
@@ -266,23 +327,130 @@ async function runGenerator(
   cb: PipelineCallbacks,
 ): Promise<string> {
   cb.onStageChange("generate");
-  cb.onLog("Generating slides...");
 
-  const deck = useDeckStore.getState().deck;
-  const prompt = buildGeneratorPrompt(deck);
+  // Modify intent: single call (no slide plan available)
+  if (!plan.plan?.slides || plan.intent === "modify") {
+    cb.onLog("Generating modifications...");
+    const deck = useDeckStore.getState().deck;
+    const prompt = buildGeneratorPrompt(deck);
+    const planMessage = `Execute these modifications:\n${plan.actions?.join("\n")}`;
+    return callAgentWithTools(getModelForAgent("generator"), prompt, generatorTools, planMessage, [], cb.onLog);
+  }
 
-  const planMessage = plan.plan
-    ? `Execute this approved plan:\n${JSON.stringify(plan.plan, null, 2)}`
-    : `Execute these modifications:\n${plan.actions?.join("\n")}`;
+  // Create intent: slide-by-slide loop
+  const slides = plan.plan.slides;
+  cb.onLog(`Generating ${slides.length} slides one by one...`);
 
-  return callAgentWithTools(
-    getModelForAgent("generator"),
-    prompt,
-    generatorTools,
-    planMessage,
-    [],
-    cb.onLog,
-  );
+  for (let i = 0; i < slides.length; i++) {
+    const slidePlan = slides[i]!;
+    cb.onLog(`[${i + 1}/${slides.length}] Generating slide: "${slidePlan.title}"`);
+
+    let attempt = 0;
+    const maxAttempts = 2;
+
+    while (attempt < maxAttempts) {
+      attempt++;
+      // Re-read deck each time so prompt reflects already-created slides
+      const currentDeck = useDeckStore.getState().deck;
+
+      const idPrefix = `${slidePlan.id}`;
+      const slideContext = `Slide ${i + 1} of ${slides.length}. Style: ${plan.reasoning}. Element IDs must be scoped: "${idPrefix}-e1", "${idPrefix}-e2", etc.`;
+
+      // --- Content Agent: creates the slide with text/code/table elements ---
+      const contentPrompt = buildContentAgentPrompt(currentDeck);
+      const contentMessage = `Create ONLY this one slide (do not create other slides):
+${JSON.stringify(slidePlan, null, 2)}
+
+${slideContext}
+After calling add_slide, briefly confirm.`;
+
+      cb.onLog(`  [content] Creating text/code/table elements...`);
+      await callAgentWithTools(getModelForAgent("generator"), contentPrompt, generatorTools, contentMessage, [], cb.onLog);
+
+      // --- Visual Agent: adds shapes/diagrams if the slide needs them ---
+      const needsVisuals = slidePlan.elementTypes?.some((t) =>
+        ["shape", "arrow", "tikz", "diagram", "scene3d"].includes(t),
+      );
+      if (needsVisuals) {
+        // Programmatically remove placeholder before Visual Agent runs
+        const deckAfterContent = useDeckStore.getState().deck;
+        const placeholderSlide = deckAfterContent?.slides.find((s) => s.id === slidePlan.id);
+        if (placeholderSlide) {
+          const placeholder = placeholderSlide.elements.find((e) => e.id.endsWith("-diagram-placeholder"));
+          if (placeholder) {
+            useDeckStore.getState().deleteElement(slidePlan.id, placeholder.id);
+            cb.onLog(`  [cleanup] Deleted placeholder ${placeholder.id}`);
+          }
+        }
+        const deckForVisual = useDeckStore.getState().deck;
+        const visualTypes = slidePlan.elementTypes?.filter((t) =>
+          ["shape", "arrow", "tikz", "diagram", "scene3d"].includes(t),
+        ) ?? [];
+        cb.onLog(`  [visual] Adding ${visualTypes.join("/")} to ${slidePlan.id}...`);
+        const visualPrompt = buildVisualAgentPrompt(deckForVisual);
+        const visualMessage = `REQUIRED: Add visual element(s) to slide ${slidePlan.id}. You MUST call add_element at least once. Do not finish without adding a visual element.
+
+Required element types for this slide: ${visualTypes.join(", ")}
+Slide plan: ${JSON.stringify(slidePlan, null, 2)}
+${slideContext}
+
+Steps:
+1. Call read_slide("${slidePlan.id}") to see existing elements
+2. Add the required visual element(s) in the RIGHT column: x:490, y:80, w:440, h:380
+3. Do NOT create duplicate IDs. Use unique IDs like "${slidePlan.id}-visual-1"`;
+        await callAgentWithTools(getModelForAgent("generator"), visualPrompt, generatorTools, visualMessage, [], cb.onLog);
+      }
+
+      // Validate the newly created slide (with programmatic overflow fix first)
+      const updatedDeck = useDeckStore.getState().deck;
+      if (updatedDeck) {
+        const newSlide = updatedDeck.slides.find((s) => s.id === slidePlan.id);
+        if (newSlide) {
+          // Programmatic overflow clamp
+          const deckStore = useDeckStore.getState();
+          for (const el of newSlide.elements) {
+            if (!el.position || !el.size) continue;
+            const overflowX = el.position.x + el.size.w - 960;
+            const overflowY = el.position.y + el.size.h - 540;
+            if (overflowX > 0) {
+              deckStore.updateElement(slidePlan.id, el.id, { size: { w: Math.max(10, el.size.w - overflowX), h: el.size.h } });
+            }
+            if (overflowY > 0) {
+              deckStore.updateElement(slidePlan.id, el.id, { size: { w: el.size.w, h: Math.max(10, el.size.h - overflowY) } });
+            }
+          }
+
+          const refreshedDeck = useDeckStore.getState().deck;
+          const refreshedSlide = refreshedDeck?.slides.find((s) => s.id === slidePlan.id);
+          const slideResult = refreshedSlide
+            ? validateDeck({ ...updatedDeck, slides: [refreshedSlide] })
+            : validateDeck({ ...updatedDeck, slides: [newSlide] });
+          const criticals = slideResult.issues.filter((iss) => iss.severity === "error");
+          if (criticals.length === 0) {
+            cb.onLog(`  ✓ Slide ${slidePlan.id} passed validation`);
+            break;
+          }
+          cb.onLog(`  ✗ Slide ${slidePlan.id} has ${criticals.length} critical issue(s) — attempt ${attempt}/${maxAttempts}`);
+          if (attempt < maxAttempts) {
+            const fixInstructions = buildFixInstructions(slideResult);
+            const fixPrompt = buildReviewerPrompt(updatedDeck);
+            await callAgentWithTools(
+              getModelForAgent("reviewer"),
+              fixPrompt,
+              reviewerTools,
+              `Fix issues in slide ${slidePlan.id} only:\n${fixInstructions}`,
+              [],
+              cb.onLog,
+            );
+          }
+        } else {
+          cb.onLog(`  ✗ Slide ${slidePlan.id} was not created — retrying (${attempt}/${maxAttempts})`);
+        }
+      }
+    }
+  }
+
+  return `Generated ${slides.length} slides with per-slide validation.`;
 }
 
 async function runReviewer(cb: PipelineCallbacks): Promise<string> {
@@ -304,7 +472,7 @@ async function runReviewer(cb: PipelineCallbacks): Promise<string> {
   cb.onLog(`Found ${localResult.issues.length} issues. Running AI reviewer...`);
   const prompt = buildReviewerPrompt(deck);
   const message = fixInstructions
-    ? `Review the deck and fix these issues:\n${fixInstructions}`
+    ? `Review the deck and address these issues:\n${fixInstructions}`
     : "Review the deck for any issues.";
 
   return callAgentWithTools(
@@ -342,16 +510,37 @@ async function runWriter(
 export async function runPipeline(
   userMessage: string,
   cb: PipelineCallbacks,
+  chatHistory?: Array<{ role: "user" | "assistant"; content: string }>,
 ): Promise<void> {
   try {
     // Stage 1: Plan
-    const plan = await runPlanner(userMessage, cb);
+    const plan = await runPlanner(userMessage, cb, chatHistory);
     if (!plan) return;
 
     // Direct chat response — no pipeline needed
     if (plan.intent === "chat") {
       cb.onComplete(plan.response ?? plan.reasoning);
       return;
+    }
+
+    // Style inquiry — show UI form, then re-run planner with preferences
+    if (plan.intent === "style_inquiry") {
+      const prefs = await cb.onStyleInquiry();
+      const prefsText = [
+        `Theme: ${prefs.theme}${prefs.customColors ? ` (bg: ${prefs.customColors.background}, text: ${prefs.customColors.text}, accent: ${prefs.customColors.accent})` : ""}`,
+        `Animations: ${prefs.animations}`,
+        `Highlight Boxes: ${prefs.highlightBoxes ? "yes" : "no"}`,
+        `Presenter Notes Tone: ${prefs.notesTone}`,
+      ].join("\n");
+      const enrichedMessage = `${userMessage}\n\nStyle Preferences:\n${prefsText}`;
+      const updatedHistory = [
+        ...(chatHistory ?? []),
+        { role: "user" as const, content: userMessage },
+        { role: "assistant" as const, content: plan.response ?? "What are your style preferences?" },
+        { role: "user" as const, content: `My style preferences:\n${prefsText}` },
+      ];
+      // Re-run pipeline with preferences included
+      return runPipeline(enrichedMessage, cb, updatedHistory);
     }
 
     // Notes-only path
