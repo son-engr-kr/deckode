@@ -9,6 +9,27 @@ import { fnv1aHash } from "@/utils/hash";
 // Bundled template data for prod/FS Access mode (no server available)
 import exampleDeck from "../../templates/default/deck.json";
 import aiGuideText from "../../docs/deckode-guide.md?raw";
+import guide01 from "../../docs/guide/01-overview.md?raw";
+import guide02 from "../../docs/guide/02-slide-splitting.md?raw";
+import guide03 from "../../docs/guide/03-schema.md?raw";
+import guide04 from "../../docs/guide/04-elements.md?raw";
+import guide05 from "../../docs/guide/05-animations.md?raw";
+import guide06 from "../../docs/guide/06-theme.md?raw";
+import guide07 from "../../docs/guide/07-slide-features.md?raw";
+import guide08 from "../../docs/guide/08-guidelines.md?raw";
+import guide09 from "../../docs/guide/09-example.md?raw";
+
+const BUNDLED_GUIDE_FILES: Record<string, string> = {
+  "01-overview.md": guide01,
+  "02-slide-splitting.md": guide02,
+  "03-schema.md": guide03,
+  "04-elements.md": guide04,
+  "05-animations.md": guide05,
+  "06-theme.md": guide06,
+  "07-slide-features.md": guide07,
+  "08-guidelines.md": guide08,
+  "09-example.md": guide09,
+};
 import layoutBlank from "../../templates/default/layouts/blank.json";
 import layoutTitle from "../../templates/default/layouts/title.json";
 import layoutTitleContent from "../../templates/default/layouts/title-content.json";
@@ -121,6 +142,10 @@ export class FsAccessAdapter implements FileSystemAdapter {
     // Write docs/
     const docsDir = await projectDir.getDirectoryHandle("docs", { create: true });
     await writeTextFile(docsDir, "deckode-guide.md", aiGuideText);
+    const guideDir = await docsDir.getDirectoryHandle("guide", { create: true });
+    for (const [name, content] of Object.entries(BUNDLED_GUIDE_FILES)) {
+      await writeTextFile(guideDir, name, content);
+    }
 
     return projectDir;
   }
