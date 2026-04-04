@@ -54,7 +54,7 @@ Use consistent color schemes. Here are some starting points:
 - Keep text concise — slides are not documents
 - One idea per slide
 - Use Markdown headings to establish hierarchy
-- Use `**bold**` for emphasis, sparingly. **Never use `**` inside `$...$` math** — use `\bm{}` or `\mathbf{}` instead
+- Use `**bold**` for emphasis, sparingly (see Common Pitfalls for math-mode caveats)
 - Code blocks: show only the relevant lines, not entire files
 - Speaker notes (`notes` field) can hold the detailed explanation
 

@@ -46,6 +46,18 @@ Another visible point.
 
 Comments are useful for personal reminders, draft notes, or temporarily hiding content without deleting it.
 
+## Example: notes with animations
+
+```json
+{
+  "notes": "Welcome.\n\n[step:1]Problem statement.[/step]\n\n[step:2]Proposed solution.[/step]",
+  "animations": [
+    { "target": "problem", "trigger": "onClick", "effect": "fadeIn" },
+    { "target": "solution", "trigger": "onClick", "effect": "slideInLeft" }
+  ]
+}
+```
+
 
 # Layout Templates
 
@@ -61,77 +73,10 @@ Deckode includes built-in layout templates that provide pre-positioned elements 
 | `"code-slide"` | Heading + large code block area |
 | `"image-left"` | Image on the left half, text content on the right |
 
-**Usage**: Set the `layout` field on a slide object:
-
-```json
-{
-  "id": "s1",
-  "layout": "title-content",
-  "elements": [
-    {
-      "id": "heading",
-      "type": "text",
-      "content": "## My Custom Title",
-      "position": { "x": 60, "y": 30 },
-      "size": { "w": 840, "h": 60 },
-      "style": { "fontSize": 32, "color": "#f8fafc" }
-    },
-    {
-      "id": "body",
-      "type": "text",
-      "content": "Content goes here...",
-      "position": { "x": 60, "y": 110 },
-      "size": { "w": 840, "h": 380 },
-      "style": { "fontSize": 20, "color": "#cbd5e1" }
-    }
-  ]
-}
-```
-
-
-# Speaker Notes
-
-Each slide can have a `notes` field with plain text or Markdown content. Notes are displayed in the presenter console during presentations.
-
-## Animation-Aware Notes
-
-Use `[step:N]...[/step]` markers to highlight sections of your notes as animations progress. This helps presenters know what to say at each animation step.
-
-```json
-{
-  "id": "s2",
-  "notes": "Welcome everyone to today's talk.\n\n[step:1]First, let's look at the problem statement. Our current tools are too restrictive.[/step]\n\n[step:2]Here's our proposed solution — a JSON-based approach that gives full control.[/step]\n\n[step:3]And these are the results from our beta testing.[/step]",
-  "elements": [ ... ],
-  "animations": [
-    { "target": "problem", "trigger": "onClick", "effect": "fadeIn" },
-    { "target": "solution", "trigger": "onClick", "effect": "slideInLeft" },
-    { "target": "results", "trigger": "onClick", "effect": "fadeIn" }
-  ]
-}
-```
-
-**Behavior**:
-- Text outside `[step:N]...[/step]` markers is always visible
-- Text inside markers is dimmed by default and highlighted (yellow) when the animation reaches that step
-- **Steps start at 1** (not 0). Steps correspond to the order of `onClick` animations: the first `onClick` is step 1, the second is step 2, etc.
-- Once a step is reached, its text stays highlighted (cumulative: `activeStep >= N`)
+**Usage**: Set `"layout": "title-content"` on a slide object. Elements from the template are provided as defaults; override positions, styles, or content as needed.
 
 
 # Rotation
 
-Any element can be rotated by setting the `rotation` field (degrees, clockwise). **Exception: `line` and `arrow` shapes must NOT use `rotation`** — the code will assert-fail. Use `waypoints` for line/arrow direction instead.
-
-```json
-{
-  "id": "label",
-  "type": "text",
-  "content": "DRAFT",
-  "position": { "x": 300, "y": 200 },
-  "size": { "w": 360, "h": 80 },
-  "rotation": -15,
-  "style": { "fontSize": 48, "color": "#ef444480", "textAlign": "center" }
-}
-```
-
-Rotation is applied as a CSS `transform: rotate()` on the element's bounding box. The element rotates around its center point.
+Any element can be rotated by setting the `rotation` field (degrees, clockwise). Rotation is applied as CSS `transform: rotate()` around the element's center. **Exception: `line` and `arrow` shapes must NOT use `rotation`** — use `waypoints` instead.
 
