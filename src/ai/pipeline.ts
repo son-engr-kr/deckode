@@ -376,7 +376,7 @@ After calling add_slide, briefly confirm.`;
         const deckAfterContent = useDeckStore.getState().deck;
         const placeholderSlide = deckAfterContent?.slides.find((s) => s.id === slidePlan.id);
         if (placeholderSlide) {
-          const placeholder = placeholderSlide.elements.find((e) => e.id.endsWith("-diagram-placeholder"));
+          const placeholder = placeholderSlide.elements.find((e) => e.id.endsWith("-placeholder"));
           if (placeholder) {
             useDeckStore.getState().deleteElement(slidePlan.id, placeholder.id);
             cb.onLog(`  [cleanup] Deleted placeholder ${placeholder.id}`);

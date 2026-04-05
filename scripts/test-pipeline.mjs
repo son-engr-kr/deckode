@@ -737,7 +737,7 @@ After calling add_slide, briefly confirm.`;
         // Programmatically remove placeholder element before Visual Agent runs
         const slideBeforeVisual = deck.slides.find((s) => s.id === slidePlan.id);
         if (slideBeforeVisual) {
-          const placeholder = slideBeforeVisual.elements.find((e) => e.id.endsWith("-diagram-placeholder"));
+          const placeholder = slideBeforeVisual.elements.find((e) => e.id.endsWith("-placeholder"));
           if (placeholder) {
             const result = executeTool("delete_element", { slideId: slidePlan.id, elementId: placeholder.id });
             console.log(`  [cleanup] Deleted placeholder: ${result}`);
@@ -943,9 +943,16 @@ function validateDeck(slides) {
           const areaA = ea.size.w * ea.size.h;
           const areaB = eb.size.w * eb.size.h;
           const pct = (ow * oh) / Math.min(areaA, areaB);
-          // Skip label-on-box pattern: smaller element fully inside larger (ratio > 3x)
+          // Skip label-on-box: smaller nearly fully inside larger (ratio > 3x)
           const isLabelOnBox = pct > 0.9 && Math.max(areaA, areaB) / Math.min(areaA, areaB) > 3;
-          if (!isLabelOnBox) {
+          // Skip shape+text/table overlaps — shapes are always decorative/intentional (highlight boxes, borders)
+          const VISUAL = ["shape"];
+          const CONTENT = ["text", "table", "code"];
+          const isShapeOnContent = (VISUAL.includes(ea.type) && CONTENT.includes(eb.type)) ||
+                                   (CONTENT.includes(ea.type) && VISUAL.includes(eb.type));
+          // Skip small element on much larger (ratio > 4x) — label-in-box or annotation
+          const isAnnotation = Math.max(areaA, areaB) / Math.min(areaA, areaB) > 4;
+          if (!isLabelOnBox && !isShapeOnContent && !isAnnotation) {
             if (pct > 0.5) {
               issues.push({
                 level: "CRITICAL",

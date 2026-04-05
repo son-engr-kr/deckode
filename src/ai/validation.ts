@@ -67,9 +67,18 @@ export function validateDeck(deck: Deck): ValidationResult {
           const areaB = eb.size.w * eb.size.h;
           const overlapArea = overlapW * overlapH;
           const overlapPct = overlapArea / Math.min(areaA, areaB);
-          // Skip label-on-box pattern: smaller element fully inside larger (area ratio > 3x)
+          // Skip label-on-box: smaller nearly fully inside larger (ratio > 3x)
           const isLabelOnBox = overlapPct > 0.9 && Math.max(areaA, areaB) / Math.min(areaA, areaB) > 3;
-          if (!isLabelOnBox) {
+          // Skip shape+text/table overlaps — shapes are always decorative/intentional
+          const eaType = (ea as { type?: string }).type;
+          const ebType = (eb as { type?: string }).type;
+          const VISUAL = ["shape"];
+          const CONTENT = ["text", "table", "code"];
+          const isShapeOnContent = (VISUAL.includes(eaType ?? "") && CONTENT.includes(ebType ?? "")) ||
+                                   (CONTENT.includes(eaType ?? "") && VISUAL.includes(ebType ?? ""));
+          // Skip small element on much larger (ratio > 4x) — label-in-box or annotation
+          const isAnnotation = Math.max(areaA, areaB) / Math.min(areaA, areaB) > 4;
+          if (!isLabelOnBox && !isShapeOnContent && !isAnnotation) {
             if (overlapPct > 0.5) {
               issues.push({
                 severity: "error",
