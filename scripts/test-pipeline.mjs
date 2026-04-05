@@ -772,12 +772,6 @@ Steps:
       // Programmatic overflow fix before validation
       applyOverflowFix(newSlide);
 
-      // Programmatic overlap resolution
-      const overlapFixed = resolveOverlaps(newSlide);
-      if (overlapFixed > 0) {
-        console.log(`  [layout] Auto-resolved ${overlapFixed} overlap(s) programmatically`);
-      }
-
       const slideIssues = validateDeck([newSlide]);
       const criticals = slideIssues.filter((iss) => iss.level === "CRITICAL");
       const overlapWarnings = slideIssues.filter(
@@ -796,12 +790,9 @@ Steps:
         const reviewMsg = `Fix layout issues in slide ${slidePlan.id} only. Call update_element with the exact suggested positions:\n${fixLines}`;
         console.log(`  [reviewer] Sending ${issueList.length} issue(s) to agent for correction...`);
         await callGeminiWithTools(buildGeneratorPrompt(), reviewMsg);
-        // Re-apply fixes after agent corrects
+        // Re-apply overflow fix after agent corrects positions
         const fixedSlide = deck.slides.find((s) => s.id === slidePlan.id);
-        if (fixedSlide) {
-          applyOverflowFix(fixedSlide);
-          resolveOverlaps(fixedSlide);
-        }
+        if (fixedSlide) applyOverflowFix(fixedSlide);
       } else {
         // Last attempt — accept remaining issues
         break;

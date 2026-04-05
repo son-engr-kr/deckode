@@ -4,7 +4,7 @@ import { callGemini, buildFunctionDeclarations, type GeminiModel, type DeckodeTo
 import { buildPlannerPrompt, buildGeneratorPrompt, buildContentAgentPrompt, buildVisualAgentPrompt, buildReviewerPrompt, buildWriterPrompt } from "./prompts";
 import { generatorTools, reviewerTools, writerTools } from "./tools";
 import { readGuide } from "./guides";
-import { validateDeck, buildFixInstructions, resolveOverlaps } from "./validation";
+import { validateDeck, buildFixInstructions } from "./validation";
 import type { Content } from "@google/generative-ai";
 
 // ---------- Types ----------
@@ -417,17 +417,6 @@ Steps:
             }
             if (overflowY > 0) {
               deckStore.updateElement(slidePlan.id, el.id, { size: { w: el.size.w, h: Math.max(10, el.size.h - overflowY) } });
-            }
-          }
-
-          // Programmatic overlap resolution — nudge smaller element away from larger
-          const slideAfterClamp = useDeckStore.getState().deck?.slides.find((s) => s.id === slidePlan.id);
-          if (slideAfterClamp) {
-            const overlapFixed = resolveOverlaps(slidePlan.id, slideAfterClamp, (elementId, patch) => {
-              useDeckStore.getState().updateElement(slidePlan.id, elementId, patch);
-            });
-            if (overlapFixed > 0) {
-              cb.onLog(`  [layout] Auto-resolved ${overlapFixed} overlap(s) programmatically`);
             }
           }
 
