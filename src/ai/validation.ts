@@ -31,7 +31,7 @@ export function validateDeck(deck: Deck): ValidationResult {
     slideIds.add(slide.id);
 
     // Forbidden element types (not supported / cause rendering issues)
-    const FORBIDDEN_TYPES = ["mermaid", "video", "iframe", "audio", "animation"];
+    const FORBIDDEN_TYPES = ["mermaid", "iframe", "audio", "animation"];
     for (const el of slide.elements) {
       if (FORBIDDEN_TYPES.includes(el.type)) {
         issues.push({
@@ -79,15 +79,26 @@ export function validateDeck(deck: Deck): ValidationResult {
           // Skip small element on much larger (ratio > 4x) — label-in-box or annotation
           const isAnnotation = Math.max(areaA, areaB) / Math.min(areaA, areaB) > 4;
           if (!isLabelOnBox && !isShapeOnContent && !isAnnotation) {
-            // Compute a suggested target position (right of the larger element)
+            // Compute a suggested target position
             const areaA = ea.size.w * ea.size.h;
             const areaB = eb.size.w * eb.size.h;
             const [larger, smaller] = areaA >= areaB ? [ea, eb] : [eb, ea];
-            const suggestX = Math.min(960 - smaller.size.w, larger.position.x + larger.size.w + 10);
-            const suggestY = smaller.position.y;
+            const candidateX = larger.position.x + larger.size.w + 10;
+            const fitsRight = candidateX + smaller.size.w <= 960;
+            let suggestion: string;
+            if (fitsRight) {
+              suggestion = `move "${smaller.id}" to x:${candidateX} y:${smaller.position.y} (right of "${larger.id}")`;
+            } else {
+              // Can't fit right — suggest stacking below
+              const candidateY = larger.position.y + larger.size.h + 10;
+              if (candidateY + smaller.size.h <= 540) {
+                suggestion = `move "${smaller.id}" to x:${smaller.position.x} y:${candidateY} (below "${larger.id}")`;
+              } else {
+                suggestion = `resize "${smaller.id}" to w:${Math.floor((960 - larger.position.x) / 2 - 10)} or delete it — no room beside/below "${larger.id}"`;
+              }
+            }
             const coordsA = `${ax1},${ay1} ${ea.size.w}×${ea.size.h}`;
             const coordsB = `${bx1},${by1} ${eb.size.w}×${eb.size.h}`;
-            const suggestion = `move "${smaller.id}" to x:${suggestX} y:${suggestY} (right of "${larger.id}")`;
             if (overlapPct > 0.5) {
               issues.push({
                 severity: "error",
@@ -193,20 +204,6 @@ export function validateDeck(deck: Deck): ValidationResult {
             slideId: slide.id,
             elementId: el.id,
             message: `Arrow/line element has rotation field (must be removed — use waypoints instead)`,
-            autoFixable: false,
-          });
-        }
-      }
-
-      // scene3d: orbitControls in slide context interferes with navigation
-      if (el.type === "scene3d") {
-        const s3d = el as { scene?: { orbitControls?: boolean; camera?: { position?: number[] } } };
-        if (s3d.scene?.orbitControls === true) {
-          issues.push({
-            severity: "warning",
-            slideId: slide.id,
-            elementId: el.id,
-            message: "scene3d has orbitControls:true — this grabs mouse events and breaks slide navigation",
             autoFixable: false,
           });
         }

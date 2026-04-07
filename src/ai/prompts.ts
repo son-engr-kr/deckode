@@ -144,7 +144,8 @@ ${state}
 - For diagrams: build with shape (rectangle, arrow) + text elements, grouped with groupId
 - Code elements: show only the essential 5-8 lines that illustrate the concept — never paste entire files (hard limit: 25 lines)
 - KaTeX math: use SINGLE backslash for ALL commands (\pi, \sum, \mathbf{x}, \alpha). NEVER double-backslash (\\pi is wrong). For bold math use \mathbf{} or \boldsymbol{} — NOT \bm{} (unsupported in KaTeX). Multi-line equations need \begin{aligned}...\end{aligned}
-- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- FORBIDDEN element types: "mermaid", "iframe", "audio", "animation" — NEVER use these
+- Allowed media types: "image" (src path to local asset), "video" (YouTube URL via url field)
 - Element positioning: ensure no two elements overlap (check x/y/w/h of all other elements before placing)
 - Element IDs MUST be globally unique across ALL slides. Use slide-scoped IDs: for slide s1 use "s1-e1", "s1-e2"...; for slide s2 use "s2-e1", "s2-e2"... Never reuse an ID that appears in any other slide.
 - After creating all slides, briefly confirm what was created
@@ -219,7 +220,8 @@ ${state}
   - Add one placeholder element: { id: "[slideId]-diagram-placeholder", type: "text", position: {x:490, y:80}, size: {w:440, h:380}, content: "[Diagram placeholder — Visual Agent will fill this area]" }
   - Keep ALL text/code/table elements strictly within x:0–480 when using split layout
 - If NO visual elements needed: elements may use the full 960×540 canvas
-- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- FORBIDDEN element types: "mermaid", "iframe", "audio", "animation" — NEVER use these
+- Allowed media types: "image" (src path to local asset), "video" (YouTube URL via url field)
 - After adding the slide, briefly confirm what was created
 
 ${ANIMATIONS_SECTION}
@@ -252,7 +254,8 @@ ${state}
 - If a slide already has a tikz element, do NOT add another tikz to the same slide
 - FIRST: call read_slide to find any element with id ending in "-diagram-placeholder". Delete it with delete_element BEFORE adding visual elements. This is mandatory.
 - After deleting the placeholder, fill the right column (x:490, y:80, w:440, h:380) with your diagram/tikz/scene3d
-- FORBIDDEN element types: "mermaid", "video", "iframe", "audio" — NEVER use these
+- FORBIDDEN element types: "mermaid", "iframe", "audio", "animation" — NEVER use these
+- Allowed media types: "image" (src path to local asset), "video" (YouTube URL via url field)
 - Use add_element to add each visual element to the slide
 - After adding all visual elements, briefly confirm what was created
 
@@ -285,7 +288,7 @@ ${state}
 8. Grouped elements (box + label) share the same groupId
 9. Every slide has presenter notes
 10. Reasonable font sizes (not too small < 10, not too large > 48)
-11. No mermaid or external image elements (should use shapes instead)
+11. No mermaid, iframe, audio, or animation elements; image/video types are allowed
 12. Line/arrow elements have waypoints (at least 2 points) and NO rotation
 13. TikZ elements include a bounding box (\\path rectangle)
 14. [step:N]...[/step] markers in notes match the number of onClick animations
