@@ -76,6 +76,16 @@ Deckode includes built-in layout templates that provide pre-positioned elements 
 **Usage**: Set `"layout": "title-content"` on a slide object. Elements from the template are provided as defaults; override positions, styles, or content as needed.
 
 
+# Cross-Instance Copy & Paste
+
+When running multiple Deckode editor instances (different projects in separate browser tabs), slides and elements can be copied and pasted between them:
+
+- **Elements**: Select elements on the canvas, press **Ctrl+C** to copy. Switch to another instance and press **Ctrl+V** to paste. Image and video assets are automatically fetched from the source instance and re-uploaded to the target project.
+- **Slides**: Click a slide thumbnail (no elements selected) and press **Ctrl+C** to copy the current slide. Multi-select slides with **Ctrl+Click** or **Shift+Click**, then **Ctrl+C** to copy all selected slides. Paste with **Ctrl+V**.
+- **Context menu**: Right-click a slide thumbnail for **Copy Slide** / **Paste Slide** options.
+- **Shared components**: Referenced components are included in the clipboard data and merged into the target deck on paste.
+
+
 # Rotation
 
 Any element can be rotated by setting the `rotation` field (degrees, clockwise). Rotation is applied as CSS `transform: rotate()` around the element's center. **Exception: `line` and `arrow` shapes must NOT use `rotation`** — use `waypoints` instead.

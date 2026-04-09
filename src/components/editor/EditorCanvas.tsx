@@ -10,6 +10,7 @@ import { useAdapter } from "@/contexts/AdapterContext";
 import { assert } from "@/utils/assert";
 import { ComponentEditOverlay } from "./ComponentEditOverlay";
 import { useGitDiff } from "@/contexts/GitDiffContext";
+import { reuploadElementAssets, reuploadSlideAssets } from "@/utils/crossInstanceAssets";
 
 interface MarqueeRect {
   startX: number;
@@ -294,19 +295,26 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
         try {
           const parsed = JSON.parse(text);
           if (parsed?.__deckode) {
+            const isCrossInstance = (parsed.origin && parsed.origin !== window.location.origin)
+              || (parsed.project && parsed.project !== adapter.projectName);
+
             // Element paste
             if (Array.isArray(parsed.elements)) {
               e.preventDefault();
               const { nextElementId } = await import("@/utils/id");
 
-              // Merge referenced components into deck
+              // Merge referenced components into deck (re-upload assets if cross-origin)
               if (parsed.components && typeof parsed.components === "object") {
                 const state = useDeckStore.getState();
                 if (state.deck) {
                   if (!state.deck.components) state.deck.components = {};
                   for (const [compId, comp] of Object.entries(parsed.components)) {
                     if (!state.deck.components[compId]) {
-                      state.deck.components[compId] = comp as import("@/types/deck").SharedComponent;
+                      const c = comp as import("@/types/deck").SharedComponent;
+                      if (isCrossInstance) {
+                        for (const el of c.elements) await reuploadElementAssets(el, parsed.origin, parsed.project, adapter);
+                      }
+                      state.deck.components[compId] = c;
                     }
                   }
                 }
@@ -318,6 +326,10 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
                 clone.id = nextElementId();
                 clone.position = { x: original.position.x + 20, y: original.position.y + 20 };
                 delete clone.groupId;
+                // Re-upload assets from other instance
+                if (isCrossInstance) {
+                  await reuploadElementAssets(clone, parsed.origin, parsed.project, adapter);
+                }
                 addElement(slide.id, clone);
                 newIds.push(clone.id);
               }
@@ -333,14 +345,48 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
               return;
             }
 
-            // Slide paste
-            if (parsed.slide) {
+            // Slide paste (supports both single `slide` and array `slides`)
+            const slidesToPaste: import("@/types/deck").Slide[] | undefined =
+              Array.isArray(parsed.slides) ? parsed.slides
+              : parsed.slide ? [parsed.slide]
+              : undefined;
+            if (slidesToPaste && slidesToPaste.length > 0) {
               e.preventDefault();
               const { cloneSlide } = await import("@/utils/id");
-              const { currentSlideIndex, addSlide, setCurrentSlide } = useDeckStore.getState();
-              const clone = cloneSlide(parsed.slide);
-              addSlide(clone, currentSlideIndex);
-              setCurrentSlide(currentSlideIndex + 1);
+              const state = useDeckStore.getState();
+
+              // Merge referenced components (re-upload assets if cross-origin)
+              if (parsed.components && typeof parsed.components === "object") {
+                if (state.deck) {
+                  if (!state.deck.components) state.deck.components = {};
+                  for (const [compId, comp] of Object.entries(parsed.components)) {
+                    if (!state.deck.components[compId]) {
+                      const c = comp as import("@/types/deck").SharedComponent;
+                      if (isCrossInstance) {
+                        for (const el of c.elements) await reuploadElementAssets(el, parsed.origin, parsed.project, adapter);
+                      }
+                      state.deck.components[compId] = c;
+                    }
+                  }
+                }
+              }
+
+              let insertIndex = state.currentSlideIndex;
+              const newSlideIds: string[] = [];
+              for (const srcSlide of slidesToPaste) {
+                const clone = cloneSlide(srcSlide);
+                // Re-upload assets from other instance
+                if (isCrossInstance) {
+                  await reuploadSlideAssets(clone, parsed.origin, parsed.project, adapter);
+                }
+                state.addSlide(clone, insertIndex);
+                insertIndex++;
+                newSlideIds.push(clone.id);
+              }
+              state.setCurrentSlide(state.currentSlideIndex + 1);
+              if (newSlideIds.length > 1) {
+                state.setSelectedSlides(newSlideIds);
+              }
               return;
             }
 

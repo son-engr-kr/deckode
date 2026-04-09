@@ -51,6 +51,7 @@ export default defineConfig(({ command }) => ({
     },
   },
   server: {
+    cors: true,
     watch: {
       ignored: [
         path.resolve(__dirname, "projects/**"),
