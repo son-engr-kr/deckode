@@ -49,6 +49,7 @@ export function PresenterView() {
   const [scale, setScale] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [showGuide, setShowGuide] = useState(true);
   const hideTimerRef = useRef(0);
   const slide = deck?.slides[currentSlideIndex];
   const steps = useMemo(
@@ -153,9 +154,13 @@ export function PresenterView() {
     };
   }, [resetHideTimer]);
 
-  // Keyboard: Escape to close, F to toggle fullscreen
+  // Keyboard: Escape to close, F to toggle fullscreen, any key dismisses guide
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (showGuide) {
+        setShowGuide(false);
+        return;
+      }
       if (e.key === "Escape") {
         if (document.fullscreenElement) {
           document.exitFullscreen();
@@ -172,7 +177,7 @@ export function PresenterView() {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+  }, [showGuide]);
 
   if (!deck || !slide) return null;
 
@@ -231,8 +236,48 @@ export function PresenterView() {
           />
         )}
       </div>
+      {/* Initial guide overlay — shown once on first open */}
+      {showGuide && (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm cursor-pointer animate-fade-in"
+          onClick={() => setShowGuide(false)}
+          onKeyDown={(e) => e.key && setShowGuide(false)}
+        >
+          <div
+            className="max-w-sm w-full mx-4 rounded-xl bg-gray-900/95 border border-white/10 p-6 text-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold mb-4">Audience View</h2>
+            <div className="space-y-3 text-sm text-white/80">
+              <div className="flex items-start gap-3">
+                <kbd className="shrink-0 px-2 py-0.5 rounded bg-white/15 text-white font-mono text-xs">F</kbd>
+                <span>Toggle fullscreen</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <kbd className="shrink-0 px-2 py-0.5 rounded bg-white/15 text-white font-mono text-xs">Esc</kbd>
+                <span>Exit fullscreen / close window</span>
+              </div>
+              {!window.matchMedia("(display-mode: standalone)").matches && (
+                <div className="mt-4 pt-3 border-t border-white/10">
+                  <p className="text-white/60 text-xs leading-relaxed">
+                    <strong className="text-white/80">Tip:</strong> Install this page as an app
+                    (browser menu &rarr; "Install" or "Add to desktop") to remove
+                    the address bar — great for sharing a clean window on Teams.
+                  </p>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setShowGuide(false)}
+              className="mt-5 w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm text-white/90 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
       {/* Fullscreen control — auto-hides after 3s, reappears on mouse move */}
-      {!isFullscreen && showControls && (
+      {!isFullscreen && !showGuide && showControls && (
         <button
           onClick={() => document.documentElement.requestFullscreen?.()}
           className="absolute top-3 right-3 text-xs px-3 py-1.5 rounded bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm animate-fade-in"
