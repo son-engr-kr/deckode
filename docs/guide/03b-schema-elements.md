@@ -23,6 +23,8 @@ Every element has these common fields:
 | `rotation` | number | no | Rotation in degrees (clockwise) |
 | `groupId` | string | no | Group identifier. Elements sharing the same `groupId` form a group — they move and scale together. |
 
+**Image elements have additional semantic fields**: `alt` (required in practice for accessibility and AI context), `caption` (longer description), `description` (free-form detail), and `aiSummary` (auto-generated multimodal caption cached from a Gemini call). See `04b-elem-media` for the full image schema and captioning rules.
+
 ## Grouping
 
 Elements can be grouped by assigning the same `groupId` string. Grouped elements behave as a unit:

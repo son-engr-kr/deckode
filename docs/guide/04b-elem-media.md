@@ -26,8 +26,18 @@ Renders an image.
 |-------|------|----------|-------------|
 | `src` | string | yes | Image path relative to project root, or absolute URL |
 | `alt` | string | **yes (AI must always provide)** | Short description of what the image depicts. Used for accessibility, PPTX export, and — critically — as the only signal AI agents have about image content when planning or summarizing the deck. Without `alt`, downstream agents see the image as an opaque blob and cannot reason about it. Keep it concise (one sentence) and specific (e.g., `"Bar chart of Q4 revenue by region"`, not `"chart"`). |
+| `caption` | string | no | Longer, richer description for slide-context understanding. Complementary to `alt` — while `alt` is a one-liner for accessibility, `caption` can be a sentence or two with domain-specific detail. |
+| `description` | string | no | Free-form detail field for AI-facing notes about the image. Rarely set directly; use when the AI needs extended context that does not fit in `alt` or `caption`. |
+| `aiSummary` | string | no | Machine-generated caption cached from a multimodal image analysis call. Populated automatically on image upload (if the auto-caption setting is on) or on first AI read via the lazy caption trigger. Treat as derived state — do not hand-edit. |
 
-**Alt text rule for AI agents**: When adding or modifying any image element, you MUST populate `alt`. Treat `alt` as required even though the schema marks it optional. The deck-summary representation passed to the Planner agent does not include image pixels — it only sees `alt`. An image without `alt` is invisible to upstream planning. If you do not know what the image depicts (e.g., user-uploaded asset with an opaque filename), write a placeholder describing the filename and slot (`"User-uploaded asset 'diagram-final-v2.png' in slide 3 hero position"`) rather than leaving it blank.
+**Alt text rule for AI agents**: When adding or modifying any image element, you MUST populate `alt`. Treat `alt` as required even though the schema marks it optional. The deck-summary representation passed to the Planner agent does not include image pixels — it only sees `alt`, `caption`, `description`, or `aiSummary`. An image with none of these is invisible to upstream planning. If you do not know what the image depicts (e.g., user-uploaded asset with an opaque filename), call `generate_image_caption(slideId, elementId)` — it runs a multimodal Gemini call and writes the result to `aiSummary`. If captioning is not available, write a placeholder describing the filename and slot (`"User-uploaded asset 'diagram-final-v2.png' in slide 3 hero position"`) rather than leaving it blank.
+
+**Image editing tools** (prefer these over raw `update_element` patches):
+
+- `set_image_alt(slideId, elementId, alt)` — replace alt text
+- `crop_image(slideId, elementId, top?, right?, bottom?, left?)` — non-destructive crop via `style.crop` fractions. The renderer applies `clip-path: inset(...)` and the original asset is preserved.
+- `generate_image_caption(slideId, elementId)` — run a multimodal Gemini call right now and write the result to `aiSummary`. Use when you need to understand image content mid-edit.
+- To swap out an image, delete the element and add a new one with the new src — there is no dedicated `replace_image` tool.
 **Style fields**:
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|

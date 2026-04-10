@@ -74,19 +74,129 @@ Reading deck state costs tokens. Always prefer the narrowest read that answers y
 
 **Read tool hierarchy** (use the highest-level summary that still answers your question):
 
-1. **`read_deck`** — Returns a summary of the entire deck: title, author, slide count, and per-slide metadata (id, element count, element types, first text preview). Use this to understand overall structure, find a target slide by content, or count slides. **This is your default first read.** It does NOT return full element data.
+1. **`list_slide_titles`** — One line per slide with its ID and extracted title. Cheapest possible read. Use this when you need a table of contents — e.g., "which slide is about transformers?". Nothing else.
 
-2. **`read_slide(slideId)`** — Returns the full JSON of a single slide, including all element fields. Use this only after `read_deck` told you which slide you need to inspect. Never call `read_slide` on every slide in a loop — that defeats the purpose of the summary tier.
+2. **`read_deck`** — Returns a summary of the entire deck: title, author, slide count, and per-slide metadata (id, extracted title, element count, element types). Use this to understand overall structure or to find candidate slides by element type. **This is your default first read when list_slide_titles is not enough.** It does NOT return full element data.
+
+3. **`find_elements(query)`** — Search across the deck by `{ type, textContains, slideRange }`. Use this when you know what to look for but not where it is. Example: `find_elements({ type: "image", textContains: "chart" })`. Avoids reading slides you do not need.
+
+4. **`search_text(query, includeNotes?)`** — Full-text search across text/code content, image alt/caption, and optionally speaker notes. Returns match snippets with context. Use when the user asks "which slide mentions X?".
+
+5. **`get_slide_outline(slideId)`** — One line per element on a single slide with id, type, position, size, and a short content preview. Cheaper than `read_slide` when you only need layout information, not full content.
+
+6. **`read_slide(slideId)`** — Returns the full JSON of a single slide, including all element fields. Use this when you need every field of every element on a slide. Never call `read_slide` on every slide in a loop — that defeats the purpose of the summary tier.
+
+7. **`read_element(slideId, elementId)`** — Returns the full JSON of a single element. Prefer this over `read_slide` when you already know the element ID and only need its fields. Cheapest way to inspect one element.
 
 **Anti-patterns to avoid**:
-- Calling `read_slide` on every slide before deciding what to do. Use `read_deck` first; it already tells you which slides have which element types.
+- Calling `read_slide` on every slide before deciding what to do. Use `read_deck` or `find_elements` first.
 - Re-reading the same slide multiple times in one turn. Cache the result mentally and reason about it.
-- Reading the entire deck just to confirm a slide exists. The `read_deck` summary already includes all slide IDs.
+- Reading the entire deck just to confirm a slide exists. `read_deck` already includes all slide IDs.
 - Reading slides you have no intention of modifying. If the user said "fix slide 3", you only need to read slide 3.
+- Using `read_slide` when `get_slide_outline` or `read_element` would suffice.
 
-**When you genuinely need everything**: For deck-wide refactors (e.g., "unify all heading colors", "renumber all slides"), it is acceptable to read every slide. But state to yourself why before doing it, and prefer a single batch over interleaved reads-and-writes.
+**When you genuinely need everything**: For deck-wide refactors (e.g., "unify all heading colors", "renumber all slides"), you may not even need to read every slide — prefer `apply_style_to_all` or `find_elements` with a filter. If you still must read everything, batch reads at the start and avoid interleaving reads and writes.
 
-**Image content in summaries**: The `read_deck` summary includes element types but does not include image pixels. To know what an image depicts, you must read the slide and inspect the `alt` field. Always populate `alt` when adding images so future reads can understand them — see the image element guide for the strict alt-text rule.
+**Image content in summaries**: The deck summary passes image `aiSummary`/`caption`/`description`/`alt` as a text hint so you can reason about image content without seeing pixels. When an image lacks all of those, it shows as `image[no alt — UNDESCRIBED]` — that is your signal that you cannot reason about its contents. Two options: (a) call `generate_image_caption(slideId, elementId)` to force a caption now and wait for the result; (b) call `read_slide` or `read_element` on the image, which triggers a background caption for the next read. Always populate `alt` when you add a new image so future reads carry the semantics for free.
+
+## Tool Catalog by Task
+
+Pick the most specific tool for the job. Specialized tools have better validation, smaller token footprints, and avoid the common failure modes that come with free-form edits.
+
+### Moving and resizing elements
+
+- **Position only** → `move_element(slideId, elementId, x?, y?)`. Either x or y or both.
+- **Size only** → `resize_element(slideId, elementId, w?, h?, anchor?)`. Anchor defaults to top-left; use `center` / `top-right` / `bottom-left` / `bottom-right` to anchor resize differently.
+- **Align multiple elements** → `align_elements(slideId, elementIds[], alignment)`. Alignment is `left | center | right | top | middle | bottom`. **Never compute alignment coordinates by hand** — the tool computes them from the selection's bounding box so you do not have to.
+- **Distribute evenly** → `distribute_elements(slideId, elementIds[], "horizontal" | "vertical")`. Requires at least three elements.
+- **Z-order** → `bring_to_front`, `send_to_back`, or `change_z_order(slideId, elementId, delta)` for relative shifts.
+
+Do not use `update_element` with a `position` patch when `move_element` applies — the dedicated tool is more explicit and harder to get wrong.
+
+### Element CRUD
+
+- **Add** → `add_element(slideId, element)` with full element shape. For a similar element nearby, `duplicate_element(slideId, elementId)` is faster and guarantees ID uniqueness.
+- **Read one** → `read_element(slideId, elementId)`, not `read_slide`.
+- **Patch fields** → `update_element(slideId, elementId, patch)` for arbitrary changes. For common operations prefer the specialized tool: `move_element`, `resize_element`, `set_image_alt`, `crop_image`, `set_element_style` (via update_element with a style-only patch).
+- **Delete** → `delete_element(slideId, elementId)`.
+
+### Slide structure
+
+- **Add slide** → `add_slide`. For a similar slide, `duplicate_slide(slideId, newSlideId)` is faster.
+- **Reorder** → `move_slide` (single slide) or `reorder_slides(order[])` (full permutation, all IDs required).
+- **Split** → `split_slide(slideId, pivotElementId, newSlideId)`. Elements at and after the pivot move to a new slide inserted after the source.
+- **Merge** → `merge_slides(targetSlideId, sourceSlideIds[])`. Source elements get y-offset stacked into the target, sources are then deleted.
+- **Patch meta** → `update_slide(slideId, patch)` for background/notes/hidden/bookmark. For just the background use `set_slide_background(slideId, color?, image?)`. For just notes use `set_speaker_notes(slideId, notes)`.
+
+### Deck-wide style
+
+Use these instead of iterating `update_element` calls:
+
+- **Unify a style across the deck** → `apply_style_to_all(filter, stylePatch)`. Filter by `{ type, slideRange, minFontSize, maxFontSize }`. Example: "make all headings blue" = `apply_style_to_all({ type: "text", minFontSize: 32 }, { color: "#3b82f6" })`.
+- **Apply theme patch** → `apply_theme(themePatch)`. Only known buckets (slide/text/code/shape/image/video/tikz/mermaid/table/scene3d) pass the validator.
+- **Update deck metadata** → `set_deck_meta({ title?, author?, aspectRatio? })` instead of `create_deck` or full-deck rewrites.
+
+### Images
+
+- **Alt text** → `set_image_alt(slideId, elementId, alt)`.
+- **Non-destructive crop** → `crop_image(slideId, elementId, top?, right?, bottom?, left?)`. Values are 0-1 fractions of each edge. The renderer applies clip-path inset; the original asset is preserved.
+- **Get a caption right now** → `generate_image_caption(slideId, elementId)`. Waits for the result and writes it to `aiSummary`. Use when you need to reason about image content mid-turn.
+- **Replace an image** → no dedicated tool. Delete the image element and add a new one with the new src.
+
+### Animations
+
+- **Add** → `add_animation(slideId, target, effect, trigger, duration?, delay?)`.
+- **List** → `list_animations(slideId)` to see indices before patching.
+- **Patch one** → `update_animation(slideId, index, patch)`.
+- **Remove** → `delete_animation(slideId, index)`.
+- **Reorder** → `reorder_animations(slideId, fromIndex, toIndex)`. Order matters: `[step:N]` markers in notes count onClick animations in order.
+
+Do not round-trip through `update_slide` with a full `animations` array for single-animation edits — the dedicated tools are safer.
+
+### Comments
+
+- **Add** → `add_comment(slideId, text, elementId?, category?)`. Category is `content | design | bug | todo | question | done`.
+- **Resolve** → `resolve_comment(slideId, commentId)` flips category to `done`.
+
+### Design quality self-check
+
+After a non-trivial edit, run at least one of these before reporting success:
+
+- **Schema check** → `validate_deck()` catches duplicate IDs, out-of-bounds, missing required fields.
+- **Layout check** → `check_overlaps(slideId)` catches accidental bounding-box intersections (grouped elements are ignored).
+- **Accessibility check** → `check_contrast(slideId)` reports text elements that fail WCAG AA (< 4.5 contrast ratio against the slide background).
+- **Combined** → `lint_slide(slideId)` runs all of the above plus empty-text and missing-title checks on one slide.
+
+### Safety net
+
+- **Snapshot before risky multi-step edits** → `snapshot(label)`. Labels are free-form, e.g., `"pre-tikz-rewrite"`. Use this when you are about to touch many elements at once.
+- **Restore a snapshot** → `restore(label)`. Replaces the whole deck with the saved state.
+- **Walk history** → `undo()` / `redo()` steps through the editor's temporal history, which captures every store change (drag, typing, tool calls). Complements snapshot/restore: undo walks back one step, restore jumps to a named checkpoint.
+- **Verify you changed what you intended** → `diff_against_snapshot(label)` reports added / removed / modified slides relative to a saved snapshot.
+- **List checkpoints** → `list_snapshots()`.
+
+### Bulk import
+
+- **Convert a markdown outline into slides** → `import_outline(markdown, mode?)`. Each `# heading` becomes one slide with title + body text elements. Modes: `append` (default) or `replace`. Fastest way to bootstrap a deck from an existing text outline.
+
+## Tool Selection Decision Tree
+
+When a user asks for an edit, pick tools in this order:
+
+1. **Is there a specialized tool for exactly this operation?** (move, resize, align, crop, set_image_alt, set_speaker_notes, apply_theme, …) Use it.
+2. **Is this a deck-wide consistency operation?** Use `apply_style_to_all` or `apply_theme`, not a loop of `update_element` calls.
+3. **Is this a structural operation?** (reorder, split, merge, duplicate) Use the dedicated structure tool.
+4. **Only if none of the above apply** → reach for `update_element` or `update_slide` with a hand-crafted patch.
+
+## Common Failure Modes to Avoid
+
+- **Manually computing alignment or distribution coordinates**. Use `align_elements` / `distribute_elements`. The LLM often makes off-by-one and centering mistakes here.
+- **Updating elements one by one when a deck-wide operation exists**. Use `apply_style_to_all`.
+- **Reading every slide before deciding what to do**. Use `list_slide_titles` → `find_elements` → `read_slide` in order of specificity.
+- **Round-tripping the whole `animations` array for a single animation change**. Use `update_animation(slideId, index, patch)`.
+- **Forgetting to snapshot before a risky multi-step operation**. A single `snapshot("before-X")` at the start lets you safely `restore("before-X")` if things go wrong.
+- **Reporting success without verification**. End non-trivial tool sequences with `validate_deck` or `lint_slide`.
+- **Adding an image without alt text**. The deck summary can only describe an image via its alt/caption/aiSummary. No alt = invisible to upstream planning.
 
 # AI Constraints
 
