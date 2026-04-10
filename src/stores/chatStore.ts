@@ -62,11 +62,23 @@ let _messageCounter = 0;
 let _currentProject: string | null = null;
 
 function storageKey(project: string): string {
+  return `tekkal:chat:${project}`;
+}
+
+function legacyStorageKey(project: string): string {
   return `deckode:chat:${project}`;
 }
 
 function loadSessions(project: string): ChatSession[] {
-  const raw = localStorage.getItem(storageKey(project));
+  let raw = localStorage.getItem(storageKey(project));
+  if (raw === null) {
+    const legacy = localStorage.getItem(legacyStorageKey(project));
+    if (legacy !== null) {
+      localStorage.setItem(storageKey(project), legacy);
+      localStorage.removeItem(legacyStorageKey(project));
+      raw = legacy;
+    }
+  }
   if (!raw) return [];
   try {
     return JSON.parse(raw);

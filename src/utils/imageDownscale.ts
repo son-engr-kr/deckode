@@ -32,7 +32,10 @@ const DEFAULT_QUALITY = 0.85;
 
 const memoryCache = new Map<string, Promise<DownscaledImage>>();
 
-const DB_NAME = "deckode-image-cache";
+// Cache is regenerable, so no legacy-DB migration. The old
+// "deckode-image-cache" database is left orphaned on existing users'
+// browsers until they explicitly clear site data; it costs negligible disk.
+const DB_NAME = "tekkal-image-cache";
 const DB_VERSION = 1;
 const STORE_NAME = "downscaled";
 

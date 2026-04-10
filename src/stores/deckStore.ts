@@ -13,7 +13,8 @@ import { setTabProject } from "@/utils/handleStore";
 // -- Session-persisted slide index helpers --
 
 function slideIndexKey(project: string): string {
-  return `deckode:slideIndex:${project}`;
+  // sessionStorage only — no back-compat needed, it resets per tab open
+  return `tekkal:slideIndex:${project}`;
 }
 
 function saveSlideIndex(project: string | null, index: number): void {

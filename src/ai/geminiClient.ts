@@ -1,17 +1,29 @@
 import { GoogleGenerativeAI, type Content, type Part, type Tool, type FunctionDeclaration, SchemaType } from "@google/generative-ai";
 
-const STORAGE_KEY = "deckode:gemini-api-key";
+const STORAGE_KEY = "tekkal:gemini-api-key";
+const LEGACY_STORAGE_KEY = "deckode:gemini-api-key";
 
 export function getApiKey(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
+  const current = localStorage.getItem(STORAGE_KEY);
+  if (current !== null) return current;
+  // Back-compat: inherit from pre-rebrand key, then migrate forward
+  const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+  if (legacy !== null) {
+    localStorage.setItem(STORAGE_KEY, legacy);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+    return legacy;
+  }
+  return null;
 }
 
 export function setApiKey(key: string): void {
   localStorage.setItem(STORAGE_KEY, key);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
 }
 
 export function clearApiKey(): void {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
 }
 
 let _client: GoogleGenerativeAI | null = null;
@@ -55,10 +67,18 @@ export const DEFAULT_AGENT_MODELS: Record<AgentRole, string> = {
   writer: "gemini-2.5-flash",
 };
 
-const MODELS_STORAGE_KEY = "deckode:agent-models";
+const MODELS_STORAGE_KEY = "tekkal:agent-models";
+const LEGACY_MODELS_STORAGE_KEY = "deckode:agent-models";
 
 export function getAgentModels(): Record<AgentRole, string> {
-  const raw = localStorage.getItem(MODELS_STORAGE_KEY);
+  let raw = localStorage.getItem(MODELS_STORAGE_KEY);
+  if (raw === null) {
+    raw = localStorage.getItem(LEGACY_MODELS_STORAGE_KEY);
+    if (raw !== null) {
+      localStorage.setItem(MODELS_STORAGE_KEY, raw);
+      localStorage.removeItem(LEGACY_MODELS_STORAGE_KEY);
+    }
+  }
   if (!raw) return { ...DEFAULT_AGENT_MODELS };
   try {
     return { ...DEFAULT_AGENT_MODELS, ...JSON.parse(raw) };
@@ -71,6 +91,7 @@ export function setAgentModel(role: AgentRole, model: string): void {
   const current = getAgentModels();
   current[role] = model;
   localStorage.setItem(MODELS_STORAGE_KEY, JSON.stringify(current));
+  localStorage.removeItem(LEGACY_MODELS_STORAGE_KEY);
 }
 
 export function getModelForAgent(role: AgentRole): string {
@@ -79,7 +100,8 @@ export function getModelForAgent(role: AgentRole): string {
 
 // -- Misc AI feature flags (persisted in localStorage) --
 
-const AUTO_CAPTION_ON_UPLOAD_KEY = "deckode:auto-caption-on-upload";
+const AUTO_CAPTION_ON_UPLOAD_KEY = "tekkal:auto-caption-on-upload";
+const LEGACY_AUTO_CAPTION_ON_UPLOAD_KEY = "deckode:auto-caption-on-upload";
 
 /**
  * Whether to auto-generate an AI caption (aiSummary) for every image the
@@ -87,11 +109,20 @@ const AUTO_CAPTION_ON_UPLOAD_KEY = "deckode:auto-caption-on-upload";
  * read instead, or on explicit generate_image_caption tool calls.
  */
 export function getAutoCaptionOnUpload(): boolean {
-  return localStorage.getItem(AUTO_CAPTION_ON_UPLOAD_KEY) === "true";
+  let raw = localStorage.getItem(AUTO_CAPTION_ON_UPLOAD_KEY);
+  if (raw === null) {
+    raw = localStorage.getItem(LEGACY_AUTO_CAPTION_ON_UPLOAD_KEY);
+    if (raw !== null) {
+      localStorage.setItem(AUTO_CAPTION_ON_UPLOAD_KEY, raw);
+      localStorage.removeItem(LEGACY_AUTO_CAPTION_ON_UPLOAD_KEY);
+    }
+  }
+  return raw === "true";
 }
 
 export function setAutoCaptionOnUpload(value: boolean): void {
   localStorage.setItem(AUTO_CAPTION_ON_UPLOAD_KEY, value ? "true" : "false");
+  localStorage.removeItem(LEGACY_AUTO_CAPTION_ON_UPLOAD_KEY);
 }
 
 export interface ChatMessage {

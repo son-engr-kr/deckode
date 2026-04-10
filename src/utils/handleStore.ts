@@ -11,7 +11,8 @@
  *   - "recentProjects": stores an array of { name, handle, openedAt } entries
  */
 
-const DB_NAME = "deckode";
+const DB_NAME = "tekkal";
+const LEGACY_DB_NAME = "deckode";
 const STORE_NAME = "handles";
 const RECENT_STORE = "recentProjects";
 const CONTEXT_PROJECTS_STORE = "contextProjects";
@@ -30,8 +31,144 @@ export interface ContextProject {
   registeredAt: number;
 }
 
+let _migrationPromise: Promise<void> | null = null;
+
+/**
+ * One-time migration from the pre-rebrand "deckode" IndexedDB to the new
+ * "tekkal" database. Runs before the first openDB() call. Copies every
+ * record from each object store in the legacy DB into the new one, then
+ * deletes the legacy DB. Safe to call repeatedly — after migration, the
+ * legacy DB no longer exists and migrateFromLegacy becomes a no-op.
+ *
+ * Directory handles are stored as structured clones, which survive the
+ * copy intact. User permissions persist through structured clone because
+ * the origin has not changed.
+ */
+async function migrateFromLegacy(): Promise<void> {
+  if (_migrationPromise) return _migrationPromise;
+  _migrationPromise = (async () => {
+    // Does a tekkal DB already exist with data? Then skip migration entirely.
+    try {
+      const existing = await new Promise<IDBDatabase>((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 3);
+        req.onupgradeneeded = (event) => {
+          const db = req.result;
+          if (event.oldVersion < 1) db.createObjectStore(STORE_NAME);
+          if (event.oldVersion < 2) db.createObjectStore(RECENT_STORE, { keyPath: "name" });
+          if (event.oldVersion < 3) db.createObjectStore(CONTEXT_PROJECTS_STORE, { keyPath: "name" });
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      // Check if any store has data
+      const hasData = await new Promise<boolean>((resolve) => {
+        const tx = existing.transaction([STORE_NAME, RECENT_STORE, CONTEXT_PROJECTS_STORE], "readonly");
+        const h = tx.objectStore(STORE_NAME).count();
+        const r = tx.objectStore(RECENT_STORE).count();
+        const c = tx.objectStore(CONTEXT_PROJECTS_STORE).count();
+        tx.oncomplete = () => resolve((h.result ?? 0) + (r.result ?? 0) + (c.result ?? 0) > 0);
+        tx.onerror = () => resolve(false);
+      });
+      if (hasData) {
+        existing.close();
+        return;
+      }
+      existing.close();
+    } catch {
+      // New DB couldn't open — we'll fall through to migration attempt below
+    }
+
+    // Try to open the legacy DB and copy records into the new DB.
+    let legacy: IDBDatabase;
+    try {
+      legacy = await new Promise<IDBDatabase>((resolve, reject) => {
+        const req = indexedDB.open(LEGACY_DB_NAME);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+        // Don't trigger onupgradeneeded; we want the DB at whatever version it is
+      });
+    } catch {
+      return; // No legacy DB, nothing to migrate
+    }
+
+    const storesToCopy = [STORE_NAME, RECENT_STORE, CONTEXT_PROJECTS_STORE].filter(
+      (s) => legacy.objectStoreNames.contains(s),
+    );
+    if (storesToCopy.length === 0) {
+      legacy.close();
+      return;
+    }
+
+    // Read all records from legacy
+    const records: Record<string, Array<{ key: IDBValidKey; value: unknown }>> = {};
+    for (const storeName of storesToCopy) {
+      records[storeName] = await new Promise((resolve) => {
+        const tx = legacy.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const req = store.openCursor();
+        const entries: Array<{ key: IDBValidKey; value: unknown }> = [];
+        req.onsuccess = () => {
+          const cursor = req.result;
+          if (cursor) {
+            entries.push({ key: cursor.primaryKey, value: cursor.value });
+            cursor.continue();
+          } else {
+            resolve(entries);
+          }
+        };
+        req.onerror = () => resolve(entries);
+      });
+    }
+    legacy.close();
+
+    // Write records into the new DB
+    const target = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 3);
+      req.onupgradeneeded = (event) => {
+        const db = req.result;
+        if (event.oldVersion < 1) db.createObjectStore(STORE_NAME);
+        if (event.oldVersion < 2) db.createObjectStore(RECENT_STORE, { keyPath: "name" });
+        if (event.oldVersion < 3) db.createObjectStore(CONTEXT_PROJECTS_STORE, { keyPath: "name" });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    for (const [storeName, entries] of Object.entries(records)) {
+      if (entries.length === 0) continue;
+      await new Promise<void>((resolve) => {
+        const tx = target.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        for (const { key, value } of entries) {
+          // For keyPath stores, put() ignores the key arg; for KEY stores, use it
+          if (storeName === STORE_NAME) {
+            store.put(value, key);
+          } else {
+            store.put(value);
+          }
+        }
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+    target.close();
+
+    // Delete legacy DB so we do not migrate twice
+    try {
+      await new Promise<void>((resolve) => {
+        const req = indexedDB.deleteDatabase(LEGACY_DB_NAME);
+        req.onsuccess = () => resolve();
+        req.onerror = () => resolve();
+        req.onblocked = () => resolve();
+      });
+    } catch {
+      // Best-effort
+    }
+  })();
+  return _migrationPromise;
+}
+
 function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  return migrateFromLegacy().then(() => new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 3);
     req.onupgradeneeded = (event) => {
       const db = req.result;
@@ -47,7 +184,7 @@ function openDB(): Promise<IDBDatabase> {
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
-  });
+  }));
 }
 
 // ── Skip-restore flag (set synchronously before closeProject to win the race) ──
@@ -61,7 +198,7 @@ export function skipNextRestore(): void {
 
 // ── Per-tab project tracking via sessionStorage ──
 
-const SESSION_PROJECT_KEY = "deckode:tabProject";
+const SESSION_PROJECT_KEY = "tekkal:tabProject";
 
 /** Remember which project this tab has open (survives refresh, not shared across tabs). */
 export function setTabProject(name: string | null): void {
