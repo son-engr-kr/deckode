@@ -89,6 +89,7 @@ interface Props {
 
 export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [loadError, setLoadError] = useState(false);
 
   // Cleanup: pause and release video resources on unmount to stop decoding
   useEffect(() => {
@@ -199,6 +200,35 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   const isLocal = type === "native";
   const firstFrame = useFirstFrame(thumbnail && isLocal ? embedUrl : undefined);
 
+  if (loadError && isLocal) {
+    return (
+      <div
+        style={{
+          ...commonStyle,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+          background: "#18181b",
+          border: "1px dashed #444",
+          color: "#666",
+          fontSize: Math.min(14, element.size.h * 0.12),
+          overflow: "hidden",
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <polygon points="10,8 16,12 10,16" />
+          <line x1="2" y1="4" x2="22" y2="20" stroke="#666" strokeWidth="2" />
+        </svg>
+        <span style={{ maxWidth: "90%", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+          {element.src.split("/").pop() || "Video not found"}
+        </span>
+      </div>
+    );
+  }
+
   // Thumbnail mode: show cached first frame or play icon placeholder
   if (thumbnail) {
     if (firstFrame) {
@@ -222,20 +252,6 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
   }
 
   if (type === "youtube" || type === "vimeo") {
-    // Editor mode: show static placeholder instead of loading iframe
-    if (editorMode) {
-      return (
-        <div
-          style={{ ...commonStyle, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#18181b", flexDirection: "column", gap: 8 }}
-        >
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="1.5">
-            <polygon points="5,3 19,12 5,21" />
-          </svg>
-          <span style={{ color: "#71717a", fontSize: 11 }}>{type === "youtube" ? "YouTube" : "Vimeo"}</span>
-        </div>
-      );
-    }
-
     const params = new URLSearchParams();
     if (element.autoplay) params.set("autoplay", "1");
     if (element.loop) params.set("loop", "1");
@@ -244,12 +260,18 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
     const url = paramStr ? `${embedUrl}?${paramStr}` : embedUrl;
 
     return (
-      <iframe
-        src={url}
-        style={{ ...commonStyle, border: "none" }}
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowFullScreen
-      />
+      <div
+        style={{ ...commonStyle, position: "relative" }}
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <iframe
+          src={url}
+          style={{ width: "100%", height: "100%", border: "none", borderRadius: commonStyle.borderRadius }}
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          allowFullScreen
+        />
+      </div>
     );
   }
 
@@ -298,7 +320,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
         muted={element.muted ?? true}
         preload="metadata"
         style={commonStyle}
-
+        onError={() => setLoadError(true)}
       />
     );
   }
@@ -316,6 +338,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
           preload="auto"
           style={{ ...commonStyle, cursor: "pointer" }}
           onClick={handleClick}
+          onError={() => setLoadError(true)}
         />
         <CropVideoControls
           videoRef={videoRef}
@@ -338,6 +361,7 @@ export function VideoElementRenderer({ element, thumbnail, videoStep, editorMode
       preload={editorMode ? "metadata" : "auto"}
       style={{ ...commonStyle, cursor: "pointer" }}
       onClick={handleClick}
+      onError={() => setLoadError(true)}
     />
   );
 }

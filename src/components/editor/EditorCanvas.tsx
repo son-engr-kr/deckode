@@ -10,6 +10,17 @@ import { useAdapter } from "@/contexts/AdapterContext";
 import { assert } from "@/utils/assert";
 import { ComponentEditOverlay } from "./ComponentEditOverlay";
 import { useGitDiff } from "@/contexts/GitDiffContext";
+import { restoreElementAssets, restoreSlideAssets } from "@/utils/crossInstanceAssets";
+import { scheduleImageCaption } from "@/ai/imageCaption";
+
+function fileToDataUrl(file: File | Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 interface MarqueeRect {
   startX: number;
@@ -215,7 +226,13 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
         const renamed = new File([file], `paste-${Date.now()}.${ext}`, {
           type: file.type,
         });
-        const storedUrl = await adapter.uploadAsset(renamed);
+        let storedUrl: string;
+        try {
+          storedUrl = await adapter.uploadAsset(renamed);
+        } catch {
+          // Adapter doesn't support upload (e.g. read-only mode) — embed as data URL
+          storedUrl = await fileToDataUrl(file);
+        }
         const slideId = slide.id;
         const id = crypto.randomUUID();
         // Use blob URL for dimension probing (storedUrl may be a relative path)
@@ -259,6 +276,7 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
           };
           addElement(slideId, element);
           selectElement(id);
+          scheduleImageCaption(slideId, id);
         } else {
           const img = new Image();
           img.onload = () => {
@@ -282,6 +300,7 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
             };
             useDeckStore.getState().addElement(slideId, element);
             useDeckStore.getState().selectElement(id);
+            scheduleImageCaption(slideId, id);
           };
           img.src = probeUrl;
         }
@@ -294,6 +313,10 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
         try {
           const parsed = JSON.parse(text);
           if (parsed?.__deckode) {
+            const isCrossInstance = (parsed.origin && parsed.origin !== window.location.origin)
+              || (parsed.project && parsed.project !== adapter.projectName);
+            const assetData = parsed.assetData as Record<string, string> | undefined;
+
             // Element paste
             if (Array.isArray(parsed.elements)) {
               e.preventDefault();
@@ -306,7 +329,11 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
                   if (!state.deck.components) state.deck.components = {};
                   for (const [compId, comp] of Object.entries(parsed.components)) {
                     if (!state.deck.components[compId]) {
-                      state.deck.components[compId] = comp as import("@/types/deck").SharedComponent;
+                      const c = comp as import("@/types/deck").SharedComponent;
+                      if (isCrossInstance) {
+                        for (const el of c.elements) await restoreElementAssets(el, assetData, parsed.origin, parsed.project, adapter);
+                      }
+                      state.deck.components[compId] = c;
                     }
                   }
                 }
@@ -318,6 +345,9 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
                 clone.id = nextElementId();
                 clone.position = { x: original.position.x + 20, y: original.position.y + 20 };
                 delete clone.groupId;
+                if (isCrossInstance) {
+                  await restoreElementAssets(clone, assetData, parsed.origin, parsed.project, adapter);
+                }
                 addElement(slide.id, clone);
                 newIds.push(clone.id);
               }
@@ -333,14 +363,47 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
               return;
             }
 
-            // Slide paste
-            if (parsed.slide) {
+            // Slide paste (supports both single `slide` and array `slides`)
+            const slidesToPaste: import("@/types/deck").Slide[] | undefined =
+              Array.isArray(parsed.slides) ? parsed.slides
+              : parsed.slide ? [parsed.slide]
+              : undefined;
+            if (slidesToPaste && slidesToPaste.length > 0) {
               e.preventDefault();
               const { cloneSlide } = await import("@/utils/id");
-              const { currentSlideIndex, addSlide, setCurrentSlide } = useDeckStore.getState();
-              const clone = cloneSlide(parsed.slide);
-              addSlide(clone, currentSlideIndex);
-              setCurrentSlide(currentSlideIndex + 1);
+              const state = useDeckStore.getState();
+
+              // Merge referenced components
+              if (parsed.components && typeof parsed.components === "object") {
+                if (state.deck) {
+                  if (!state.deck.components) state.deck.components = {};
+                  for (const [compId, comp] of Object.entries(parsed.components)) {
+                    if (!state.deck.components[compId]) {
+                      const c = comp as import("@/types/deck").SharedComponent;
+                      if (isCrossInstance) {
+                        for (const el of c.elements) await restoreElementAssets(el, assetData, parsed.origin, parsed.project, adapter);
+                      }
+                      state.deck.components[compId] = c;
+                    }
+                  }
+                }
+              }
+
+              let insertIndex = state.currentSlideIndex;
+              const newSlideIds: string[] = [];
+              for (const srcSlide of slidesToPaste) {
+                const clone = cloneSlide(srcSlide);
+                if (isCrossInstance) {
+                  await restoreSlideAssets(clone, assetData, parsed.origin, parsed.project, adapter);
+                }
+                state.addSlide(clone, insertIndex);
+                insertIndex++;
+                newSlideIds.push(clone.id);
+              }
+              state.setCurrentSlide(state.currentSlideIndex + 1);
+              if (newSlideIds.length > 1) {
+                state.setSelectedSlides(newSlideIds);
+              }
               return;
             }
 
@@ -591,6 +654,7 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
         size: { w: 400, h: 300 },
       };
       addElement(slideId, element);
+      scheduleImageCaption(slideId, id);
       selectElement(id);
     } else if (isVideo) {
       const probeUrl = URL.createObjectURL(file);
@@ -644,6 +708,7 @@ export const EditorCanvas = memo(function EditorCanvas({ showDiff = false }: { s
           size: { w, h },
         };
         useDeckStore.getState().addElement(slideId, element);
+        scheduleImageCaption(slideId, id);
         useDeckStore.getState().selectElement(id);
       };
       img.src = probeUrl;

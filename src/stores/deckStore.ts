@@ -96,6 +96,7 @@ interface DeckState {
   patchElementById: (elementId: string, patch: Partial<SlideElement>) => void;
   bringToFront: (slideId: string, elementId: string) => void;
   sendToBack: (slideId: string, elementId: string) => void;
+  moveElementOrder: (slideId: string, fromIndex: number, toIndex: number) => void;
 
   // Shared component actions
   createComponent: (slideId: string, groupId: string) => void;
@@ -144,7 +145,7 @@ export function getLastSaveTime(): number {
 function normalizeSizes(deck: Deck): void {
   for (const slide of deck.slides) {
     for (const el of slide.elements) {
-      if (el.size.aspectRatio && !el.size.h) {
+      if (el.size?.aspectRatio && !el.size.h) {
         el.size.h = Math.round(el.size.w / el.size.aspectRatio);
       }
     }
@@ -153,7 +154,7 @@ function normalizeSizes(deck: Deck): void {
   if (deck.components) {
     for (const comp of Object.values(deck.components)) {
       for (const el of comp.elements) {
-        if (el.size.aspectRatio && !el.size.h) {
+        if (el.size?.aspectRatio && !el.size.h) {
           el.size.h = Math.round(el.size.w / el.size.aspectRatio);
         }
       }
@@ -752,6 +753,16 @@ export const useDeckStore = create<DeckState>()(
             if (idx === 0) return; // already back
             const [el] = slide.elements.splice(idx, 1);
             slide.elements.unshift(el!);
+            state.versionId += 1;
+          }),
+
+        moveElementOrder: (slideId, fromIndex, toIndex) =>
+          set((state) => {
+            assert(state.deck !== null, "No deck loaded");
+            const slide = getSlide(state.deck.slides, slideId);
+            if (fromIndex === toIndex) return;
+            const [el] = slide.elements.splice(fromIndex, 1);
+            slide.elements.splice(toIndex, 0, el!);
             state.versionId += 1;
           }),
 

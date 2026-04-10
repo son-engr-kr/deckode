@@ -18,8 +18,10 @@ import { useDeckStore } from "@/stores/deckStore";
 import { SlideRenderer } from "@/components/renderer/SlideRenderer";
 import { nextSlideId, cloneSlide } from "@/utils/id";
 import { useAdapter } from "@/contexts/AdapterContext";
-import type { Slide, DeckTheme } from "@/types/deck";
+import type { Slide, DeckTheme, ReferenceElement, SharedComponent } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
+import { setSlideClipboard, setElementClipboard } from "./clipboard";
+import { restoreSlideAssets, restoreElementAssets, collectAssetDataUrls } from "@/utils/crossInstanceAssets";
 import type { LayoutInfo } from "@/adapters/types";
 import { useGitDiff } from "@/contexts/GitDiffContext";
 
@@ -315,6 +317,85 @@ export function SlideList({ showDiff = false }: { showDiff?: boolean }) {
             setCurrentSlide(contextMenu.slideIndex + 1);
             closeContextMenu();
           }}
+          onCopy={() => {
+            const state = useDeckStore.getState();
+            const deck = state.deck;
+            if (!deck) { closeContextMenu(); return; }
+            const sel = state.selectedSlideIds;
+            const slidesToCopy = sel.length > 1
+              ? sel.map(id => deck.slides.find(s => s.id === id)).filter((s): s is Slide => !!s)
+              : [slides[contextMenu.slideIndex]].filter((s): s is Slide => !!s);
+            if (slidesToCopy.length === 0) { closeContextMenu(); return; }
+            const slidesData: Slide[] = JSON.parse(JSON.stringify(slidesToCopy));
+            const components: Record<string, SharedComponent> = {};
+            for (const s of slidesData) {
+              for (const el of s.elements) {
+                if (el.type === "reference" && deck.components) {
+                  const compId = (el as ReferenceElement).componentId;
+                  const comp = deck.components[compId];
+                  if (comp) components[compId] = comp;
+                }
+              }
+            }
+            setSlideClipboard(slidesData);
+            setElementClipboard(null);
+            const clipData: Record<string, unknown> = { __deckode: true, origin: window.location.origin, project: adapter.projectName, slides: slidesData };
+            if (Object.keys(components).length > 0) clipData.components = components;
+            const allEls = slidesData.flatMap(s => s.elements);
+            const bgImages = slidesData.map(s => s.background?.image).filter((v): v is string => !!v);
+            collectAssetDataUrls(allEls, adapter, bgImages).then((assetData) => {
+              if (Object.keys(assetData).length > 0) clipData.assetData = assetData;
+              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+            }).catch(() => {
+              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+            });
+            closeContextMenu();
+          }}
+          onPaste={async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              const parsed = JSON.parse(text);
+              if (!parsed?.__deckode) { closeContextMenu(); return; }
+              const isCrossInstance = (parsed.origin && parsed.origin !== window.location.origin)
+                || (parsed.project && parsed.project !== adapter.projectName);
+              const assetData = parsed.assetData as Record<string, string> | undefined;
+              const slidesToPaste: Slide[] | undefined =
+                Array.isArray(parsed.slides) ? parsed.slides
+                : parsed.slide ? [parsed.slide]
+                : undefined;
+              if (!slidesToPaste || slidesToPaste.length === 0) { closeContextMenu(); return; }
+              const state = useDeckStore.getState();
+              // Merge components
+              if (parsed.components && typeof parsed.components === "object" && state.deck) {
+                if (!state.deck.components) state.deck.components = {};
+                for (const [compId, comp] of Object.entries(parsed.components)) {
+                  if (!state.deck.components[compId]) {
+                    const c = comp as SharedComponent;
+                    if (isCrossInstance) {
+                      for (const el of c.elements) await restoreElementAssets(el, assetData, parsed.origin, parsed.project, adapter);
+                    }
+                    state.deck.components[compId] = c;
+                  }
+                }
+              }
+              let insertIndex = contextMenu.slideIndex;
+              const newIds: string[] = [];
+              for (const src of slidesToPaste) {
+                const clone = cloneSlide(src);
+                if (isCrossInstance) {
+                  await restoreSlideAssets(clone, assetData, parsed.origin, parsed.project, adapter);
+                }
+                state.addSlide(clone, insertIndex);
+                insertIndex++;
+                newIds.push(clone.id);
+              }
+              state.setCurrentSlide(contextMenu.slideIndex + 1);
+              if (newIds.length > 1) state.setSelectedSlides(newIds);
+            } catch {
+              // Clipboard not available or not deckode data
+            }
+            closeContextMenu();
+          }}
           onDuplicate={() => {
             const source = slides[contextMenu.slideIndex];
             if (source) {
@@ -500,6 +581,8 @@ function SlideContextMenu({
   pageNumbersEnabled,
   canDelete,
   onNewSlide,
+  onCopy,
+  onPaste,
   onDuplicate,
   onToggleHidden,
   onTogglePageNumber,
@@ -515,6 +598,8 @@ function SlideContextMenu({
   pageNumbersEnabled: boolean;
   canDelete: boolean;
   onNewSlide: () => void;
+  onCopy: () => void;
+  onPaste: () => void;
   onDuplicate: () => void;
   onToggleHidden: () => void;
   onTogglePageNumber: () => void;
@@ -535,6 +620,9 @@ function SlideContextMenu({
       >
         <ContextMenuItem label="New Slide" onClick={onNewSlide} />
         <ContextMenuItem label="Duplicate Slide" onClick={onDuplicate} />
+        <div className="h-px bg-zinc-700 my-1" />
+        <ContextMenuItem label="Copy Slide" shortcut="Ctrl+C" onClick={onCopy} />
+        <ContextMenuItem label="Paste Slide" shortcut="Ctrl+V" onClick={onPaste} />
         <div className="h-px bg-zinc-700 my-1" />
         <ContextMenuItem
           label={isHidden ? "Show Slide" : "Hide Slide"}
@@ -559,10 +647,12 @@ function SlideContextMenu({
 
 function ContextMenuItem({
   label,
+  shortcut,
   danger,
   onClick,
 }: {
   label: string;
+  shortcut?: string;
   danger?: boolean;
   onClick: () => void;
 }) {
@@ -576,6 +666,7 @@ function ContextMenuItem({
       onClick={onClick}
     >
       {label}
+      {shortcut && <span className="text-zinc-500 text-[10px]">{shortcut}</span>}
     </button>
   );
 }

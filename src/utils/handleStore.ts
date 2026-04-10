@@ -14,6 +14,7 @@
 const DB_NAME = "deckode";
 const STORE_NAME = "handles";
 const RECENT_STORE = "recentProjects";
+const CONTEXT_PROJECTS_STORE = "contextProjects";
 const KEY = "projectDir";
 const MAX_RECENT = 20;
 
@@ -23,9 +24,15 @@ export interface RecentProject {
   openedAt: number;
 }
 
+export interface ContextProject {
+  name: string;
+  handle: FileSystemDirectoryHandle;
+  registeredAt: number;
+}
+
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 2);
+    const req = indexedDB.open(DB_NAME, 3);
     req.onupgradeneeded = (event) => {
       const db = req.result;
       if (event.oldVersion < 1) {
@@ -33,6 +40,9 @@ function openDB(): Promise<IDBDatabase> {
       }
       if (event.oldVersion < 2) {
         db.createObjectStore(RECENT_STORE, { keyPath: "name" });
+      }
+      if (event.oldVersion < 3) {
+        db.createObjectStore(CONTEXT_PROJECTS_STORE, { keyPath: "name" });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -187,6 +197,46 @@ export async function removeRecentProject(name: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(RECENT_STORE, "readwrite");
     tx.objectStore(RECENT_STORE).delete(name);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ── Context projects (external reference folders for AI chat) ──
+
+export async function saveContextProject(handle: FileSystemDirectoryHandle): Promise<ContextProject> {
+  const db = await openDB();
+  const entry: ContextProject = {
+    name: handle.name,
+    handle,
+    registeredAt: Date.now(),
+  };
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(CONTEXT_PROJECTS_STORE, "readwrite");
+    tx.objectStore(CONTEXT_PROJECTS_STORE).put(entry);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  return entry;
+}
+
+export async function listContextProjects(): Promise<ContextProject[]> {
+  const db = await openDB();
+  const entries: ContextProject[] = await new Promise((resolve, reject) => {
+    const tx = db.transaction(CONTEXT_PROJECTS_STORE, "readonly");
+    const req = tx.objectStore(CONTEXT_PROJECTS_STORE).getAll();
+    req.onsuccess = () => resolve(req.result ?? []);
+    req.onerror = () => reject(req.error);
+  });
+  entries.sort((a, b) => b.registeredAt - a.registeredAt);
+  return entries;
+}
+
+export async function removeContextProject(name: string): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CONTEXT_PROJECTS_STORE, "readwrite");
+    tx.objectStore(CONTEXT_PROJECTS_STORE).delete(name);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });

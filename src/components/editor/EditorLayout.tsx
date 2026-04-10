@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { useDeckStore, selectIsDirty } from "@/stores/deckStore";
 import type { SlideElement } from "@/types/deck";
 import type { ReferenceElement, SharedComponent } from "@/types/deck";
@@ -11,6 +12,7 @@ import { CodePanel } from "./CodePanel";
 import { NotesEditor } from "./NotesEditor";
 import { ElementPalette } from "./ElementPalette";
 import { SlideAnimationList } from "./SlideAnimationList";
+import { ElementList } from "./ElementList";
 import { ThemePanel } from "./ThemePanel";
 import { PresentationMode } from "@/components/presenter/PresentationMode";
 import { exportToPdf } from "@/components/export/pdfExport";
@@ -18,6 +20,7 @@ import { exportToNativePdf } from "@/components/export/pdfNativeExport";
 import { exportToPptx } from "@/components/export/pptxExport";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { ProjectSettingsDialog } from "./ProjectSettingsDialog";
+import { AiChatPanel } from "./AiChatPanel";
 import { useGitDiff } from "@/contexts/GitDiffContext";
 import { useTikzAutoRender } from "@/hooks/useTikzAutoRender";
 
@@ -25,6 +28,62 @@ import {
   setElementClipboard,
   setSlideClipboard,
 } from "./clipboard";
+import { collectAssetDataUrls } from "@/utils/crossInstanceAssets";
+
+// ── Error boundary for PropertyPanel ──
+
+class PropertyPanelErrorBoundary extends Component<
+  { elementId: string | null; elementType: string | null; children: ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(`[PropertyPanel] Crash for element "${this.props.elementId}" (${this.props.elementType}):`, error, info.componentStack);
+  }
+
+  componentDidUpdate(prevProps: { elementId: string | null; elementType: string | null }) {
+    if (prevProps.elementId !== this.props.elementId && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="p-3">
+          <div
+            style={{
+              backgroundColor: "#2a1215",
+              border: "1px solid #7f1d1d",
+              borderRadius: 6,
+              padding: "10px 12px",
+              color: "#f87171",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            PropertyPanel crashed
+            {this.props.elementType && (
+              <div style={{ fontWeight: 400, marginTop: 4, color: "#fca5a5" }}>
+                {this.props.elementType}
+                {this.props.elementId ? ` / ${this.props.elementId}` : ""}
+              </div>
+            )}
+            <div style={{ fontWeight: 400, marginTop: 6, color: "#ef4444", fontSize: 11 }}>
+              {this.state.error.message}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function performUndoRedo(direction: "undo" | "redo") {
   const temporal = useDeckStore.temporal.getState();
@@ -56,6 +115,8 @@ export function EditorLayout() {
   const isReadOnly = adapter.mode === "readonly";
   const [bottomPanel, setBottomPanel] = useState<BottomPanel>(null);
   const [rightPanel, setRightPanel] = useState<RightPanel>("properties");
+  const [showAi, setShowAi] = useState(false);
+  const [aiWidth, setAiWidth] = useState(300);
   const [presenting, setPresenting] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
   const [pdfMenuOpen, setPdfMenuOpen] = useState(false);
@@ -66,6 +127,13 @@ export function EditorLayout() {
   const isDirty = useDeckStore(selectIsDirty);
   const isSaving = useDeckStore((s) => s.isSaving);
   const saveToDisk = useDeckStore((s) => s.saveToDisk);
+  const selectedElementId = useDeckStore((s) => s.selectedElementIds?.[0] ?? null);
+  const selectedElement = useDeckStore((s) => {
+    const id = s.selectedElementIds?.[0];
+    if (!id) return null;
+    const slide = s.deck?.slides?.[s.currentSlideIndex];
+    return slide?.elements?.find((e) => e.id === id) ?? null;
+  });
 
   // Resizable panel widths
   const [leftWidth, setLeftWidth] = useState(170);
@@ -210,7 +278,7 @@ export function EditorLayout() {
       // Copy: Ctrl+C — let browser handle if user has text selected
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.code === "KeyC") {
         if (hasTextSelection) return;
-        const { deck, currentSlideIndex, selectedElementIds } = useDeckStore.getState();
+        const { deck, currentSlideIndex, selectedElementIds, selectedSlideIds } = useDeckStore.getState();
         if (deck) {
           const slide = deck.slides[currentSlideIndex];
           if (slide && selectedElementIds.length > 0) {
@@ -231,18 +299,50 @@ export function EditorLayout() {
                 }
               }
               // Write to system clipboard for cross-instance paste
-              const clipData: Record<string, unknown> = { __deckode: true, elements };
+              const clipData: Record<string, unknown> = { __deckode: true, origin: window.location.origin, project: adapter.projectName, elements };
               if (Object.keys(components).length > 0) clipData.components = components;
-              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
               e.preventDefault();
+              // Embed asset data URLs for adapters without HTTP serving (FsAccess, read-only)
+              collectAssetDataUrls(elements, adapter).then((assetData) => {
+                if (Object.keys(assetData).length > 0) clipData.assetData = assetData;
+                navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+              }).catch(() => {
+                navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+              });
             }
           } else if (slide) {
-            // No elements selected → copy current slide
-            const slideData = JSON.parse(JSON.stringify(slide));
-            setSlideClipboard(slideData);
+            // No elements selected → copy selected slides (or current slide)
+            const slidesToCopy = selectedSlideIds.length > 1
+              ? selectedSlideIds
+                  .map(id => deck.slides.find(s => s.id === id))
+                  .filter((s): s is import("@/types/deck").Slide => s !== undefined)
+              : [slide];
+            const slidesData: import("@/types/deck").Slide[] = JSON.parse(JSON.stringify(slidesToCopy));
+            // Collect referenced components from all slides
+            const components: Record<string, SharedComponent> = {};
+            for (const s of slidesData) {
+              for (const el of s.elements) {
+                if (el.type === "reference" && deck.components) {
+                  const compId = (el as ReferenceElement).componentId;
+                  const comp = deck.components[compId];
+                  if (comp) components[compId] = comp;
+                }
+              }
+            }
+            setSlideClipboard(slidesData);
             setElementClipboard(null);
-            navigator.clipboard.writeText(JSON.stringify({ __deckode: true, slide: slideData })).catch(() => {});
+            const clipData: Record<string, unknown> = { __deckode: true, origin: window.location.origin, project: adapter.projectName, slides: slidesData };
+            if (Object.keys(components).length > 0) clipData.components = components;
             e.preventDefault();
+            // Embed asset data URLs
+            const allElements = slidesData.flatMap(s => s.elements);
+            const bgImages = slidesData.map(s => s.background?.image).filter((v): v is string => !!v);
+            collectAssetDataUrls(allElements, adapter, bgImages).then((assetData) => {
+              if (Object.keys(assetData).length > 0) clipData.assetData = assetData;
+              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+            }).catch(() => {
+              navigator.clipboard.writeText(JSON.stringify(clipData)).catch(() => {});
+            });
           }
         }
         return;
@@ -261,7 +361,13 @@ export function EditorLayout() {
               const cloned = JSON.parse(JSON.stringify(elements));
               setElementClipboard(cloned);
               // Write to system clipboard so paste event can access it
-              navigator.clipboard.writeText(JSON.stringify({ __deckode: true, elements: cloned })).catch(() => {});
+              const cutData: Record<string, unknown> = { __deckode: true, origin: window.location.origin, project: adapter.projectName, elements: cloned };
+              collectAssetDataUrls(cloned, adapter).then((assetData) => {
+                if (Object.keys(assetData).length > 0) cutData.assetData = assetData;
+                navigator.clipboard.writeText(JSON.stringify(cutData)).catch(() => {});
+              }).catch(() => {
+                navigator.clipboard.writeText(JSON.stringify(cutData)).catch(() => {});
+              });
               for (const elId of [...selectedElementIds]) {
                 deleteElement(slide.id, elId);
               }
@@ -583,6 +689,16 @@ export function EditorLayout() {
         >
           JSON
         </button>
+        <button
+          onClick={() => setShowAi((v) => !v)}
+          className={`text-xs px-2 py-1 rounded transition-colors ${
+            showAi
+              ? "bg-purple-600 text-white"
+              : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          AI
+        </button>
       </div>
 
       {/* Main area */}
@@ -658,11 +774,24 @@ export function EditorLayout() {
             </div>
           ) : (
             <>
-              {/* Properties — top half */}
+              {/* Properties */}
               <div className="flex-1 overflow-y-auto border-b border-zinc-800">
-                <PropertyPanel />
+                <PropertyPanelErrorBoundary
+                  elementId={selectedElementId}
+                  elementType={selectedElement?.type ?? null}
+                >
+                  <PropertyPanel />
+                </PropertyPanelErrorBoundary>
               </div>
-              {/* Animations — bottom half */}
+              {/* Element list */}
+              <div className="h-[180px] shrink-0 overflow-y-auto border-b border-zinc-800">
+                <ElementList
+                  onSelectElement={(elementId) => {
+                    useDeckStore.getState().selectElement(elementId);
+                  }}
+                />
+              </div>
+              {/* Animations */}
               <div className="flex-1 overflow-y-auto">
                 <SlideAnimationList
                   onSelectElement={(elementId) => {
@@ -673,6 +802,32 @@ export function EditorLayout() {
             </>
           )}
         </div>
+
+        {/* AI panel — independent, rightmost */}
+        {showAi && (
+          <>
+            <div
+              className="w-1 shrink-0 cursor-col-resize hover:bg-purple-500/40 active:bg-purple-500/40 transition-colors"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const startX = e.clientX;
+                const startW = aiWidth;
+                const onMove = (ev: MouseEvent) => setAiWidth(Math.max(200, Math.min(500, startW - (ev.clientX - startX))));
+                const onUp = () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+                document.body.style.cursor = "col-resize";
+                document.body.style.userSelect = "none";
+                window.addEventListener("mousemove", onMove);
+                window.addEventListener("mouseup", onUp);
+              }}
+            />
+            <div
+              style={{ width: aiWidth }}
+              className="flex flex-col shrink-0 border-l border-zinc-800 overflow-hidden"
+            >
+              <AiChatPanel />
+            </div>
+          </>
+        )}
       </div>
       {exportProgress && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl px-5 py-3 flex items-center gap-3 min-w-[280px]">

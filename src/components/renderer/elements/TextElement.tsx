@@ -3,7 +3,7 @@ import type { TextElement as TextElementType, TextStyle } from "@/types/deck";
 import { renderMarkdown } from "@/utils/markdown";
 import { useElementStyle } from "@/contexts/ThemeContext";
 
-const MIN_FONT_SIZE = 6;
+const MIN_FONT_SIZE = 12;
 
 interface Props {
   element: TextElementType;
@@ -15,7 +15,9 @@ export function TextElementRenderer({ element }: Props) {
   const alignItems = { top: "flex-start", middle: "center", bottom: "flex-end" }[verticalAlign];
 
   const baseFontSize = style.fontSize ?? 24;
-  const textSizing = style.textSizing ?? "flexible";
+  // Treat elements with math ($...$) as fixed — auto-shrink distorts KaTeX rendering
+  const hasMath = /\$/.test(element.content ?? "");
+  const textSizing = style.textSizing ?? (hasMath ? "fixed" : "flexible");
   const isFixed = textSizing === "fixed";
 
   const [fontSize, setFontSize] = useState(baseFontSize);
@@ -69,7 +71,7 @@ export function TextElementRenderer({ element }: Props) {
         alignItems,
       }}
     >
-      <div ref={innerRef} className="w-full">{renderMarkdown(element.content)}</div>
+      <div ref={innerRef} className="w-full">{renderMarkdown(element.content, fontSize)}</div>
     </div>
   );
 }

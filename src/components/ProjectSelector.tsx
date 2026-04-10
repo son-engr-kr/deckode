@@ -71,7 +71,13 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
     assert(config.name !== undefined && config.name.length > 0, "Project name is required");
     setCreating(true);
     setWizardOpen(false);
-    await createProject(config.name, config);
+    try {
+      await createProject(config.name, config);
+    } catch (err) {
+      setCreating(false);
+      alert(err instanceof Error ? err.message : String(err));
+      return;
+    }
     setCreating(false);
     await handleOpen(config.name);
   };
@@ -124,7 +130,7 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
   }
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-zinc-950 text-white">
+    <div className="min-h-screen w-screen flex items-center justify-center bg-zinc-950 text-white">
       <div className="w-full max-w-lg px-6">
         <h1 className="text-2xl font-bold text-zinc-100 mb-6">Deckode Projects</h1>
 
@@ -361,7 +367,7 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
   }
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-zinc-950 text-white">
+    <div className="min-h-screen w-screen flex items-center justify-center bg-zinc-950 text-white">
       <div className="w-full max-w-lg px-6">
         <h1 className="text-2xl font-bold text-zinc-100 mb-2 text-center">Deckode</h1>
         <p className="text-sm text-zinc-400 mb-6 text-center">

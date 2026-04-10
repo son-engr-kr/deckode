@@ -10,6 +10,7 @@ import type { ShapeElement as ShapeElementType } from "@/types/deck";
 
 import { setComponentClipboard } from "./clipboard";
 import { computeBounds } from "@/utils/bounds";
+import { useContextBarStore } from "@/stores/contextBarStore";
 
 function getGroupBounds(elements: SlideElement[]) {
   return computeBounds(elements);
@@ -723,6 +724,21 @@ function ElementContextMenu({
         <ContextMenuItem
           label="Send to Back"
           onClick={() => handleAction(() => sendToBack(slideId, elementId))}
+        />
+        <div className="h-px bg-zinc-700 my-1" />
+        <ContextMenuItem
+          label="Add to AI Chat"
+          onClick={() => handleAction(() => {
+            const el = slide?.elements.find((e) => e.id === elementId);
+            const type = el?.type ?? "unknown";
+            let label = type;
+            if (el && "content" in el && typeof el.content === "string") {
+              label = el.content.replace(/\n/g, " ").slice(0, 30) || type;
+            } else if (el && "shape" in el && typeof el.shape === "string") {
+              label = el.shape;
+            }
+            useContextBarStore.getState().addElementRef({ elementId, slideId, type, label });
+          })}
         />
         {canCrop && (
           <>

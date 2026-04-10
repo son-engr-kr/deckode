@@ -434,7 +434,7 @@ export function PresentationMode({ onExit }: PresentationModeProps) {
     audienceWindowRef.current = window.open(
       url,
       "deckode-audience",
-      "width=960,height=540",
+      "width=960,height=540,menubar=no,toolbar=no,location=no,status=no",
     );
   }, []);
 

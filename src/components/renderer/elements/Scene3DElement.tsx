@@ -475,6 +475,27 @@ export function Scene3DElementRenderer({ element, sceneStep, thumbnail }: Props)
 
   const borderRadius = style.borderRadius ?? 0;
 
+  if (!scene || !scene.objects) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "#2a1215",
+          borderRadius: style.borderRadius ?? 4,
+          border: "1px solid #7f1d1d",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ color: "#f87171", fontSize: 13, fontWeight: 600 }}>
+          Invalid scene3d: missing {!scene ? "scene" : "objects"} configuration
+        </div>
+      </div>
+    );
+  }
+
   // Thumbnail mode: show cached snapshot or static placeholder
   if (thumbnail) {
     const cachedFrame = scene3dFrameCache.get(element.id);
@@ -553,7 +574,14 @@ export function Scene3DElementRenderer({ element, sceneStep, thumbnail }: Props)
         position: "relative",
       }}
     >
-      <div style={{ position: "absolute", inset: 0 }}>
+      <div
+        style={{ position: "absolute", inset: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <Canvas
           camera={{
             position: cameraState.position,
