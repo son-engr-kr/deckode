@@ -317,6 +317,58 @@ export const deckodeTools: DeckodeTool[] = [
       required: ["slideId", "newSlideId"],
     },
   },
+  {
+    name: "bring_to_front",
+    description:
+      "Raise an element to the top of the slide's z-order so it renders above all other elements. Useful when text is hidden behind a shape or image.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        elementId: { type: SchemaType.STRING },
+      },
+      required: ["slideId", "elementId"],
+    },
+  },
+  {
+    name: "send_to_back",
+    description:
+      "Lower an element to the bottom of the slide's z-order so it renders behind all other elements. Useful for background shapes or images.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        elementId: { type: SchemaType.STRING },
+      },
+      required: ["slideId", "elementId"],
+    },
+  },
+  {
+    name: "set_speaker_notes",
+    description:
+      "Set or replace the speaker notes (the slide.notes field) for a slide. Notes support [step:N]...[/step] markers tied to onClick animations.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        notes: { type: SchemaType.STRING, description: "Full markdown notes content" },
+      },
+      required: ["slideId", "notes"],
+    },
+  },
+  {
+    name: "set_deck_meta",
+    description:
+      "Update top-level deck metadata (title, author, aspectRatio). Provide only the fields to change. Does not touch slides or theme.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        title: { type: SchemaType.STRING },
+        author: { type: SchemaType.STRING },
+        aspectRatio: { type: SchemaType.STRING, description: "16:9 or 4:3" },
+      },
+    },
+  },
 ];
 
 // ── Project file reference tools (only available when a project is @mentioned) ──

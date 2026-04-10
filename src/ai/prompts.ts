@@ -246,7 +246,7 @@ Once preferences are chosen, apply them consistently to all subsequent slides wi
 }
 
 export function buildGeneratorPrompt(deck: Deck | null, context?: PromptContext): string {
-  const state = deck ? formatDeckState(deck) : "No deck loaded.";
+  const state = deck ? formatDeckState(deck, { anchorSlideId: context?.currentSlide?.slideId }) : "No deck loaded.";
   const contextSection = buildContextSection(context);
   const schema = getGeneratorSchema();
 
@@ -321,7 +321,7 @@ Write notes that help the presenter deliver the content:
 - Include key talking points and transitions to the next slide`;
 
 export function buildContentAgentPrompt(deck: Deck | null, context?: PromptContext): string {
-  const state = deck ? formatDeckState(deck) : "No deck loaded.";
+  const state = deck ? formatDeckState(deck, { anchorSlideId: context?.currentSlide?.slideId }) : "No deck loaded.";
   const contextSection = buildContextSection(context);
   const schema = getContentAgentSchema();
 
@@ -361,7 +361,7 @@ ${NOTES_SECTION}
 }
 
 export function buildVisualAgentPrompt(deck: Deck | null, context?: PromptContext): string {
-  const state = deck ? formatDeckState(deck) : "No deck loaded.";
+  const state = deck ? formatDeckState(deck, { anchorSlideId: context?.currentSlide?.slideId }) : "No deck loaded.";
   const contextSection = buildContextSection(context);
   const schema = getVisualAgentSchema();
 
@@ -479,24 +479,64 @@ ${CONSTRAINTS}
 `;
 }
 
-/** Compact deck summary — avoids dumping full element details into every prompt. */
-function formatDeckState(deck: Deck): string {
+interface FormatDeckStateOptions {
+  /** Slide ID the user is currently focused on. Triggers sliding-window mode when set. */
+  anchorSlideId?: string;
+  /** Number of slides on each side of the anchor that get full element hints. Default 2. */
+  windowRadius?: number;
+  /** Minimum slide count before sliding-window trimming kicks in. Default 8. */
+  windowThreshold?: number;
+}
+
+/**
+ * Compact deck summary — avoids dumping full element details into every prompt.
+ *
+ * Sliding-window mode: when the deck has at least `windowThreshold` slides AND
+ * an `anchorSlideId` is provided, only slides within ±`windowRadius` of the
+ * anchor get expanded element hints. Distant slides collapse to a single
+ * title-only line. This keeps prompts bounded for large decks while preserving
+ * full local context where the user is working.
+ */
+function formatDeckState(deck: Deck, opts: FormatDeckStateOptions = {}): string {
   const lines: string[] = [
     `Title: "${deck.meta.title}" | Author: ${deck.meta.author ?? "N/A"} | Aspect: ${deck.meta.aspectRatio}`,
     `Theme background: ${deck.theme?.slide?.background?.color ?? "default"}`,
     `Slides (${deck.slides.length}):`,
   ];
 
-  for (const slide of deck.slides) {
+  const radius = opts.windowRadius ?? 2;
+  const threshold = opts.windowThreshold ?? 8;
+  const anchorIdx = opts.anchorSlideId
+    ? deck.slides.findIndex((s) => s.id === opts.anchorSlideId)
+    : -1;
+  const useWindow = anchorIdx >= 0 && deck.slides.length >= threshold;
+  const windowStart = useWindow ? Math.max(0, anchorIdx - radius) : 0;
+  const windowEnd = useWindow ? Math.min(deck.slides.length - 1, anchorIdx + radius) : deck.slides.length - 1;
+
+  if (useWindow) {
+    lines.push(
+      `(sliding-window mode: detailed view around slide ${anchorIdx + 1}/${deck.slides.length}, radius ${radius})`,
+    );
+  }
+
+  for (let i = 0; i < deck.slides.length; i++) {
+    const slide = deck.slides[i]!;
+    const inWindow = !useWindow || (i >= windowStart && i <= windowEnd);
     const title = extractSlideTitle(slide);
     const titleLabel = title ? ` "${title}"` : " <no title>";
     const flags = `${slide.notes ? " [has notes]" : ""}${slide.hidden ? " [hidden]" : ""}`;
-    lines.push(
-      `  [${slide.id}]${titleLabel} — ${slide.elements.length} elements${flags}`,
-    );
-    if (slide.elements.length > 0) {
-      const hints = slide.elements.map((e) => `${e.id}=${elementHint(e)}`);
-      lines.push(`    elements: ${hints.join(" | ")}`);
+
+    if (inWindow) {
+      lines.push(
+        `  [${slide.id}]${titleLabel} — ${slide.elements.length} elements${flags}`,
+      );
+      if (slide.elements.length > 0) {
+        const hints = slide.elements.map((e) => `${e.id}=${elementHint(e)}`);
+        lines.push(`    elements: ${hints.join(" | ")}`);
+      }
+    } else {
+      // Title-only line for distant slides
+      lines.push(`  [${slide.id}]${titleLabel} (${slide.elements.length} el)${flags}`);
     }
   }
 

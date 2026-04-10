@@ -423,6 +423,38 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
       if (result.issues.length === 0) return "OK: deck passes structural validation.";
       return `Found ${result.issues.length} issue(s):\n${result.issues.map((i) => `- [${i.severity}] ${i.message}`).join("\n")}`;
     }
+    case "bring_to_front": {
+      const slideId = args.slideId as string;
+      const elementId = args.elementId as string;
+      store.bringToFront(slideId, elementId);
+      return `Element "${elementId}" raised to front on slide "${slideId}".`;
+    }
+    case "send_to_back": {
+      const slideId = args.slideId as string;
+      const elementId = args.elementId as string;
+      store.sendToBack(slideId, elementId);
+      return `Element "${elementId}" sent to back on slide "${slideId}".`;
+    }
+    case "set_speaker_notes": {
+      const slideId = args.slideId as string;
+      const notes = args.notes as string;
+      store.updateSlide(slideId, { notes });
+      return `Speaker notes set on slide "${slideId}" (${notes.length} chars).`;
+    }
+    case "set_deck_meta": {
+      if (!deck) return "No deck loaded.";
+      const patch: Partial<Deck["meta"]> = {};
+      if (typeof args.title === "string") patch.title = args.title;
+      if (typeof args.author === "string") patch.author = args.author;
+      if (args.aspectRatio === "16:9" || args.aspectRatio === "4:3") {
+        patch.aspectRatio = args.aspectRatio;
+      }
+      if (Object.keys(patch).length === 0) {
+        return "ERROR: set_deck_meta called with no recognized fields. Use title, author, or aspectRatio.";
+      }
+      store.replaceDeck({ ...deck, meta: { ...deck.meta, ...patch } });
+      return `Deck meta updated: ${Object.keys(patch).join(", ")}.`;
+    }
     case "duplicate_slide": {
       if (!deck) return "No deck loaded.";
       const sourceId = args.slideId as string;
@@ -834,7 +866,7 @@ async function runReviewer(cb: PipelineCallbacks): Promise<string> {
     ? `Review the deck and address these issues:\n${fixInstructions}`
     : "Review the deck for any issues.";
 
-  return callAgentWithTools(
+  const aiResponse = await callAgentWithTools(
     getModelForAgent("reviewer"),
     prompt,
     reviewerTools,
@@ -842,6 +874,27 @@ async function runReviewer(cb: PipelineCallbacks): Promise<string> {
     [],
     cb.onLog,
   );
+
+  // Post-fix re-validation guarantees we never report success without
+  // verifying the reviewer actually resolved what it was asked to fix.
+  // The reviewer can also call validate_deck during its tool loop, but
+  // a forced final check is the authoritative answer.
+  const postDeck = useDeckStore.getState().deck;
+  if (!postDeck) return aiResponse;
+  const postResult = validateDeck(postDeck);
+  const before = localResult.issues.length;
+  const after = postResult.issues.length;
+  if (after === 0) {
+    cb.onLog(`Post-fix validation: all ${before} issues resolved.`);
+    return `${aiResponse}\n\n[validation] All ${before} issue(s) resolved.`;
+  }
+  const remaining = postResult.issues.map((i) => `- [${i.severity}] ${i.message}`).join("\n");
+  if (after < before) {
+    cb.onLog(`Post-fix validation: ${before - after} of ${before} resolved, ${after} remaining.`);
+    return `${aiResponse}\n\n[validation] ${before - after} of ${before} resolved. Remaining:\n${remaining}`;
+  }
+  cb.onLog(`Post-fix validation: ${after} issues remain (no net improvement).`);
+  return `${aiResponse}\n\n[validation] ${after} issue(s) still present:\n${remaining}`;
 }
 
 async function runWriter(
