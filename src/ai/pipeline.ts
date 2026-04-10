@@ -7,6 +7,7 @@ import { useProjectRefStore } from "@/stores/projectRefStore";
 import { readGuide } from "./guides";
 import { validateDeck, buildFixInstructions } from "./validation";
 import { downscaleImage } from "@/utils/imageDownscale";
+import { scheduleImageCaptionForced, captionImageNow } from "./imageCaption";
 import type { Content, Part } from "@google/generative-ai";
 
 const MAX_ATTACHED_IMAGES = 3;
@@ -210,6 +211,14 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
       if (!deck) return "No deck loaded.";
       const slide = deck.slides.find((s) => s.id === slideId);
       if (!slide) return `Slide "${slideId}" not found.`;
+      // Lazy caption trigger: kick off background captioning for any images
+      // lacking aiSummary. The returned JSON still has empty aiSummary for
+      // this read, but the next read will see the generated caption.
+      for (const el of slide.elements) {
+        if (el.type === "image" && !(el as { aiSummary?: string }).aiSummary) {
+          scheduleImageCaptionForced(slideId, el.id);
+        }
+      }
       return JSON.stringify(slide, null, 2);
     }
     case "create_deck": {
@@ -278,6 +287,10 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
       if (!slide) return `Slide "${slideId}" not found.`;
       const element = slide.elements.find((e) => e.id === elementId);
       if (!element) return `Element "${elementId}" not found in slide "${slideId}".`;
+      // Lazy caption trigger for image elements without aiSummary.
+      if (element.type === "image" && !(element as { aiSummary?: string }).aiSummary) {
+        scheduleImageCaptionForced(slideId, elementId);
+      }
       return JSON.stringify(element, null, 2);
     }
     case "move_element": {
@@ -504,6 +517,15 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
       }
       store.replaceDeck({ ...deck, meta: { ...deck.meta, ...patch } });
       return `Deck meta updated: ${Object.keys(patch).join(", ")}.`;
+    }
+    case "generate_image_caption": {
+      const slideId = args.slideId as string;
+      const elementId = args.elementId as string;
+      const summary = await captionImageNow(slideId, elementId);
+      if (summary === null) {
+        return `ERROR: could not caption element "${elementId}" on slide "${slideId}". Possible reasons: no API key, element missing, image src unreachable, or permanently failed prior attempt.`;
+      }
+      return `Caption for "${elementId}": ${summary}`;
     }
     case "apply_style_to_all": {
       if (!deck) return "No deck loaded.";

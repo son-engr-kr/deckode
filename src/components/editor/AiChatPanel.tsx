@@ -4,7 +4,7 @@ import { useDeckStore } from "@/stores/deckStore";
 import { useContextBarStore } from "@/stores/contextBarStore";
 import { useProjectRefStore } from "@/stores/projectRefStore";
 import { runPipeline, type PipelineCallbacks, type PlanResult, type StylePreferences, type ContextBarSnapshot } from "@/ai/pipeline";
-import { getApiKey, setApiKey, clearApiKey, getAgentModels, setAgentModel, AVAILABLE_MODELS, type AgentRole } from "@/ai/geminiClient";
+import { getApiKey, setApiKey, clearApiKey, getAgentModels, setAgentModel, AVAILABLE_MODELS, getAutoCaptionOnUpload, setAutoCaptionOnUpload, type AgentRole } from "@/ai/geminiClient";
 import { ContextBar } from "./ContextBar";
 import { AtMentionDropdown } from "./AtMentionDropdown";
 
@@ -43,6 +43,7 @@ export function AiChatPanel() {
   const [keyInput, setKeyInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [agentModels, setAgentModels] = useState(getAgentModels);
+  const [autoCaption, setAutoCaption] = useState(getAutoCaptionOnUpload);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -290,6 +291,18 @@ export function AiChatPanel() {
               Reset Key
             </button>
           </div>
+          <label className="flex items-center gap-2 pt-1 cursor-pointer" title="When enabled, uploading an image triggers an immediate Gemini multimodal call to generate an aiSummary. When disabled (default), captions are generated lazily on first AI read.">
+            <input
+              type="checkbox"
+              checked={autoCaption}
+              onChange={(e) => {
+                setAutoCaptionOnUpload(e.target.checked);
+                setAutoCaption(e.target.checked);
+              }}
+              className="accent-blue-500"
+            />
+            <span className="text-[10px] text-zinc-400">Auto-caption images on upload</span>
+          </label>
           <ReferenceProjectsSection />
         </div>
       )}

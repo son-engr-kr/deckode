@@ -77,6 +77,23 @@ export function getModelForAgent(role: AgentRole): string {
   return getAgentModels()[role];
 }
 
+// -- Misc AI feature flags (persisted in localStorage) --
+
+const AUTO_CAPTION_ON_UPLOAD_KEY = "deckode:auto-caption-on-upload";
+
+/**
+ * Whether to auto-generate an AI caption (aiSummary) for every image the
+ * moment it is uploaded. Default false — captioning happens lazily on first
+ * read instead, or on explicit generate_image_caption tool calls.
+ */
+export function getAutoCaptionOnUpload(): boolean {
+  return localStorage.getItem(AUTO_CAPTION_ON_UPLOAD_KEY) === "true";
+}
+
+export function setAutoCaptionOnUpload(value: boolean): void {
+  localStorage.setItem(AUTO_CAPTION_ON_UPLOAD_KEY, value ? "true" : "false");
+}
+
 export interface ChatMessage {
   role: "user" | "model";
   parts: Part[];

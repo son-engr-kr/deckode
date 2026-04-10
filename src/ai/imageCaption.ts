@@ -14,7 +14,7 @@
 
 import { useDeckStore } from "@/stores/deckStore";
 import { downscaleImage } from "@/utils/imageDownscale";
-import { callGemini, getApiKey, getModelForAgent } from "./geminiClient";
+import { callGemini, getApiKey, getModelForAgent, getAutoCaptionOnUpload } from "./geminiClient";
 import type { ImageElement } from "@/types/deck";
 
 const captionsInFlight = new Set<string>();
@@ -27,13 +27,78 @@ const MAX_ATTEMPTS = 3;
 const BACKOFF_MS = [1000, 2000, 4000];
 
 /**
- * Schedule a caption generation for an image element. Idempotent: same src
- * is only captioned once per page lifetime. Safe to call from any code path
- * that creates an image element.
+ * Schedule a caption generation triggered by an image upload. Honors the
+ * `autoCaptionOnUpload` user setting, which defaults to off — users pay
+ * Gemini tokens so we do not fire the call unless they explicitly opt in.
+ *
+ * For "always caption this image regardless of setting" (e.g., lazy on
+ * read_slide, or explicit generate_image_caption tool), use
+ * `scheduleImageCaptionForced` instead.
  */
 export function scheduleImageCaption(slideId: string, elementId: string): void {
-  // Defer to next tick so the element is definitely in the store
+  if (!getAutoCaptionOnUpload()) return;
   queueMicrotask(() => runCaption(slideId, elementId));
+}
+
+/**
+ * Force a caption generation regardless of the upload-time setting. Use this
+ * for on-demand paths: when AI reads an image, when the user explicitly
+ * asks for a caption, or when an attached image needs a cached summary.
+ */
+export function scheduleImageCaptionForced(slideId: string, elementId: string): void {
+  queueMicrotask(() => runCaption(slideId, elementId));
+}
+
+/**
+ * Synchronous-return variant for explicit tool calls that need to wait for
+ * the caption before returning. Returns the generated summary, the cached
+ * one if already captioned, or null on failure / missing API key.
+ */
+export async function captionImageNow(slideId: string, elementId: string): Promise<string | null> {
+  if (!getApiKey()) return null;
+
+  const deck = useDeckStore.getState().deck;
+  if (!deck) return null;
+  const slide = deck.slides.find((s) => s.id === slideId);
+  const element = slide?.elements.find((e) => e.id === elementId);
+  if (!element || element.type !== "image") return null;
+
+  const img = element as ImageElement;
+  if (img.aiSummary) return img.aiSummary;
+  if (!img.src) return null;
+  if (captionsFailed.has(img.src)) return null;
+
+  // Wait for any in-flight generation for the same src
+  if (captionsInFlight.has(img.src)) {
+    while (captionsInFlight.has(img.src)) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    const refreshed = useDeckStore.getState().deck?.slides
+      .find((s) => s.id === slideId)?.elements
+      .find((e) => e.id === elementId);
+    if (refreshed && refreshed.type === "image") {
+      return (refreshed as ImageElement).aiSummary ?? null;
+    }
+    return null;
+  }
+
+  captionsInFlight.add(img.src);
+  try {
+    const summary = await captionWithRetry(img.src);
+    if (!summary) {
+      captionsFailed.add(img.src);
+      return null;
+    }
+    useDeckStore.getState().updateElement(slideId, elementId, { aiSummary: summary });
+    captionsDone.add(img.src);
+    return summary;
+  } catch (err) {
+    console.warn(`[imageCaption] captionImageNow failed for ${elementId}:`, err);
+    captionsFailed.add(img.src);
+    return null;
+  } finally {
+    captionsInFlight.delete(img.src);
+  }
 }
 
 async function runCaption(slideId: string, elementId: string): Promise<void> {

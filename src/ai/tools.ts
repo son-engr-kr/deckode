@@ -370,6 +370,19 @@ export const deckodeTools: DeckodeTool[] = [
     },
   },
   {
+    name: "generate_image_caption",
+    description:
+      "Generate an AI caption for a specific image element and wait for the result. Caches the caption into the element's aiSummary so future reads and deck summaries carry the description. Use when you need to understand an image's content before deciding how to modify the slide, and you cannot wait for the lazy background caption to complete.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        elementId: { type: SchemaType.STRING },
+      },
+      required: ["slideId", "elementId"],
+    },
+  },
+  {
     name: "apply_style_to_all",
     description:
       "Apply a style patch to every element matching the filter in one shot. Use for deck-wide consistency operations like unifying heading colors, changing body font, or setting a common shape stroke. The style patch is shallow-merged into each matched element's style object.",
