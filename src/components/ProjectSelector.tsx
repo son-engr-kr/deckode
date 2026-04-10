@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDeckStore } from "@/stores/deckStore";
 import { FsAccessAdapter } from "@/adapters/fsAccess";
 import { ViteApiAdapter } from "@/adapters/viteApi";
@@ -23,6 +23,35 @@ import type { ProjectInfo } from "@/utils/api";
 import type { NewProjectConfig } from "@/utils/projectTemplates";
 import { assert } from "@/utils/assert";
 
+// ── Per-project "last opened" tracker for Vite dev mode ──
+// The server's listProjects() returns every directory under projects/ with
+// no history. This small localStorage map lets us sort the list by recency
+// and show the most-used ones first.
+
+const VITE_RECENCY_KEY = "tekkal:vite-project-recency";
+
+function getViteProjectRecency(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(VITE_RECENCY_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function markViteProjectOpened(name: string): void {
+  try {
+    const map = getViteProjectRecency();
+    map[name] = Date.now();
+    localStorage.setItem(VITE_RECENCY_KEY, JSON.stringify(map));
+  } catch {
+    // localStorage unavailable — non-fatal, ordering just falls back to name
+  }
+}
+
+const DEFAULT_VISIBLE_PROJECTS = 5;
+const DEFAULT_VISIBLE_RECENT_FOLDERS = 5;
+
 interface Props {
   isDevMode: boolean;
   onAdapterReady: (adapter: FileSystemAdapter) => void;
@@ -44,6 +73,12 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
   const [creating, setCreating] = useState(false);
   const [ghDialogOpen, setGhDialogOpen] = useState(false);
   const [recentFolders, setRecentFolders] = useState<RecentProject[]>([]);
+  const [projectSearch, setProjectSearch] = useState("");
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [folderSearch, setFolderSearch] = useState("");
+  const [showAllFolders, setShowAllFolders] = useState(false);
+  // Bumped whenever handleOpen runs so the sorted list refreshes on navigation
+  const [recencyTick, setRecencyTick] = useState(0);
 
   const fetchProjects = () => {
     listProjects().then((p) => {
@@ -58,9 +93,50 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
 
   useEffect(() => { fetchProjects(); loadRecentFolders(); }, []);
 
+  // Recency-aware sort: projects opened recently rank above those never opened;
+  // ties (never opened) fall back to alphabetical by name.
+  const sortedProjects = useMemo(() => {
+    void recencyTick;
+    const recency = getViteProjectRecency();
+    return [...projects].sort((a, b) => {
+      const ra = recency[a.name];
+      const rb = recency[b.name];
+      if (ra !== undefined && rb !== undefined) return rb - ra;
+      if (ra !== undefined) return -1;
+      if (rb !== undefined) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [projects, recencyTick]);
+
+  const filteredProjects = useMemo(() => {
+    const q = projectSearch.trim().toLowerCase();
+    if (!q) return sortedProjects;
+    return sortedProjects.filter((p) =>
+      p.name.toLowerCase().includes(q) || p.title.toLowerCase().includes(q),
+    );
+  }, [sortedProjects, projectSearch]);
+
+  const visibleProjects = useMemo(() => {
+    if (projectSearch.trim() || showAllProjects) return filteredProjects;
+    return filteredProjects.slice(0, DEFAULT_VISIBLE_PROJECTS);
+  }, [filteredProjects, projectSearch, showAllProjects]);
+
+  const filteredRecentFolders = useMemo(() => {
+    const q = folderSearch.trim().toLowerCase();
+    if (!q) return recentFolders;
+    return recentFolders.filter((f) => f.name.toLowerCase().includes(q));
+  }, [recentFolders, folderSearch]);
+
+  const visibleRecentFolders = useMemo(() => {
+    if (folderSearch.trim() || showAllFolders) return filteredRecentFolders;
+    return filteredRecentFolders.slice(0, DEFAULT_VISIBLE_RECENT_FOLDERS);
+  }, [filteredRecentFolders, folderSearch, showAllFolders]);
+
   const handleOpen = async (name: string) => {
     const deck = await loadDeckFromDisk(name);
     assert(deck !== null, `Failed to load deck for project "${name}"`);
+    markViteProjectOpened(name);
+    setRecencyTick((t) => t + 1);
     const adapter = new ViteApiAdapter(name);
     onAdapterReady(adapter);
     useDeckStore.getState().openProject(name, deck);
@@ -138,36 +214,77 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
           <p className="text-sm text-zinc-500 mb-6">No projects yet. Create one below.</p>
         )}
 
-        <div className="space-y-2 mb-8">
-          {projects.map((p) => (
-            <div
-              key={p.name}
-              className="flex items-center justify-between px-4 py-3 bg-zinc-900 rounded-lg border border-zinc-800 hover:border-zinc-600 transition-colors group"
-            >
-              <button
-                onClick={() => handleOpen(p.name)}
-                className="flex-1 text-left"
-              >
-                <span className="text-sm font-medium text-zinc-200">{p.title}</span>
-                <span className="text-xs text-zinc-500 ml-2">{p.name}</span>
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleDelete(p.name); }}
-                className="text-xs text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
-                title={`Delete ${p.name}`}
-              >
-                Delete
-              </button>
+        {projects.length > 0 && (
+          <div className="mb-8">
+            {projects.length > DEFAULT_VISIBLE_PROJECTS && (
+              <input
+                type="text"
+                value={projectSearch}
+                onChange={(e) => setProjectSearch(e.target.value)}
+                placeholder={`Search ${projects.length} projects...`}
+                className="w-full mb-2 px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-blue-500"
+              />
+            )}
+            <div className="space-y-2">
+              {visibleProjects.map((p) => (
+                <div
+                  key={p.name}
+                  className="flex items-center justify-between px-4 py-3 bg-zinc-900 rounded-lg border border-zinc-800 hover:border-zinc-600 transition-colors group"
+                >
+                  <button
+                    onClick={() => handleOpen(p.name)}
+                    className="flex-1 text-left"
+                  >
+                    <span className="text-sm font-medium text-zinc-200">{p.title}</span>
+                    <span className="text-xs text-zinc-500 ml-2">{p.name}</span>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(p.name); }}
+                    className="text-xs text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
+                    title={`Delete ${p.name}`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            {projectSearch.trim() && filteredProjects.length === 0 && (
+              <p className="text-xs text-zinc-600 mt-2">No projects match &quot;{projectSearch}&quot;.</p>
+            )}
+            {!projectSearch.trim() && !showAllProjects && filteredProjects.length > DEFAULT_VISIBLE_PROJECTS && (
+              <button
+                onClick={() => setShowAllProjects(true)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show all {filteredProjects.length} projects
+              </button>
+            )}
+            {!projectSearch.trim() && showAllProjects && filteredProjects.length > DEFAULT_VISIBLE_PROJECTS && (
+              <button
+                onClick={() => setShowAllProjects(false)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show fewer
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Recent local folders */}
         {recentFolders.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Recent Local Folders</h2>
+            {recentFolders.length > DEFAULT_VISIBLE_RECENT_FOLDERS && (
+              <input
+                type="text"
+                value={folderSearch}
+                onChange={(e) => setFolderSearch(e.target.value)}
+                placeholder={`Search ${recentFolders.length} folders...`}
+                className="w-full mb-2 px-3 py-1.5 text-xs bg-zinc-900 border border-zinc-800 rounded text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-blue-500"
+              />
+            )}
             <div className="space-y-1.5">
-              {recentFolders.map((entry) => (
+              {visibleRecentFolders.map((entry) => (
                 <div
                   key={entry.name}
                   className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 rounded-lg border border-zinc-800 hover:border-zinc-600 transition-colors group"
@@ -191,6 +308,25 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
                 </div>
               ))}
             </div>
+            {folderSearch.trim() && filteredRecentFolders.length === 0 && (
+              <p className="text-xs text-zinc-600 mt-2">No folders match &quot;{folderSearch}&quot;.</p>
+            )}
+            {!folderSearch.trim() && !showAllFolders && filteredRecentFolders.length > DEFAULT_VISIBLE_RECENT_FOLDERS && (
+              <button
+                onClick={() => setShowAllFolders(true)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show all {filteredRecentFolders.length} folders
+              </button>
+            )}
+            {!folderSearch.trim() && showAllFolders && filteredRecentFolders.length > DEFAULT_VISIBLE_RECENT_FOLDERS && (
+              <button
+                onClick={() => setShowAllFolders(false)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show fewer
+              </button>
+            )}
           </div>
         )}
 
@@ -251,10 +387,23 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
   const [creating, setCreating] = useState(false);
   const [ghDialogOpen, setGhDialogOpen] = useState(false);
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
+  const [recentSearch, setRecentSearch] = useState("");
+  const [showAllRecent, setShowAllRecent] = useState(false);
 
   const loadRecentProjects = () => {
     listRecentProjects().then(setRecentProjects);
   };
+
+  const filteredRecent = useMemo(() => {
+    const q = recentSearch.trim().toLowerCase();
+    if (!q) return recentProjects;
+    return recentProjects.filter((p) => p.name.toLowerCase().includes(q));
+  }, [recentProjects, recentSearch]);
+
+  const visibleRecent = useMemo(() => {
+    if (recentSearch.trim() || showAllRecent) return filteredRecent;
+    return filteredRecent.slice(0, DEFAULT_VISIBLE_PROJECTS);
+  }, [filteredRecent, recentSearch, showAllRecent]);
 
   // Try to auto-restore the most recently opened directory handle from IndexedDB
   useEffect(() => {
@@ -405,8 +554,17 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
         {recentProjects.length > 0 && (
           <div className="mb-6">
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Recent Projects</h2>
+            {recentProjects.length > DEFAULT_VISIBLE_PROJECTS && (
+              <input
+                type="text"
+                value={recentSearch}
+                onChange={(e) => setRecentSearch(e.target.value)}
+                placeholder={`Search ${recentProjects.length} recent projects...`}
+                className="w-full mb-2 px-3 py-1.5 text-xs bg-zinc-900 border border-zinc-800 rounded text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-blue-500"
+              />
+            )}
             <div className="space-y-1.5">
-              {recentProjects.map((entry) => (
+              {visibleRecent.map((entry) => (
                 <div
                   key={entry.name}
                   className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 rounded-lg border border-zinc-800 hover:border-zinc-600 transition-colors group"
@@ -430,6 +588,25 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
                 </div>
               ))}
             </div>
+            {recentSearch.trim() && filteredRecent.length === 0 && (
+              <p className="text-xs text-zinc-600 mt-2">No recent projects match &quot;{recentSearch}&quot;.</p>
+            )}
+            {!recentSearch.trim() && !showAllRecent && filteredRecent.length > DEFAULT_VISIBLE_PROJECTS && (
+              <button
+                onClick={() => setShowAllRecent(true)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show all {filteredRecent.length} recent projects
+              </button>
+            )}
+            {!recentSearch.trim() && showAllRecent && filteredRecent.length > DEFAULT_VISIBLE_PROJECTS && (
+              <button
+                onClick={() => setShowAllRecent(false)}
+                className="mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                Show fewer
+              </button>
+            )}
           </div>
         )}
 
