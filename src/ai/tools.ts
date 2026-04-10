@@ -719,6 +719,101 @@ export const deckodeTools: DeckodeTool[] = [
       required: ["label"],
     },
   },
+  {
+    name: "add_animation",
+    description:
+      "Add an animation to a slide's animations array. The target must be an existing element ID on that slide. Use onClick for reveal-on-click sequences, onEnter for auto-play-on-show, withPrevious/afterPrevious to chain with the previous animation.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        target: { type: SchemaType.STRING, description: "Element ID the animation applies to" },
+        effect: {
+          type: SchemaType.STRING,
+          description: "fadeIn | fadeOut | slideInLeft | slideInRight | slideInUp | slideInDown | scaleIn | scaleOut | typewriter | scene3dStep | playVideo",
+        },
+        trigger: {
+          type: SchemaType.STRING,
+          description: "onEnter | onClick | onKey | afterPrevious | withPrevious",
+        },
+        duration: { type: SchemaType.NUMBER, description: "Milliseconds. Default depends on effect." },
+        delay: { type: SchemaType.NUMBER, description: "Milliseconds before the animation starts." },
+      },
+      required: ["slideId", "target", "effect", "trigger"],
+    },
+  },
+  {
+    name: "update_animation",
+    description:
+      "Patch fields on an existing animation in a slide's animations array. Use the animation's 0-based index (read via list_animations).",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        index: { type: SchemaType.NUMBER, description: "0-based index in slide.animations" },
+        patch: {
+          type: SchemaType.OBJECT,
+          description: "Partial Animation fields: target, effect, trigger, duration, delay",
+          properties: {},
+        },
+      },
+      required: ["slideId", "index", "patch"],
+    },
+  },
+  {
+    name: "delete_animation",
+    description: "Remove an animation from a slide by 0-based index.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        index: { type: SchemaType.NUMBER },
+      },
+      required: ["slideId", "index"],
+    },
+  },
+  {
+    name: "reorder_animations",
+    description:
+      "Move an animation from one index to another within a slide's animations array. Order matters because step markers in speaker notes ([step:N]) are tied to the nth onClick animation.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+        fromIndex: { type: SchemaType.NUMBER },
+        toIndex: { type: SchemaType.NUMBER },
+      },
+      required: ["slideId", "fromIndex", "toIndex"],
+    },
+  },
+  {
+    name: "list_animations",
+    description:
+      "Return all animations on a slide with their index, target, effect, trigger, and timing. Use before update_animation or delete_animation so you know which index to target.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        slideId: { type: SchemaType.STRING },
+      },
+      required: ["slideId"],
+    },
+  },
+  {
+    name: "import_outline",
+    description:
+      "Parse a markdown outline and create slides from it. Each top-level '# heading' becomes one slide: the heading is the title text element (with '# ' prefix preserved so the renderer styles it as h1), everything between that heading and the next '#' becomes a body text element. Markdown inside the body (bullets, bold, italic, math) is left intact — the renderer handles it. Fastest way to bulk-create slides from an existing outline.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        markdown: { type: SchemaType.STRING, description: "Markdown outline. Top-level '#' starts a new slide." },
+        mode: {
+          type: SchemaType.STRING,
+          description: "'append' (default) adds slides to the end of the current deck; 'replace' clears existing slides first.",
+        },
+      },
+      required: ["markdown"],
+    },
+  },
 ];
 
 // ── Project file reference tools (only available when a project is @mentioned) ──

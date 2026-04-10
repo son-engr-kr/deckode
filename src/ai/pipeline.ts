@@ -20,6 +20,29 @@ const MAX_ATTACHED_IMAGES = 3;
 const snapshots = new Map<string, Deck>();
 
 /**
+ * Parse a markdown outline into (title, body) blocks. Each top-level '#'
+ * heading starts a new block; all content until the next '#' (at column 0,
+ * not '##' or '###') becomes the body. Deeper headings (##, ###) are left
+ * inside the body where renderMarkdown will handle them as sub-headings.
+ */
+function parseOutline(markdown: string): Array<{ title: string; body: string }> {
+  const lines = markdown.split("\n");
+  const blocks: Array<{ title: string; body: string[] }> = [];
+  let current: { title: string; body: string[] } | null = null;
+  for (const line of lines) {
+    const h1 = /^#\s+(.+)$/.exec(line);
+    if (h1) {
+      if (current) blocks.push(current);
+      current = { title: h1[1]!.trim(), body: [] };
+      continue;
+    }
+    if (current) current.body.push(line);
+  }
+  if (current) blocks.push(current);
+  return blocks.map((b) => ({ title: b.title, body: b.body.join("\n") }));
+}
+
+/**
  * WCAG relative luminance for an sRGB color. Input accepts #rgb, #rrggbb,
  * or the literal "transparent". Unknown strings fall back to assuming
  * white, which is the conservative choice for contrast checks.
@@ -1023,6 +1046,114 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
         `  modified slides: ${modified.length === 0 ? "none" : modified.join(", ")}`,
       ];
       return lines.join("\n");
+    }
+    case "add_animation": {
+      const slideId = args.slideId as string;
+      const target = args.target as string;
+      const effect = args.effect as string;
+      const trigger = args.trigger as string;
+      const duration = typeof args.duration === "number" ? args.duration : undefined;
+      const delay = typeof args.delay === "number" ? args.delay : undefined;
+      const validEffects = [
+        "fadeIn", "fadeOut", "slideInLeft", "slideInRight", "slideInUp", "slideInDown",
+        "scaleIn", "scaleOut", "typewriter", "scene3dStep", "playVideo",
+      ];
+      const validTriggers = ["onEnter", "onClick", "onKey", "afterPrevious", "withPrevious"];
+      if (!validEffects.includes(effect)) {
+        return `ERROR: unknown effect "${effect}". Valid: ${validEffects.join(", ")}.`;
+      }
+      if (!validTriggers.includes(trigger)) {
+        return `ERROR: unknown trigger "${trigger}". Valid: ${validTriggers.join(", ")}.`;
+      }
+      const animation = {
+        target,
+        effect: effect as Parameters<typeof store.addAnimation>[1]["effect"],
+        trigger: trigger as Parameters<typeof store.addAnimation>[1]["trigger"],
+        ...(duration !== undefined ? { duration } : {}),
+        ...(delay !== undefined ? { delay } : {}),
+      };
+      store.addAnimation(slideId, animation);
+      return `Animation added to slide "${slideId}": ${trigger} ${effect} on ${target}.`;
+    }
+    case "update_animation": {
+      const slideId = args.slideId as string;
+      const index = args.index as number;
+      const patch = args.patch as Record<string, unknown>;
+      store.updateAnimation(slideId, index, patch as Parameters<typeof store.updateAnimation>[2]);
+      return `Animation [${index}] on slide "${slideId}" patched.`;
+    }
+    case "delete_animation": {
+      const slideId = args.slideId as string;
+      const index = args.index as number;
+      store.deleteAnimation(slideId, index);
+      return `Animation [${index}] deleted from slide "${slideId}".`;
+    }
+    case "reorder_animations": {
+      const slideId = args.slideId as string;
+      const fromIndex = args.fromIndex as number;
+      const toIndex = args.toIndex as number;
+      store.moveAnimation(slideId, fromIndex, toIndex);
+      return `Animation moved from [${fromIndex}] to [${toIndex}] on slide "${slideId}".`;
+    }
+    case "list_animations": {
+      if (!deck) return "No deck loaded.";
+      const slideId = args.slideId as string;
+      const slide = deck.slides.find((s) => s.id === slideId);
+      if (!slide) return `Slide "${slideId}" not found.`;
+      const anims = slide.animations ?? [];
+      if (anims.length === 0) return `No animations on slide "${slideId}".`;
+      const lines = anims.map((a, i) => {
+        const timing = [
+          a.delay !== undefined ? `delay ${a.delay}ms` : null,
+          a.duration !== undefined ? `duration ${a.duration}ms` : null,
+        ].filter(Boolean).join(" ");
+        return `  [${i}] ${a.trigger} ${a.effect} -> ${a.target}${timing ? ` (${timing})` : ""}`;
+      });
+      return `${anims.length} animation(s) on slide "${slideId}":\n${lines.join("\n")}`;
+    }
+    case "import_outline": {
+      if (!deck) return "No deck loaded. Use create_deck first.";
+      const markdown = args.markdown as string;
+      const mode = (args.mode as string) ?? "append";
+      const parsed = parseOutline(markdown);
+      if (parsed.length === 0) {
+        return `ERROR: outline contained no top-level '# heading' slides.`;
+      }
+      // Build Slide objects
+      const existingSlideIds = new Set(
+        mode === "replace" ? [] : deck.slides.map((s) => s.id),
+      );
+      const newSlides: Slide[] = parsed.map((block, i) => {
+        let baseId = `imported-${Date.now()}-${i + 1}`;
+        while (existingSlideIds.has(baseId)) baseId += "_";
+        existingSlideIds.add(baseId);
+        const titleEl: SlideElement = {
+          id: `${baseId}-title`,
+          type: "text",
+          content: `# ${block.title}`,
+          position: { x: 60, y: 40 },
+          size: { w: 840, h: 80 },
+          style: { fontSize: 36, color: "#f8fafc" },
+        } as SlideElement;
+        const elements: SlideElement[] = [titleEl];
+        if (block.body.trim()) {
+          elements.push({
+            id: `${baseId}-body`,
+            type: "text",
+            content: block.body.trim(),
+            position: { x: 60, y: 140 },
+            size: { w: 840, h: 360 },
+            style: { fontSize: 22, color: "#e2e8f0" },
+          } as SlideElement);
+        }
+        return { id: baseId, elements };
+      });
+      if (mode === "replace") {
+        store.replaceDeck({ ...deck, slides: newSlides });
+      } else {
+        for (const slide of newSlides) store.addSlide(slide);
+      }
+      return `Imported ${newSlides.length} slide(s) in '${mode}' mode.`;
     }
     case "duplicate_slide": {
       if (!deck) return "No deck loaded.";
