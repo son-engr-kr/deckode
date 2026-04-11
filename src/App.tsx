@@ -46,7 +46,9 @@ export function App() {
   const currentProject = useDeckStore((s) => s.currentProject);
   const [adapter, setAdapter] = useState<FileSystemAdapter | null>(null);
   const [externalChange, setExternalChange] = useState(false);
+  const [mergedToast, setMergedToast] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const mergedToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Synchronously detect if we need to auto-open from URL so we can show
   // a loading state immediately and prevent ProjectSelector from mounting.
@@ -172,10 +174,18 @@ export function App() {
   const tryMerge = useCallback((remoteDeck: Deck) => {
     const result = useDeckStore.getState().mergeExternalChange(remoteDeck);
     if (result === "merged") {
-      console.log("[tekkal] External change merged");
+      // Translucent overlay toast that fades in then out so the
+      // user notices the auto-merge without being blocked by it.
+      if (mergedToastTimerRef.current) clearTimeout(mergedToastTimerRef.current);
+      setMergedToast(true);
+      mergedToastTimerRef.current = setTimeout(() => setMergedToast(false), 2200);
     } else if (result === "conflict") {
       setExternalChange(true);
     }
+  }, []);
+
+  useEffect(() => () => {
+    if (mergedToastTimerRef.current) clearTimeout(mergedToastTimerRef.current);
   }, []);
 
   // HMR: reload deck when deck.json changes on disk (dev mode only)
@@ -366,6 +376,15 @@ export function App() {
 
   return (
     <AdapterProvider adapter={adapter}>
+      {adapter.mode !== "readonly" && (
+        <div
+          className={`pointer-events-none fixed top-3 left-1/2 -translate-x-1/2 z-[9998] px-4 py-2 rounded-full bg-emerald-600/70 text-white text-sm font-medium shadow-lg backdrop-blur-sm transition-opacity duration-500 ${
+            mergedToast ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          External change merged
+        </div>
+      )}
       {externalChange && adapter.mode !== "readonly" && (
         <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-center gap-3 px-4 py-2 bg-amber-600 text-white text-sm font-medium shadow-lg">
           <span>deck.json was modified externally</span>
