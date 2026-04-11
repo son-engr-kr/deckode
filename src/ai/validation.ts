@@ -8,6 +8,17 @@ export interface ValidationIssue {
   autoFixable: boolean;
 }
 
+/**
+ * Asset paths the FsAccess and Vite adapters know how to resolve.
+ * Anything else (bare filename, OS path, missing leading slash) hits
+ * an assert deeper in resolveAssetUrl that gets swallowed by
+ * useAssetUrl, leaving the image silently absent at render time —
+ * exactly the failure mode the api3_1 benchmark deck hit. Both
+ * validators (this one + scripts/tekkal-validate.mjs) must keep
+ * this in lockstep.
+ */
+const VALID_ASSET_PATH_RE = /^(\.\/assets\/|\/assets\/|https?:\/\/|data:)/;
+
 export interface ValidationResult {
   issues: ValidationIssue[];
   fixed: number;
@@ -29,6 +40,44 @@ export function validateDeck(deck: Deck): ValidationResult {
       });
     }
     slideIds.add(slide.id);
+
+    // Empty slide. Either bare-empty (no elements at all) or
+    // notes-without-elements (interrupted generation — the model
+    // wrote presenter notes but never came back to add the visible
+    // content). The notes-only case is reported with a stronger
+    // message because it is essentially never legitimate.
+    if (slide.elements.length === 0) {
+      const hasNotes = typeof slide.notes === "string" && slide.notes.trim().length > 0;
+      if (hasNotes) {
+        issues.push({
+          severity: "error",
+          slideId: slide.id,
+          message: `Slide "${slide.id}" has presenter notes but no visible elements — looks like generation was interrupted; add the planned content elements (e.g. a "# Title" text element) before the slide can render`,
+          autoFixable: false,
+        });
+      } else {
+        issues.push({
+          severity: "error",
+          slideId: slide.id,
+          message: `Slide "${slide.id}" has zero elements — add at least one text element with a "# Title" heading, or remove the slide if intentional`,
+          autoFixable: false,
+        });
+      }
+    }
+
+    // Slide background image path format. Same rules as image/video
+    // src — bare filenames render as nothing.
+    const slideBg = slide.background as { image?: unknown } | undefined;
+    if (slideBg && typeof slideBg.image === "string" && slideBg.image.length > 0) {
+      if (!VALID_ASSET_PATH_RE.test(slideBg.image)) {
+        issues.push({
+          severity: "error",
+          slideId: slide.id,
+          message: `Slide background image "${slideBg.image}" must start with ./assets/, /assets/, http(s)://, or data:`,
+          autoFixable: false,
+        });
+      }
+    }
 
     // Forbidden element types (not supported / cause rendering issues)
     const FORBIDDEN_TYPES = ["mermaid", "iframe", "audio", "animation"];
@@ -193,6 +242,32 @@ export function validateDeck(deck: Deck): ValidationResult {
           message: `Element overflows bottom edge: y(${el.position.y}) + h(${el.size.h}) = ${el.position.y + el.size.h} > 540`,
           autoFixable: true,
         });
+      }
+
+      // image/video src format. Must resolve through useAssetUrl —
+      // bare filenames or absent ./assets/ prefix render as nothing
+      // and the failure is silent (resolveAssetUrl rejects, useAssetUrl
+      // catches). Caught here as an error so the AI fix loop has a
+      // signal to act on.
+      if (el.type === "image" || el.type === "video") {
+        const src = (el as { src?: unknown }).src;
+        if (typeof src !== "string" || src.length === 0) {
+          issues.push({
+            severity: "error",
+            slideId: slide.id,
+            elementId: el.id,
+            message: `${el.type} element missing src field`,
+            autoFixable: false,
+          });
+        } else if (!VALID_ASSET_PATH_RE.test(src)) {
+          issues.push({
+            severity: "error",
+            slideId: slide.id,
+            elementId: el.id,
+            message: `${el.type} element src "${src}" must start with ./assets/, /assets/, http(s)://, or data:`,
+            autoFixable: false,
+          });
+        }
       }
 
       // Arrow/line with rotation field (causes assert fail in renderer)

@@ -44,10 +44,11 @@ export const LIGHT_THEME: DeckTheme = {
 // ----- Generators -----
 
 export function generateBlankDeck(title?: string): Deck {
+  const deckTitle = title || "Untitled Presentation";
   return {
     version: "0.1.0",
     meta: {
-      title: title || "Untitled Presentation",
+      title: deckTitle,
       aspectRatio: "16:9",
     },
     theme: { ...LIGHT_THEME },
@@ -55,7 +56,21 @@ export function generateBlankDeck(title?: string): Deck {
       {
         id: "s1",
         background: { color: "#ffffff" },
-        elements: [],
+        // A single placeholder text element so the freshly-scaffolded
+        // deck passes validation out of the box. The validator now
+        // treats elements: [] as an interrupted-generation signal,
+        // and a brand-new project should not ship invalid. The user
+        // edits or replaces this element on their first interaction.
+        elements: [
+          {
+            id: "s1-title",
+            type: "text",
+            content: `# ${deckTitle}`,
+            position: { x: 80, y: 220 },
+            size: { w: 800, h: 100 },
+            style: { fontSize: 40, color: "#1e293b", textAlign: "center" },
+          },
+        ],
       },
     ],
   };

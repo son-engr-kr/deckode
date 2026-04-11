@@ -28,6 +28,13 @@ const FORBIDDEN_TYPES = new Set(["mermaid", "iframe", "audio", "animation"]);
 const VISUAL_TYPES = new Set(["shape"]);
 const CONTENT_TYPES = new Set(["text", "table", "code"]);
 
+// Asset paths the FsAccess and Vite adapters know how to resolve.
+// Bare filenames or absent ./assets/ prefix render as nothing — the
+// failure is silent because resolveAssetUrl rejects and useAssetUrl
+// catches. Caught here as an error so the AI fix loop has a signal.
+// Must stay in lockstep with src/ai/validation.ts VALID_ASSET_PATH_RE.
+const VALID_ASSET_PATH_RE = /^(\.\/assets\/|\/assets\/|https?:\/\/|data:)/;
+
 function fail(msg) {
   // Internal invariant violation in the validator itself — fail loud.
   // This is NOT how user-deck findings get reported; those go through
@@ -231,6 +238,11 @@ function validateElement(el, slideIdx, elIdx, slideId, seenElementIds, findings)
       } else {
         findings.error(`${elPath}.src`, "image element missing `src` field");
       }
+    } else if (!VALID_ASSET_PATH_RE.test(el.src)) {
+      findings.error(
+        `${elPath}.src`,
+        `image element src "${el.src}" must start with ./assets/, /assets/, http(s)://, or data: — bare filenames render as nothing`,
+      );
     }
   }
 
@@ -245,6 +257,11 @@ function validateElement(el, slideIdx, elIdx, slideId, seenElementIds, findings)
       } else {
         findings.error(`${elPath}.src`, "video element missing `src` field");
       }
+    } else if (!VALID_ASSET_PATH_RE.test(el.src)) {
+      findings.error(
+        `${elPath}.src`,
+        `video element src "${el.src}" must start with ./assets/, /assets/, http(s)://, or data: — bare filenames render as nothing`,
+      );
     }
   }
 
@@ -367,6 +384,42 @@ function validateSlide(slide, slideIdx, seenSlideIds, seenElementIds, findings) 
   if (!Array.isArray(slide.elements)) {
     findings.error(`${slidePath}.elements`, "Missing or non-array `elements` field");
     return;
+  }
+
+  // Empty slide. Either bare-empty or notes-without-elements
+  // (interrupted generation — the model wrote presenter notes but
+  // never came back to add visible content). The notes-only case
+  // gets a stronger message because it is essentially never
+  // legitimate. This was the api3_1 benchmark deck failure mode.
+  if (slide.elements.length === 0) {
+    const notesText = typeof slide.notes === "string" ? slide.notes.trim() : "";
+    const idLabel = slide.id || `(unnamed slide ${slideIdx})`;
+    if (notesText.length > 0) {
+      findings.error(
+        `${slidePath}`,
+        `Slide "${idLabel}" has presenter notes but no visible elements — looks like generation was interrupted; add the planned content elements (e.g. a "# Title" text element) before the slide can render`,
+      );
+    } else {
+      findings.error(
+        `${slidePath}`,
+        `Slide "${idLabel}" has zero elements — add at least one text element with a "# Title" heading, or remove the slide if intentional`,
+      );
+    }
+  }
+
+  // Slide background image path format. Same rules as image/video
+  // src — bare filenames render as nothing.
+  const slideBg = isPlainObject(slide.background) ? slide.background : null;
+  if (
+    slideBg &&
+    typeof slideBg.image === "string" &&
+    slideBg.image.length > 0 &&
+    !VALID_ASSET_PATH_RE.test(slideBg.image)
+  ) {
+    findings.error(
+      `${slidePath}.background.image`,
+      `Slide background image "${slideBg.image}" must start with ./assets/, /assets/, http(s)://, or data:`,
+    );
   }
 
   for (let i = 0; i < slide.elements.length; i++) {

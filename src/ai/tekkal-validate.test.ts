@@ -334,6 +334,178 @@ describe("tekkal-validate.mjs drift", () => {
     expect(result.stdout).toMatch(/bounding box/);
   });
 
+  it("flags image element with bare filename src (api3_1 benchmark failure shape)", () => {
+    const result = runDeck(
+      deckOf([
+        slideOf("s1", [
+          {
+            id: "img1",
+            type: "image",
+            // Bare filename — no ./assets/ prefix. resolveAssetUrl
+            // hits an assert that useAssetUrl swallows, so the image
+            // is silently absent at render time.
+            src: "interference.png",
+            position: pos(20, 20),
+            size: size(320, 200),
+          },
+        ]),
+      ]),
+      "image-bare-filename",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]\.elements\[0\]\.src/);
+    // Message must list the four legal prefixes so the LLM can fix.
+    expect(result.stdout).toMatch(/\.\/assets\//);
+    expect(result.stdout).toMatch(/http\(s\)/);
+  });
+
+  it("flags image element src missing the assets directory", () => {
+    const result = runDeck(
+      deckOf([
+        slideOf("s1", [
+          {
+            id: "img2",
+            type: "image",
+            // Has a leading slash but no /assets/ — also invalid.
+            src: "/images/foo.png",
+            position: pos(20, 20),
+            size: size(320, 200),
+          },
+        ]),
+      ]),
+      "image-missing-assets-dir",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]\.elements\[0\]\.src/);
+    expect(result.stdout).toMatch(/\/images\/foo\.png/);
+  });
+
+  it("flags image element src as an absolute Windows OS path", () => {
+    const result = runDeck(
+      deckOf([
+        slideOf("s1", [
+          {
+            id: "img3",
+            type: "image",
+            src: "C:\\Users\\me\\foo.png",
+            position: pos(20, 20),
+            size: size(320, 200),
+          },
+        ]),
+      ]),
+      "image-os-path",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]\.elements\[0\]\.src/);
+  });
+
+  it("flags video element src that is a bare filename", () => {
+    const result = runDeck(
+      deckOf([
+        slideOf("s1", [
+          {
+            id: "vid2",
+            type: "video",
+            src: "clip.mp4",
+            position: pos(20, 20),
+            size: size(320, 200),
+          },
+        ]),
+      ]),
+      "video-bare-filename",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]\.elements\[0\]\.src/);
+    expect(result.stdout).toMatch(/clip\.mp4/);
+  });
+
+  it("flags slide background image with bare filename", () => {
+    const result = runDeck(
+      deckOf([
+        slideOf(
+          "s1",
+          [textEl("t1", "content")],
+          { background: { image: "background.png" } },
+        ),
+      ]),
+      "slide-bg-bare-filename",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]\.background\.image/);
+    expect(result.stdout).toMatch(/background\.png/);
+  });
+
+  it("accepts image src with the four legal prefixes", () => {
+    const cases = [
+      "./assets/foo.png",
+      "/assets/proj/foo.png",
+      "https://example.com/foo.png",
+      "data:image/png;base64,iVBORw0KGgo=",
+    ];
+    for (const src of cases) {
+      const result = runDeck(
+        deckOf([
+          slideOf("s1", [
+            {
+              id: "img-ok",
+              type: "image",
+              src,
+              position: pos(20, 20),
+              size: size(320, 200),
+            },
+          ]),
+        ]),
+        `image-ok-${src.replace(/[^a-z0-9]/gi, "_").slice(0, 20)}`,
+      );
+      // Path check passes for these prefixes; other checks (overlap,
+      // empty slide) are also satisfied because the slide has one
+      // image element. Exit 0, no path-related error.
+      expect(result.exitCode, `should accept "${src}"`).toBe(0);
+      expect(result.stdout).toMatch(/RESULT: PASS/);
+    }
+  });
+
+  it("flags slide with zero elements (empty slide)", () => {
+    const result = runDeck(
+      deckOf([slideOf("s1", [])]),
+      "empty-slide-no-notes",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]/);
+    expect(result.stdout).toMatch(/zero elements/);
+    // Suggested fix is in the message
+    expect(result.stdout).toMatch(/# Title|remove the slide/);
+  });
+
+  it("flags slide with notes but no elements (interrupted generation)", () => {
+    // This is the api3_1 s1 failure shape exactly: notes filled in,
+    // elements left as []. The validator must produce a stronger,
+    // distinct error message so the AI knows it is mid-completion.
+    const result = runDeck(
+      deckOf([
+        slideOf("s1", [], {
+          notes: "Welcome to the presentation. This deck covers the basics.",
+        }),
+      ]),
+      "empty-slide-with-notes",
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toMatch(/slides\[0\]/);
+    // Distinct wording from the no-notes case so the AI's mental
+    // model can branch on the right corrective action.
+    expect(result.stdout).toMatch(/notes but no visible elements/);
+    expect(result.stdout).toMatch(/interrupted/);
+  });
+
+  it("accepts slide with at least one element", () => {
+    const result = runDeck(
+      deckOf([slideOf("s1", [textEl("t1", "content")])]),
+      "non-empty-slide",
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toMatch(/RESULT: PASS/);
+  });
+
   it("flags step marker count mismatch with onClick animation count", () => {
     const result = runDeck(
       deckOf([

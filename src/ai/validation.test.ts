@@ -34,7 +34,9 @@ function image(id: string, overrides: Partial<ImageElement> = {}): ImageElement 
   return {
     id,
     type: "image",
-    src: "./img.png",
+    // Default fixture uses a valid asset path so tests that don't
+    // care about src format are unaffected by the path-format check.
+    src: "./assets/img.png",
     position: { x: 0, y: 0 },
     size: { w: 100, h: 100 },
     ...overrides,
@@ -551,5 +553,113 @@ describe("resolveOverlaps", () => {
     expect(p.y).toBeGreaterThanOrEqual(0);
     expect(p.x + 300).toBeLessThanOrEqual(960);
     expect(p.y + 200).toBeLessThanOrEqual(540);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Asset path format — image, video, slide.background.image
+// ─────────────────────────────────────────────────────────────────
+
+describe("validateDeck — asset path format", () => {
+  it("flags image element with bare filename src", () => {
+    const d = deck([
+      slide("s1", [text("t1", "anchor"), image("img", { src: "interference.png" })]),
+    ]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /must start with \.\/assets\//)).toBe(true);
+    expect(findIssue(result, /interference\.png/)).toBe(true);
+  });
+
+  it("flags image src missing the assets directory", () => {
+    const d = deck([
+      slide("s1", [text("t1", "anchor"), image("img", { src: "/images/foo.png" })]),
+    ]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /must start with \.\/assets\//)).toBe(true);
+  });
+
+  it("flags video element with bare filename src", () => {
+    const d = deck([
+      slide("s1", [
+        text("t1", "anchor"),
+        {
+          id: "v1",
+          type: "video",
+          src: "clip.mp4",
+          position: { x: 0, y: 0 },
+          size: { w: 200, h: 150 },
+        } as unknown as SlideElement,
+      ]),
+    ]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /video element src "clip\.mp4"/)).toBe(true);
+  });
+
+  it("flags slide background image with bare filename", () => {
+    const d = deck([slide("s1", [text("t1", "anchor")], { background: { image: "background.png" } })]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /Slide background image "background\.png"/)).toBe(true);
+  });
+
+  it("accepts the four legal prefixes for image src", () => {
+    for (const src of [
+      "./assets/foo.png",
+      "/assets/proj/foo.png",
+      "https://example.com/foo.png",
+      "data:image/png;base64,iVBORw0KGgo=",
+    ]) {
+      const d = deck([slide("s1", [text("t1", "anchor"), image("img", { src })])]);
+      const result = validateDeck(d);
+      const offending = result.issues.filter((i) => /must start with \.\/assets\//.test(i.message));
+      expect(offending, `should accept ${src}`).toHaveLength(0);
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Empty slide / interrupted generation (api3_1 benchmark failure)
+// ─────────────────────────────────────────────────────────────────
+
+describe("validateDeck — empty slide detection", () => {
+  it("flags slide with zero elements as an error", () => {
+    const d = deck([slide("s1", [])]);
+    const result = validateDeck(d);
+    const issue = result.issues.find((i) => /zero elements/.test(i.message));
+    expect(issue).toBeDefined();
+    expect(issue!.severity).toBe("error");
+    expect(issue!.message).toMatch(/Slide "s1"/);
+  });
+
+  it("flags slide with notes but no elements with a distinct interrupted-generation message", () => {
+    // The api3_1 benchmark failure shape exactly: presenter notes
+    // present, elements left as []. The model walked away thinking
+    // s1 was complete because the validator never spoke up.
+    const d = deck([
+      slide("s1", [], {
+        notes: "Welcome to the presentation. This deck covers the basics.",
+      }),
+    ]);
+    const result = validateDeck(d);
+    const issue = result.issues.find((i) => /notes but no visible elements/.test(i.message));
+    expect(issue).toBeDefined();
+    expect(issue!.severity).toBe("error");
+    expect(issue!.message).toMatch(/interrupted/);
+    // Distinct from the bare-empty case so the AI's mental model
+    // can branch on the right corrective action.
+    const bareEmpty = result.issues.filter((i) => /zero elements/.test(i.message));
+    expect(bareEmpty).toHaveLength(0);
+  });
+
+  it("ignores notes that are only whitespace (treats as no notes)", () => {
+    const d = deck([slide("s1", [], { notes: "   \n  " })]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /zero elements/)).toBe(true);
+    expect(findIssue(result, /interrupted/)).toBe(false);
+  });
+
+  it("accepts a slide with at least one element", () => {
+    const d = deck([slide("s1", [text("t1", "hello")])]);
+    const result = validateDeck(d);
+    expect(findIssue(result, /zero elements|interrupted/)).toBe(false);
   });
 });
