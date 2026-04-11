@@ -1,5 +1,5 @@
 {
-  "deckode": "1.0",
+  "version": "1.0",
   "meta": {
     "title": "Reinforcement Learning Basics",
     "author": "test-pipeline",

@@ -15,7 +15,7 @@
       {
         "id": "code-block",
         "type": "code",
-        "content": "function hello() {\n  console.log(\"Hello, Deckode!\");\n}",
+        "content": "function hello() {\n  console.log(\"Hello, TEKKAL!\");\n}",
         "position": { "x": 60, "y": 100 },
         "size": { "w": 840, "h": 380 },
         "style": { "language": "typescript", "theme": "github-dark" }

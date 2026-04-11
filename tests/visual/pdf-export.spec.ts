@@ -24,7 +24,7 @@ test.describe("PDF Export Visual Tests", () => {
   test("test fixture deck is valid JSON", () => {
     const raw = fs.readFileSync(TEST_DECK_PATH, "utf-8");
     const deck = JSON.parse(raw);
-    expect(deck.deckode).toBe("1.0");
+    expect(deck.version).toBe("1.0");
     expect(deck.meta.title).toBe("Test Deck");
     expect(deck.slides).toHaveLength(4);
     const hidden = deck.slides.filter(

@@ -1,7 +1,7 @@
 {
-  "deckode": "0.1.0",
+  "version": "0.1.0",
   "meta": {
-    "title": "Deckode Feature Showcase",
+    "title": "TEKKAL Feature Showcase",
     "author": "Son",
     "aspectRatio": "16:9"
   },
@@ -44,7 +44,7 @@
         {
           "id": "title-text",
           "type": "text",
-          "content": "# Deckode Feature Showcase",
+          "content": "# TEKKAL Feature Showcase",
           "position": {
             "x": 130,
             "y": 140
@@ -226,7 +226,7 @@
         {
           "id": "tm-markdown",
           "type": "text",
-          "content": "**Rich text** supports *italic*, `inline code`, ~~strikethrough~~, and [links](https://deckode.dev).\n\nInline math: the quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ renders in text flow.",
+          "content": "**Rich text** supports *italic*, `inline code`, ~~strikethrough~~, and [links](https://tekkal.dev).\n\nInline math: the quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ renders in text flow.",
           "position": {
             "x": 60,
             "y": 100

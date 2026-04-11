@@ -61,8 +61,8 @@ export async function exportToPptx(
   onProgress?: (current: number, total: number) => void,
 ): Promise<void> {
   const pres = new PptxGenJS();
-  pres.defineLayout({ name: "DECKODE", width: SLIDE_W, height: SLIDE_H });
-  pres.layout = "DECKODE";
+  pres.defineLayout({ name: "TEKKAL", width: SLIDE_W, height: SLIDE_H });
+  pres.layout = "TEKKAL";
   pres.title = deck.meta.title;
   if (deck.meta.author) pres.author = deck.meta.author;
 

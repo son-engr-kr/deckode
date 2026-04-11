@@ -33,9 +33,9 @@ test("render and compare both PDF exports side by side", async ({ page }) => {
   await page.goto("/");
   await page.waitForSelector(".h-screen", { timeout: 15_000 });
 
-  // Click on a project to open it — look for "deckode-intro" or any project button
+  // Click on a project to open it — look for "tekkal-intro" / legacy "deckode-intro" / any project button
   const projectButton = page.locator("button", {
-    hasText: /deckode-intro|example|muscle/,
+    hasText: /tekkal-intro|deckode-intro|example|muscle/,
   });
   const projectCount = await projectButton.count();
   if (projectCount > 0) {

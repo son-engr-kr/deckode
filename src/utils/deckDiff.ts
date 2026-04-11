@@ -213,7 +213,7 @@ export function mergeDeck(base: Deck, local: Deck, remote: Deck): MergeResult {
           // Only local changed → keep local
           mergedElements.push(structuredClone(localEl));
         } else {
-          // Both changed → keep local (deckode user is actively editing)
+          // Both changed → keep local (tekkal user is actively editing)
           mergedElements.push(structuredClone(localEl));
         }
       }

@@ -49,7 +49,7 @@ test("export fidelity: canvas vs PDF image vs PDF native", async ({
 
   // Open a project if the project selector is shown
   const projectButton = page.locator("button", {
-    hasText: /deckode-intro|example|muscle/,
+    hasText: /tekkal-intro|deckode-intro|example|muscle/,
   });
   const projectCount = await projectButton.count();
   if (projectCount > 0) {
