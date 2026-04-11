@@ -737,6 +737,15 @@ export const useDeckStore = create<DeckState>()(
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
+            // Reject animations whose target doesn't resolve. The
+            // pipeline tool layer also checks this, but the store is
+            // the lower invariant: any direct caller (UI panel,
+            // future scripting hook) must not be able to introduce
+            // an orphan that the renderer will silently drop.
+            assert(
+              slide.elements.some((e) => e.id === animation.target),
+              `Animation target "${animation.target}" not found in slide "${slideId}"`,
+            );
             if (!slide.animations) slide.animations = [];
             slide.animations.push(animation);
             state.versionId += 1;
@@ -747,6 +756,14 @@ export const useDeckStore = create<DeckState>()(
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
             assert(slide.animations !== undefined && index >= 0 && index < slide.animations.length, `Animation index ${index} out of bounds`);
+            // Same orphan-target guard as addAnimation, but only when
+            // the patch actually changes target.
+            if (typeof patch.target === "string") {
+              assert(
+                slide.elements.some((e) => e.id === patch.target),
+                `Animation target "${patch.target}" not found in slide "${slideId}"`,
+              );
+            }
             Object.assign(slide.animations[index]!, patch);
             state.versionId += 1;
           }),
@@ -777,6 +794,15 @@ export const useDeckStore = create<DeckState>()(
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
+            // If the comment is anchored to an element, require the
+            // anchor to exist on this slide. A ghost anchor renders
+            // as a floating marker over empty canvas.
+            if (comment.elementId) {
+              assert(
+                slide.elements.some((e) => e.id === comment.elementId),
+                `Comment anchor "${comment.elementId}" not found in slide "${slideId}"`,
+              );
+            }
             if (!slide.comments) slide.comments = [];
             slide.comments.push(comment);
             state.versionId += 1;
@@ -964,6 +990,30 @@ export const useDeckStore = create<DeckState>()(
 
             // Replace the reference element with inlined elements
             slide.elements.splice(idx, 1, ...inlined);
+            // Animations and comments anchored to the now-vanished
+            // reference id would otherwise become orphans (animation
+            // silently dropped at render time, comment pinned to
+            // empty space). Re-anchor to the first inlined element
+            // when there is one — that's the position the user was
+            // most likely commenting on — otherwise drop / clear.
+            const firstInlinedId = newIds[0];
+            if (slide.animations) {
+              if (firstInlinedId) {
+                for (const a of slide.animations) {
+                  if (a.target === elementId) a.target = firstInlinedId;
+                }
+              } else {
+                slide.animations = slide.animations.filter((a) => a.target !== elementId);
+              }
+            }
+            if (slide.comments) {
+              for (const c of slide.comments) {
+                if (c.elementId === elementId) {
+                  if (firstInlinedId) c.elementId = firstInlinedId;
+                  else delete c.elementId;
+                }
+              }
+            }
             state.selectedElementIds = newIds;
             state.versionId += 1;
           }),

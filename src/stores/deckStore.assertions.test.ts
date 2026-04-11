@@ -154,6 +154,86 @@ describe("assertNoLineRotation — guards against arrow/line with rotation", () 
     }).toThrow(/already exists/i);
   });
 
+  it("rejects addAnimation targeting an element that does not exist", () => {
+    useDeckStore.getState().openProject("test", deck());
+    expect(() => {
+      useDeckStore.getState().addAnimation("s1", {
+        target: "ghost",
+        effect: "fadeIn",
+        trigger: "onEnter",
+      });
+    }).toThrow(/not found/i);
+  });
+
+  it("rejects updateAnimation that retargets to an element that does not exist", () => {
+    const d = deck();
+    d.slides[0]!.elements.push({
+      id: "e1",
+      type: "text",
+      content: "hi",
+      position: { x: 0, y: 0 },
+      size: { w: 100, h: 50 },
+    });
+    d.slides[0]!.animations = [{ target: "e1", effect: "fadeIn", trigger: "onEnter" }];
+    useDeckStore.getState().openProject("test", d);
+    expect(() => {
+      useDeckStore.getState().updateAnimation("s1", 0, { target: "ghost" });
+    }).toThrow(/not found/i);
+  });
+
+  it("rejects addComment anchored to an element that does not exist", () => {
+    useDeckStore.getState().openProject("test", deck());
+    expect(() => {
+      useDeckStore.getState().addComment("s1", {
+        id: "c1",
+        text: "hi",
+        elementId: "ghost",
+        createdAt: 1,
+      });
+    }).toThrow(/not found/i);
+  });
+
+  it("re-anchors animations and comments when detachReference inlines a component", () => {
+    // Set up: a component with one element, a slide that references
+    // it, and an animation + comment pinned to the reference's id.
+    const d = deck();
+    d.components = {
+      compA: {
+        id: "compA",
+        name: "C",
+        elements: [{
+          id: "compA-e0",
+          type: "text",
+          content: "inside",
+          position: { x: 0, y: 0 },
+          size: { w: 50, h: 20 },
+        }],
+      },
+    };
+    d.slides[0]!.elements.push({
+      id: "ref1",
+      type: "reference",
+      componentId: "compA",
+      position: { x: 0, y: 0 },
+      size: { w: 50, h: 20 },
+    });
+    useDeckStore.getState().openProject("test", d);
+    // Have to bypass the new addAnimation guard by inserting
+    // directly into the deck via openProject above. Now the animation
+    // pre-exists pointing at "ref1".
+    useDeckStore.setState((s) => {
+      s.deck!.slides[0]!.animations = [{ target: "ref1", effect: "fadeIn", trigger: "onEnter" }];
+      s.deck!.slides[0]!.comments = [{ id: "c1", elementId: "ref1", text: "fix", createdAt: 1 }];
+    });
+
+    useDeckStore.getState().detachReference("s1", "ref1");
+
+    const slide = useDeckStore.getState().deck!.slides[0]!;
+    const inlinedId = slide.elements[0]!.id;
+    expect(slide.animations![0]!.target).toBe(inlinedId);
+    expect(slide.comments![0]!.elementId).toBe(inlinedId);
+  });
+
   it("rejects update_element that adds rotation to an existing line shape", () => {
     useDeckStore.getState().openProject("test", deck());
     useDeckStore.getState().addElement("s1", {
