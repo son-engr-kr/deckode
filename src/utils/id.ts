@@ -113,17 +113,29 @@ export function cloneSlide(source: Slide): Slide {
     el.id = newId;
   }
 
-  // Remap animation targets
+  // Remap animation targets. Drop animations whose target was not
+  // in the source slide — keeping the old id would point at a real
+  // element on a DIFFERENT slide once the clone is added to a deck,
+  // a silent cross-slide leak.
   if (clone.animations) {
-    for (const anim of clone.animations) {
-      anim.target = idMap.get(anim.target) ?? anim.target;
-    }
+    clone.animations = clone.animations
+      .map((anim) => {
+        const remapped = idMap.get(anim.target);
+        return remapped ? { ...anim, target: remapped } : null;
+      })
+      .filter((a): a is NonNullable<typeof a> => a !== null);
   }
 
-  // Remap comment elementId references
+  // Remap comment elementId references. Stale anchors are cleared
+  // (not dropped) so the user keeps the comment text but it loses
+  // the cross-slide pointer.
   if (clone.comments) {
     for (const c of clone.comments) {
-      if (c.elementId) c.elementId = idMap.get(c.elementId) ?? c.elementId;
+      if (c.elementId) {
+        const remapped = idMap.get(c.elementId);
+        if (remapped) c.elementId = remapped;
+        else delete c.elementId;
+      }
       c.id = crypto.randomUUID();
     }
   }

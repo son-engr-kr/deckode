@@ -254,6 +254,30 @@ describe("mergeDeck adversarial — regression guards", () => {
     expect(result.conflicts).toHaveLength(0);
   });
 
+  it("reports conflict when local modifies a slide that remote deleted", () => {
+    // base = [s1, s2, s3], local modified s3, remote deleted s3.
+    // Previously the slide-order iteration only walked remote (since
+    // remote changed structure), so s3 was never visited and the
+    // local modification silently disappeared from the merged deck.
+    const base = deck([slide("s1"), slide("s2"), slide("s3", [el("s3-e0", "base")])]);
+    const local = structuredClone(base);
+    (local.slides[2]!.elements[0]! as TextElement).content = "local edit";
+    const remote = structuredClone(base);
+    remote.slides.splice(2, 1); // remote deleted s3
+
+    const result = mergeDeck(base, local, remote);
+    // The local modification on s3 must not vanish: either keep it
+    // in the merged output as a conflict-with-keep-local, or report
+    // a slide-level conflict so the user is asked. Either way, the
+    // merge must NOT silently produce [s1, s2] only.
+    if (result.merged) {
+      const ids = result.merged.slides.map((s) => s.id);
+      expect(ids).toContain("s3");
+    } else {
+      expect(result.hasSlideConflicts || result.conflicts.length > 0).toBe(true);
+    }
+  });
+
   it("accepts mixed scenario: local adds, remote modifies unrelated", () => {
     const base = deck([slide("s1", [el("e1")])]);
     const local = structuredClone(base);

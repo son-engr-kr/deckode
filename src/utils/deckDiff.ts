@@ -114,8 +114,19 @@ export function mergeDeck(base: Deck, local: Deck, remote: Deck): MergeResult {
     return { merged: null, conflicts: [], hasSlideConflicts: true };
   }
 
-  // Use remote slide order if it changed, otherwise local
-  const slideOrder = remoteIds !== baseIds ? remote.slides.map((s) => s.id) : local.slides.map((s) => s.id);
+  // Use remote slide order if it changed, otherwise local. Then
+  // append any slide ids that exist on the side we didn't pick so
+  // that local-modified-remote-deleted (and the symmetric remote-
+  // modified-local-deleted) slides are still visited and can be
+  // resolved by the per-slide branches below. Without this, picking
+  // remote order silently dropped any slide that local had modified
+  // but remote had deleted.
+  const slideOrderBase = remoteIds !== baseIds ? remote.slides.map((s) => s.id) : local.slides.map((s) => s.id);
+  const slideOrder: string[] = [...slideOrderBase];
+  const seenInOrder = new Set(slideOrder);
+  for (const s of local.slides) if (!seenInOrder.has(s.id)) { slideOrder.push(s.id); seenInOrder.add(s.id); }
+  for (const s of remote.slides) if (!seenInOrder.has(s.id)) { slideOrder.push(s.id); seenInOrder.add(s.id); }
+  for (const s of base.slides) if (!seenInOrder.has(s.id)) { slideOrder.push(s.id); seenInOrder.add(s.id); }
   const mergedSlides: Slide[] = [];
 
   for (const slideId of slideOrder) {

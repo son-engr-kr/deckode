@@ -176,6 +176,45 @@ describe("cloneSlide — regression guards", () => {
     expect(clone.comments![0]!.elementId).toBe(clone.elements[0]!.id);
   });
 
+  it("does not preserve animation targets that point at non-cloned ids", () => {
+    // The original slide had a stale animation referencing an
+    // element id that is no longer in the slide (perhaps the user
+    // deleted that element). cloneSlide used to fall back to the
+    // old id when idMap.get returned undefined, so the cloned slide
+    // carried an animation pointing at a real element on a DIFFERENT
+    // slide elsewhere in the deck — a cross-slide leak.
+    const source = slide("s1", [el("e1")], {
+      animations: [
+        { target: "e1", effect: "fadeIn", trigger: "onEnter" } as Animation,
+        { target: "e-orphan", effect: "fadeIn", trigger: "onClick" } as Animation,
+      ],
+    });
+    const clone = cloneSlide(source);
+    // The valid animation must be remapped to the new id.
+    expect(clone.animations![0]!.target).toBe(clone.elements[0]!.id);
+    // The orphan must NOT keep the old id verbatim — it should
+    // either be dropped or cleared, not silently re-target whatever
+    // happens to live at "e-orphan" elsewhere in the deck.
+    const orphan = clone.animations![1];
+    expect(orphan === undefined || orphan.target !== "e-orphan").toBe(true);
+  });
+
+  it("does not preserve comment elementId anchors that point at non-cloned ids", () => {
+    const source = slide("s1", [el("e1")], {
+      comments: [
+        { id: "c1", elementId: "e1", text: "valid", createdAt: 1 },
+        { id: "c2", elementId: "e-orphan", text: "stale anchor", createdAt: 2 },
+      ],
+    });
+    const clone = cloneSlide(source);
+    expect(clone.comments![0]!.elementId).toBe(clone.elements[0]!.id);
+    // The stale-anchored comment should keep its text but lose the
+    // anchor (or be removed entirely) so it doesn't pin itself to
+    // the wrong element after the clone is added to a deck.
+    const stale = clone.comments!.find((c) => c.text === "stale anchor");
+    expect(stale === undefined || stale.elementId === undefined).toBe(true);
+  });
+
   it("strips the _ref field on the clone (clone belongs to a new file)", () => {
     const source = slide(
       "s1",

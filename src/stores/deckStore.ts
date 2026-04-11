@@ -516,6 +516,17 @@ export const useDeckStore = create<DeckState>()(
           set((state) => {
             assert(state.deck !== null, "No deck loaded");
             const slide = getSlide(state.deck.slides, slideId);
+            // Reject unknown ids up-front. The previous loop silently
+            // skipped any id that didn't resolve, so a typo or stale
+            // id would let the function happily produce a "group" of
+            // one (or even zero) live elements after the size check
+            // counted the ghost ids.
+            for (const id of elementIds) {
+              assert(
+                slide.elements.some((e) => e.id === id),
+                `Element id "${id}" not found in slide "${slideId}"`,
+              );
+            }
             // Expand to include all members of any partially-selected group
             const expandedIds = new Set(elementIds);
             for (const elId of elementIds) {
