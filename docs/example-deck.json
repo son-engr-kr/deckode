@@ -1,0 +1,244 @@
+{
+  "version": "0.1.0",
+  "meta": {
+    "title": "TEKKAL Example Deck",
+    "author": "TEKKAL Reference",
+    "aspectRatio": "16:9"
+  },
+  "theme": {
+    "slide": { "background": { "color": "#ffffff" } },
+    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 20, "color": "#1e293b" },
+    "code": { "theme": "github-light", "fontSize": 14 },
+    "shape": { "stroke": "#334155", "strokeWidth": 2 },
+    "table": { "headerBackground": "#f1f5f9", "borderColor": "#e2e8f0" }
+  },
+  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number" },
+  "slides": [
+    {
+      "id": "s1",
+      "background": { "color": "#ffffff" },
+      "hidePageNumber": true,
+      "transition": { "type": "fade", "duration": 300 },
+      "elements": [
+        {
+          "id": "s1-title",
+          "type": "text",
+          "content": "# TEKKAL Element Reference",
+          "position": { "x": 60, "y": 60 },
+          "size": { "w": 840, "h": 70 },
+          "style": { "fontSize": 36, "color": "#1e293b", "align": "center" }
+        },
+        {
+          "id": "s1-subtitle",
+          "type": "text",
+          "content": "Every element type in the exact shape the renderer accepts",
+          "position": { "x": 60, "y": 140 },
+          "size": { "w": 840, "h": 32 },
+          "style": { "fontSize": 18, "color": "#64748b", "align": "center" }
+        },
+        {
+          "id": "s1-eq",
+          "type": "text",
+          "content": "Inline math: $E = mc^2$. Display math on its own line: $$\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}$$",
+          "position": { "x": 60, "y": 200 },
+          "size": { "w": 840, "h": 80 },
+          "style": { "fontSize": 16, "color": "#334155" }
+        },
+        {
+          "id": "s1-bullets",
+          "type": "text",
+          "content": "**Bullets** with markdown:\n- Bold via `**bold**`\n- Italic via `*italic*`\n- Inline code via backticks\n- Math via `$...$` (single dollar) or `$$...$$` (display)",
+          "position": { "x": 60, "y": 290 },
+          "size": { "w": 420, "h": 200 },
+          "style": { "fontSize": 14, "color": "#334155" }
+        },
+        {
+          "id": "s1-image",
+          "type": "image",
+          "src": "./assets/example.png",
+          "alt": "Reference image — replace src with a real ./assets/... path",
+          "position": { "x": 510, "y": 290 },
+          "size": { "w": 390, "h": 200 }
+        }
+      ],
+      "animations": [
+        { "target": "s1-title", "effect": "fadeIn", "trigger": "onEnter", "duration": 400 },
+        { "target": "s1-subtitle", "effect": "fadeIn", "trigger": "onEnter", "duration": 400, "delay": 200 }
+      ]
+    },
+    {
+      "id": "s2",
+      "background": { "color": "#ffffff" },
+      "transition": { "type": "slide", "duration": 300 },
+      "elements": [
+        {
+          "id": "s2-heading",
+          "type": "text",
+          "content": "## Code, table, shapes",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 40 },
+          "style": { "fontSize": 24, "color": "#1e293b" }
+        },
+        {
+          "id": "s2-code",
+          "type": "code",
+          "language": "python",
+          "content": "def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint([fib(i) for i in range(10)])",
+          "position": { "x": 60, "y": 90 },
+          "size": { "w": 420, "h": 200 }
+        },
+        {
+          "id": "s2-table",
+          "type": "table",
+          "columns": [
+            { "key": "name", "label": "Element" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "name": "text", "purpose": "Markdown + KaTeX prose" },
+            { "name": "code", "purpose": "Syntax-highlighted snippet" },
+            { "name": "table", "purpose": "Tabular data" },
+            { "name": "shape", "purpose": "Boxes, lines, arrows" }
+          ],
+          "position": { "x": 510, "y": 90 },
+          "size": { "w": 390, "h": 200 },
+          "style": { "fontSize": 14 }
+        },
+        {
+          "id": "s2-rect",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": { "x": 60, "y": 320 },
+          "size": { "w": 200, "h": 140 },
+          "style": {
+            "fill": "#eff6ff",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "rx": 8
+          }
+        },
+        {
+          "id": "s2-rect-label",
+          "type": "text",
+          "content": "shape: rectangle",
+          "position": { "x": 60, "y": 380 },
+          "size": { "w": 200, "h": 24 },
+          "style": { "fontSize": 14, "color": "#1e3a8a", "align": "center" }
+        },
+        {
+          "id": "s2-line",
+          "type": "shape",
+          "shape": "line",
+          "position": { "x": 290, "y": 320 },
+          "size": { "w": 280, "h": 140 },
+          "style": {
+            "stroke": "#0f766e",
+            "strokeWidth": 3,
+            "waypoints": [
+              { "x": 0, "y": 0 },
+              { "x": 140, "y": 70 },
+              { "x": 280, "y": 0 }
+            ]
+          }
+        },
+        {
+          "id": "s2-line-label",
+          "type": "text",
+          "content": "shape: line (style.waypoints)",
+          "position": { "x": 290, "y": 460 },
+          "size": { "w": 280, "h": 24 },
+          "style": { "fontSize": 14, "color": "#0f766e", "align": "center" }
+        },
+        {
+          "id": "s2-arrow",
+          "type": "shape",
+          "shape": "arrow",
+          "position": { "x": 600, "y": 320 },
+          "size": { "w": 300, "h": 140 },
+          "style": {
+            "stroke": "#7c3aed",
+            "strokeWidth": 3,
+            "waypoints": [
+              { "x": 0, "y": 70 },
+              { "x": 300, "y": 70 }
+            ]
+          }
+        },
+        {
+          "id": "s2-arrow-label",
+          "type": "text",
+          "content": "shape: arrow (waypoints, no rotation)",
+          "position": { "x": 600, "y": 460 },
+          "size": { "w": 300, "h": 24 },
+          "style": { "fontSize": 14, "color": "#5b21b6", "align": "center" }
+        }
+      ],
+      "animations": [
+        { "target": "s2-code", "effect": "fadeIn", "trigger": "onClick" },
+        { "target": "s2-table", "effect": "fadeIn", "trigger": "onClick" }
+      ],
+      "notes": "Step through the layout: [step:1] introduce the code block; [step:2] reveal the comparison table."
+    },
+    {
+      "id": "s3",
+      "background": { "color": "#ffffff" },
+      "transition": { "type": "fade", "duration": 300 },
+      "elements": [
+        {
+          "id": "s3-heading",
+          "type": "text",
+          "content": "## TikZ and 3D",
+          "position": { "x": 60, "y": 30 },
+          "size": { "w": 840, "h": 40 },
+          "style": { "fontSize": 24, "color": "#1e293b" }
+        },
+        {
+          "id": "s3-tikz",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}\n  \\path (0,0) rectangle (4,3);\n  \\draw[thick,blue] (0,0) -- (4,3);\n  \\draw[thick,red] (0,3) -- (4,0);\n  \\node at (2,1.5) {\\small TikZ bounding box};\n\\end{tikzpicture}",
+          "position": { "x": 60, "y": 90 },
+          "size": { "w": 420, "h": 280 }
+        },
+        {
+          "id": "s3-tikz-caption",
+          "type": "text",
+          "content": "tikz content must include `\\path ... rectangle` so the renderer can size the figure.",
+          "position": { "x": 60, "y": 380 },
+          "size": { "w": 420, "h": 60 },
+          "style": { "fontSize": 13, "color": "#64748b" }
+        },
+        {
+          "id": "s3-scene",
+          "type": "scene3d",
+          "scene": {
+            "orbitControls": false,
+            "camera": { "position": [3, 3, 5], "lookAt": [0, 0, 0], "fov": 50 },
+            "lights": [
+              { "type": "ambient", "intensity": 0.4 },
+              { "type": "directional", "position": [5, 5, 5], "intensity": 0.8 }
+            ],
+            "objects": [
+              {
+                "id": "cube",
+                "type": "mesh",
+                "geometry": { "type": "box", "args": [2, 2, 2] },
+                "material": { "type": "standard", "color": "#3b82f6" },
+                "position": [0, 0, 0]
+              }
+            ]
+          },
+          "position": { "x": 510, "y": 90 },
+          "size": { "w": 390, "h": 280 }
+        },
+        {
+          "id": "s3-scene-caption",
+          "type": "text",
+          "content": "scene3d objects render via three.js. Keep `orbitControls: false` so slide navigation keeps working.",
+          "position": { "x": 510, "y": 380 },
+          "size": { "w": 390, "h": 60 },
+          "style": { "fontSize": 13, "color": "#64748b" }
+        }
+      ]
+    }
+  ]
+}

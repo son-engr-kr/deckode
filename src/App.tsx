@@ -11,9 +11,10 @@ import { ViteApiAdapter } from "@/adapters/viteApi";
 import { ReadOnlyAdapter } from "@/adapters/readOnly";
 import { loadDeckFromDisk } from "@/utils/api";
 import { parseGitHubParam, buildGitHubRawBase, fetchGitHubDeck } from "@/utils/github";
-import { restoreHandle } from "@/utils/handleStore";
+import { restoreHandle, clearHandle, setTabProject, skipNextRestore } from "@/utils/handleStore";
 import type { FileSystemAdapter } from "@/adapters/types";
 import { FsAccessAdapter } from "@/adapters/fsAccess";
+import { ProjectLoadErrorBoundary } from "@/components/ProjectLoadErrorBoundary";
 import { normalizeDeckLegacyFields, type Deck } from "@/types/deck";
 import { assert } from "@/utils/assert";
 import { fnv1aHash } from "@/utils/hash";
@@ -49,6 +50,11 @@ export function App() {
   const [externalChange, setExternalChange] = useState(false);
   const [mergedToast, setMergedToast] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Recovery banner shown on the project picker after a project
+  // either failed to load (parse error) or threw at first render
+  // (broken deck.json from an agentic tool benchmark, etc.). Set
+  // by the async load catch and by ProjectLoadErrorBoundary.
+  const [projectCrash, setProjectCrash] = useState<{ project: string; message: string } | null>(null);
   const mergedToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Synchronously detect if we need to auto-open from URL so we can show
@@ -150,8 +156,40 @@ export function App() {
 
     tryViteApi()
       .then((ok) => ok || tryFsAccessRestore())
-      .catch(() => false)
+      .catch((err) => {
+        // Async load failure (broken JSON, unreadable file, schema
+        // crash inside loadDeck). Clear the persisted handle and
+        // fall back to the project picker so the user is not stuck
+        // in a reload loop on the same broken project.
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[auto-open] project load failed:", err);
+        recoverFromProjectCrash(project, message);
+        return false;
+      })
       .then(() => setLoading(false));
+  }, []);
+
+  // Centralized recovery: clear every persisted "last opened project"
+  // bit (IndexedDB handle, sessionStorage tab project, in-memory store
+  // adapter + deck) and surface a banner on the next render. Both the
+  // async load catch and the ErrorBoundary go through here so the
+  // recovery path stays in one place.
+  const recoverFromProjectCrash = useCallback((projectName: string, message: string) => {
+    skipNextRestore();
+    setTabProject(null);
+    void clearHandle();
+    setStoreAdapter(null);
+    setAdapter(null);
+    useDeckStore.getState().closeProject();
+    // Strip ?project=... from the URL so a manual refresh does not
+    // immediately re-trigger the auto-restore effect.
+    if (IS_DEV) {
+      const params = new URLSearchParams(window.location.search);
+      params.delete("project");
+      const qs = params.toString();
+      history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    }
+    setProjectCrash({ project: projectName, message });
   }, []);
 
   // Sync URL when project changes (dev mode only).
@@ -369,10 +407,36 @@ export function App() {
 
   if (!currentProject) {
     return (
-      <ProjectSelector
-        isDevMode={IS_DEV}
-        onAdapterReady={handleAdapterReady}
-      />
+      <>
+        {projectCrash && (
+          <div className="fixed top-3 left-1/2 -translate-x-1/2 z-[9999] max-w-2xl px-4 py-3 rounded-lg bg-red-600/95 text-white text-sm shadow-xl border border-red-400">
+            <div className="flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold mb-0.5">
+                  Project &quot;{projectCrash.project}&quot; failed to load
+                </div>
+                <div className="text-red-100 text-xs break-words font-mono">
+                  {projectCrash.message}
+                </div>
+                <div className="text-red-200 text-[11px] mt-1">
+                  Auto-reopen has been cleared. Pick a project below — the failed one will not reopen on reload.
+                </div>
+              </div>
+              <button
+                onClick={() => setProjectCrash(null)}
+                className="shrink-0 text-red-200 hover:text-white"
+                title="Dismiss"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        )}
+        <ProjectSelector
+          isDevMode={IS_DEV}
+          onAdapterReady={handleAdapterReady}
+        />
+      </>
     );
   }
 
@@ -415,9 +479,18 @@ export function App() {
           </button>
         </div>
       )}
-      {isAudiencePopup ? <PresenterView /> : import.meta.env.DEV
-        ? <GitDiffProvider><EditorLayout /></GitDiffProvider>
-        : <EditorLayout />}
+      <ProjectLoadErrorBoundary
+        // Re-mount on project switch so a previous crash does not stick.
+        key={currentProject}
+        onError={(err) => {
+          const message = err instanceof Error ? err.message : String(err);
+          recoverFromProjectCrash(currentProject, message);
+        }}
+      >
+        {isAudiencePopup ? <PresenterView /> : import.meta.env.DEV
+          ? <GitDiffProvider><EditorLayout /></GitDiffProvider>
+          : <EditorLayout />}
+      </ProjectLoadErrorBoundary>
     </AdapterProvider>
   );
 }

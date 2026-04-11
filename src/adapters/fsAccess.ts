@@ -28,6 +28,8 @@ import guide08a from "../../docs/guide/08a-guidelines.md?raw";
 import guide08b from "../../docs/guide/08b-style-preferences.md?raw";
 import guide08c from "../../docs/guide/08c-visual-style.md?raw";
 import guide09 from "../../docs/guide/09-example.md?raw";
+import tekkalValidateScript from "../../scripts/tekkal-validate.mjs?raw";
+import exampleDeckRaw from "../../docs/example-deck.json?raw";
 
 const BUNDLED_GUIDE_FILES: Record<string, string> = {
   "01-overview.md": guide01,
@@ -162,10 +164,19 @@ export class FsAccessAdapter implements FileSystemAdapter {
     // Write docs/
     const docsDir = await projectDir.getDirectoryHandle("docs", { create: true });
     await writeTextFile(docsDir, "tekkal-guide.md", aiGuideText);
+    // Reference deck for agentic tools that follow examples better
+    // than specs. Validates clean against tekkal-validate.mjs and
+    // exercises every element type in canonical shape.
+    await writeTextFile(docsDir, "example-deck.json", exampleDeckRaw);
     const guideDir = await docsDir.getDirectoryHandle("guide", { create: true });
     for (const [name, content] of Object.entries(BUNDLED_GUIDE_FILES)) {
       await writeTextFile(guideDir, name, content);
     }
+
+    // Standalone validator CLI at the project root. Agentic tools
+    // run `node tekkal-validate.mjs deck.json` and parse the report
+    // to drive their own fix loop.
+    await writeTextFile(projectDir, "tekkal-validate.mjs", tekkalValidateScript);
 
     return projectDir;
   }
