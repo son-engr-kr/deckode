@@ -268,17 +268,28 @@ export function AiChatPanel() {
       {sessions.length > 1 && (
         <div className="flex items-center gap-1 px-2 py-1 border-b border-zinc-800 overflow-x-auto">
           {sessions.map((s) => (
-            <button
+            <div
               key={s.id}
-              onClick={() => useChatStore.getState().switchSession(s.id)}
-              className={`text-[9px] px-2 py-0.5 rounded whitespace-nowrap transition-colors ${
+              className={`inline-flex items-center gap-0.5 rounded whitespace-nowrap text-[9px] transition-colors ${
                 s.id === currentSessionId
                   ? "bg-blue-600/20 text-blue-400"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              {s.messages.length > 0 ? s.messages[0]!.content.slice(0, 20) + (s.messages[0]!.content.length > 20 ? "..." : "") : "New"}
-            </button>
+              <button
+                onClick={() => useChatStore.getState().switchSession(s.id)}
+                className="px-2 py-0.5"
+              >
+                {s.messages.length > 0 ? s.messages[0]!.content.slice(0, 20) + (s.messages[0]!.content.length > 20 ? "..." : "") : "New"}
+              </button>
+              <button
+                onClick={() => useChatStore.getState().deleteSession(s.id)}
+                className="pr-1.5 py-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                title="Delete session"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       )}
