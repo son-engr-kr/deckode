@@ -154,8 +154,8 @@ export function App() {
       return true;
     };
 
-    tryViteApi()
-      .then((ok) => ok || tryFsAccessRestore())
+    tryFsAccessRestore()
+      .then((ok) => ok || tryViteApi())
       .catch((err) => {
         // Async load failure (broken JSON, unreadable file, schema
         // crash inside loadDeck). Clear the persisted handle and

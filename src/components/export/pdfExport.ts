@@ -22,6 +22,7 @@ import type {
   ReferenceElement,
   VideoElement as VideoElementType,
   VideoStyle,
+  Scene3DElement as Scene3DElementType,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
@@ -46,6 +47,7 @@ import {
 } from "@/utils/exportUtils";
 import { computeBounds } from "@/utils/bounds";
 import { resolveMarkers } from "@/utils/lineMarkers";
+import { renderScene3DToDataUrl, restoreLiveContexts } from "@/utils/renderScene3D";
 
 const MIN_FONT_SIZE = 6;
 const CAPTURE_SCALE = 2;
@@ -205,6 +207,8 @@ export async function exportToPdf(
     opts?.onProgress?.(i + 1, slides.length);
   }
 
+  restoreLiveContexts();
+
   const name = (deck.meta.title || "presentation").replace(
     /[^a-zA-Z0-9_-]/g,
     "_",
@@ -256,9 +260,24 @@ export async function captureSlideToDataUrl(
   wrapper.appendChild(ctr);
   document.body.appendChild(wrapper);
 
+  // Track scene3d elements for post-capture compositing.
+  // html-to-image can't reliably embed large WebGL data-URL images inside
+  // its SVG foreignObject clone, so we render them separately and composite
+  // onto the captured bitmap afterwards.
+  const scene3dElements: Scene3DElementType[] = [];
+
   // Build each element as a positioned child of the slide container
   for (const el of slide.elements) {
     try {
+      // Scene3D: add a background-only placeholder; real render composited later
+      if (el.type === "scene3d") {
+        scene3dElements.push(el as Scene3DElementType);
+        const ph = document.createElement("div");
+        ph.style.cssText = `position:absolute;left:${el.position.x}px;top:${el.position.y}px;width:${el.size.w}px;height:${el.size.h}px;background:${(el as Scene3DElementType).scene?.background ?? "#1a1a2e"}`;
+        ctr.appendChild(ph);
+        continue;
+      }
+
       const node = await buildElement(el, deck, adapter);
       if (!node) continue;
       node.style.position = "absolute";
@@ -347,6 +366,16 @@ export async function captureSlideToDataUrl(
   }
 
   wrapper.remove();
+
+  // Composite scene3d renders onto the captured image via a 2D canvas.
+  // This bypasses html-to-image entirely for WebGL content.
+  if (scene3dElements.length > 0 && dataUrl!) {
+    const composited = await compositeScene3D(
+      dataUrl!, scene3dElements, captureScale,
+    );
+    if (composited) return composited;
+  }
+
   return dataUrl!;
 }
 
@@ -417,6 +446,7 @@ async function buildElement(
       return buildMermaid(el);
     case "video":
       return await buildVideo(el as VideoElementType, deck, adapter);
+    // scene3d is handled via post-capture compositing, not buildElement
     case "reference":
       return await buildReference(el as ReferenceElement, deck, adapter);
     default:
@@ -505,8 +535,10 @@ async function buildCode(el: CodeElement, deck: Deck): Promise<HTMLElement> {
     d.innerHTML = html;
     const pre = d.querySelector("pre");
     if (pre instanceof HTMLElement) {
+      // Preserve the background-color that Shiki set on the <pre> before overwriting styles
+      const bg = pre.style.backgroundColor || "";
       pre.style.cssText =
-        "height:100%;width:100%;padding:16px;margin:0;overflow:auto;border-radius:0";
+        `height:100%;width:100%;padding:16px;margin:0;overflow:hidden;border-radius:0${bg ? `;background-color:${bg}` : ""}`;
     }
     const code = d.querySelector("code");
     if (code instanceof HTMLElement) {
@@ -920,6 +952,55 @@ function buildMermaid(el: MermaidElement): HTMLElement {
     d.style.fontSize = "14px";
   }
   return d;
+}
+
+// ---- Scene3D post-capture compositing ----
+
+async function compositeScene3D(
+  baseDataUrl: string,
+  elements: Scene3DElementType[],
+  scale: number,
+): Promise<string | null> {
+  // Load the base slide image
+  const baseImg = new Image();
+  const baseLoaded = await new Promise<boolean>((resolve) => {
+    baseImg.onload = () => resolve(true);
+    baseImg.onerror = () => resolve(false);
+    baseImg.src = baseDataUrl;
+  });
+  if (!baseLoaded) return null;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = baseImg.naturalWidth;
+  canvas.height = baseImg.naturalHeight;
+  const ctx = canvas.getContext("2d")!;
+
+  // Draw the base slide
+  ctx.drawImage(baseImg, 0, 0);
+
+  // Draw each 3D element at its position
+  for (const el of elements) {
+    const dataUrl = await renderScene3DToDataUrl(el);
+    if (!dataUrl) continue;
+
+    const img3d = new Image();
+    const loaded = await new Promise<boolean>((resolve) => {
+      img3d.onload = () => resolve(true);
+      img3d.onerror = () => resolve(false);
+      img3d.src = dataUrl;
+    });
+    if (!loaded) continue;
+
+    ctx.drawImage(
+      img3d,
+      el.position.x * scale,
+      el.position.y * scale,
+      el.size.w * scale,
+      el.size.h * scale,
+    );
+  }
+
+  return canvas.toDataURL("image/png");
 }
 
 // ---- Video (first frame or placeholder) ----

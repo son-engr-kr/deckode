@@ -4,18 +4,28 @@ import { OrbitControls, Text, Grid, Line } from "@react-three/drei";
 import * as THREE from "three";
 
 // ── Scene snapshot cache ──
-const scene3dFrameCache = new Map<string, string>();
+export const scene3dFrameCache = new Map<string, string>();
 
 /** Captures the WebGL canvas after first render and stores as blob URL */
 function FrameCapturer({ elementId }: { elementId: string }) {
   const { gl } = useThree();
-  const captured = useRef(false);
+  const frameCount = useRef(0);
 
   useFrame(() => {
-    if (captured.current || scene3dFrameCache.has(elementId)) return;
-    captured.current = true;
+    if (scene3dFrameCache.has(elementId)) return;
+    const ctx = gl.getContext();
+    if (ctx.isContextLost()) { frameCount.current = 0; return; }
+
+    // Wait a few frames for shaders to compile and the scene to fully render.
+    // The first 1-2 frames often produce a blank or incomplete canvas.
+    frameCount.current++;
+    if (frameCount.current < 5) return;
+
     try {
-      const dataUrl = gl.domElement.toDataURL("image/jpeg", 0.7);
+      const dataUrl = gl.domElement.toDataURL("image/png");
+      // A real rendered scene produces a much larger PNG than a blank canvas.
+      // If the result is suspiciously small, skip and retry next frame.
+      if (dataUrl.length < 5000) return;
       scene3dFrameCache.set(elementId, dataUrl);
     } catch { /* security error on tainted canvas */ }
   });

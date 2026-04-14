@@ -46,6 +46,8 @@ import {
   rasterizeKatexToBase64,
   rasterizeSvgToBase64,
 } from "@/utils/rasterize";
+import type { Scene3DElement as Scene3DElementType } from "@/types/deck";
+import { renderScene3DToDataUrl, restoreLiveContexts } from "@/utils/renderScene3D";
 
 const SLIDE_W = 10; // inches (standard 16:9 widescreen)
 const SLIDE_H = 5.625;
@@ -145,6 +147,8 @@ export async function exportToPptx(
     onProgress?.(si + 1, visibleSlides.length);
   }
 
+  restoreLiveContexts();
+
   const filename = (deck.meta.title || "presentation").replace(
     /[^a-zA-Z0-9_-]/g,
     "_",
@@ -197,7 +201,7 @@ async function addElement(
       await addMermaid(slide, el, x, y, w, h, rotate);
       break;
     case "scene3d":
-      addScene3DPlaceholder(slide, x, y, w, h, rotate);
+      await addScene3D(slide, el as Scene3DElementType, x, y, w, h, rotate);
       break;
     case "reference": {
       const refEl = el as ReferenceElement;
@@ -876,36 +880,34 @@ function addCustomPlaceholder(
 }
 
 // ========================================================================
-// Scene3D placeholder
+// Scene3D — offscreen Three.js render
 // ========================================================================
 
-function addScene3DPlaceholder(
+async function addScene3D(
   slide: PptxGenJS.Slide,
+  el: Scene3DElementType,
   x: number,
   y: number,
   w: number,
   h: number,
   rotate: number,
 ) {
+  const dataUrl = await renderScene3DToDataUrl(el);
+  if (dataUrl) {
+    slide.addImage({ data: dataUrl, x, y, w, h, rotate });
+    return;
+  }
+
+  // Fallback placeholder
   slide.addShape("rect" as PptxGenJS.ShapeType, {
-    x,
-    y,
-    w,
-    h,
+    x, y, w, h,
     fill: { color: "1A1A2E" },
     line: { color: "444466", width: 1 },
     rotate,
   });
   slide.addText("[3D Scene]", {
-    x,
-    y,
-    w,
-    h,
-    fontSize: 14,
-    fontFace: "Arial",
-    color: "8888AA",
-    align: "center",
-    valign: "middle",
-    rotate,
+    x, y, w, h,
+    fontSize: 14, fontFace: "Arial", color: "8888AA",
+    align: "center", valign: "middle", rotate,
   });
 }

@@ -19,6 +19,7 @@ import { exportToPdf } from "@/components/export/pdfExport";
 import { exportToNativePdf } from "@/components/export/pdfNativeExport";
 import { exportToPptx } from "@/components/export/pptxExport";
 import { exportSlidesToImages } from "@/components/export/imageExport";
+import { warmScene3DCache } from "@/utils/renderScene3D";
 import { useAdapter } from "@/contexts/AdapterContext";
 import { ProjectSettingsDialog } from "./ProjectSettingsDialog";
 import { AiChatPanel } from "./AiChatPanel";
@@ -609,7 +610,10 @@ export function EditorLayout() {
                     if (!deck) return;
                     const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label });
                     setExportProgress({ current: 0, total: deck.slides.length, label });
-                    exportToPdf(deck, adapter, { ...opts, onProgress }).finally(() => setExportProgress(null));
+                    const { currentSlideIndex, setCurrentSlide } = useDeckStore.getState();
+                    warmScene3DCache(deck, setCurrentSlide, currentSlideIndex)
+                      .then(() => exportToPdf(deck, adapter, { ...opts, onProgress }))
+                      .finally(() => setExportProgress(null));
                   }}
                   className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
                 >
@@ -624,7 +628,10 @@ export function EditorLayout() {
                   if (!deck) return;
                   const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label: "PDF (Native)" });
                   setExportProgress({ current: 0, total: deck.slides.length, label: "PDF (Native)" });
-                  exportToNativePdf(deck, adapter, onProgress).finally(() => setExportProgress(null));
+                  const { currentSlideIndex: ci2, setCurrentSlide: sc2 } = useDeckStore.getState();
+                  warmScene3DCache(deck, sc2, ci2)
+                    .then(() => exportToNativePdf(deck, adapter, onProgress))
+                    .finally(() => setExportProgress(null));
                 }}
                 className="w-full text-left text-xs px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
               >
@@ -640,7 +647,10 @@ export function EditorLayout() {
             if (!deck) return;
             const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label: "PPTX" });
             setExportProgress({ current: 0, total: deck.slides.length, label: "PPTX" });
-            exportToPptx(deck, adapter, onProgress).finally(() => setExportProgress(null));
+            const { currentSlideIndex: ci3, setCurrentSlide: sc3 } = useDeckStore.getState();
+            warmScene3DCache(deck, sc3, ci3)
+              .then(() => exportToPptx(deck, adapter, onProgress))
+              .finally(() => setExportProgress(null));
           }}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
         >
@@ -653,7 +663,10 @@ export function EditorLayout() {
             if (!deck) return;
             const onProgress = (c: number, t: number) => setExportProgress({ current: c, total: t, label: "Images (ZIP)" });
             setExportProgress({ current: 0, total: deck.slides.length, label: "Images (ZIP)" });
-            exportSlidesToImages(deck, adapter, { scale: 2, format: "png", onProgress }).finally(() => setExportProgress(null));
+            const { currentSlideIndex: ci4, setCurrentSlide: sc4 } = useDeckStore.getState();
+            warmScene3DCache(deck, sc4, ci4)
+              .then(() => exportSlidesToImages(deck, adapter, { scale: 2, format: "png", onProgress }))
+              .finally(() => setExportProgress(null));
           }}
           className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
         >

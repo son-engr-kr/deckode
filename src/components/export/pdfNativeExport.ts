@@ -19,6 +19,7 @@ import type {
   Slide,
   VideoElement as VideoElementType,
   VideoStyle,
+  Scene3DElement as Scene3DElementType,
 } from "@/types/deck";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
@@ -51,6 +52,7 @@ import {
   rasterizeHtmlToBase64 as rasterizeHtmlToImage,
   rasterizeSvgToBase64 as rasterizeSvg,
 } from "@/utils/rasterize";
+import { renderScene3DToDataUrl, restoreLiveContexts } from "@/utils/renderScene3D";
 
 const MIN_FONT_SIZE = 6;
 const RASTER_SCALE = 2;
@@ -1132,13 +1134,20 @@ function drawCustomPlaceholder(doc: jsPDF, el: SlideElement): void {
 }
 
 // ========================================================================
-// Scene3D → PDF (placeholder — 3D canvas cannot be natively drawn in jsPDF)
+// Scene3D → PDF (offscreen Three.js render)
 // ========================================================================
 
-function drawScene3DPlaceholder(doc: jsPDF, el: SlideElement): void {
+async function drawScene3D(doc: jsPDF, el: Scene3DElementType): Promise<void> {
   const { x, y } = el.position;
   const { w, h } = el.size;
 
+  const dataUrl = await renderScene3DToDataUrl(el);
+  if (dataUrl) {
+    doc.addImage(dataUrl, "PNG", x, y, w, h);
+    return;
+  }
+
+  // Fallback placeholder
   setFillColor(doc, "#1a1a2e");
   doc.rect(x, y, w, h, "F");
 
@@ -1242,7 +1251,7 @@ async function renderSlide(
         drawCustomPlaceholder(doc, el);
         break;
       case "scene3d":
-        drawScene3DPlaceholder(doc, el);
+        await drawScene3D(doc, el as Scene3DElementType);
         break;
       case "reference": {
         const refEl = el as ReferenceElement;
@@ -1337,6 +1346,8 @@ export async function buildNativePdf(
     await renderSlide(doc, slides[i]!, deck, adapter, i + 1, totalPages);
     onProgress?.(i + 1, slides.length);
   }
+
+  restoreLiveContexts();
 
   return doc;
 }

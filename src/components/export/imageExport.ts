@@ -2,6 +2,7 @@ import JSZip from "jszip";
 import type { Deck } from "@/types/deck";
 import type { FileSystemAdapter } from "@/adapters/types";
 import { captureSlideToDataUrl, type PdfImageOptions } from "./pdfExport";
+import { restoreLiveContexts } from "@/utils/renderScene3D";
 
 /**
  * Export every visible slide as an image, bundled into a single ZIP file.
@@ -40,6 +41,9 @@ export async function exportSlidesToImages(
 
     opts?.onProgress?.(i + 1, slides.length);
   }
+
+  // Restore any WebGL contexts that were released for offscreen 3D rendering
+  restoreLiveContexts();
 
   const blob = await zip.generateAsync({ type: "blob" });
   const name = (deck.meta.title || "presentation").replace(/[^a-zA-Z0-9_-]/g, "_");
