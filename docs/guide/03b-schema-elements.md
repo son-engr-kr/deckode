@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Schema: Elements & Components","desc":"Element common fields, grouping, shared components"} -->
 # Element Object
 
 Every element has these common fields:

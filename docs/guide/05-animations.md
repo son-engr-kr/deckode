@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Animations","desc":"Animation triggers, effects, and sequencing examples"} -->
 # Animations
 
 Animations are defined per-slide and reference elements by ID.

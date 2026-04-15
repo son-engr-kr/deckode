@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"TikZ","desc":"`tikz` element: TikZJax engine, PGFPlots, limitations"} -->
 # TikZ Elements
 
 ## `"tikz"`

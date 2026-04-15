@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Style Preferences","desc":"Ask user about theme, animations, notes tone, highlight boxes"} -->
 # Style Preferences Checklist
 
 **MANDATORY**: When a new deck is first created or its initial content is confirmed, you **must ask the user** about each preference below. Present the options and wait for their choices. Do not assume defaults or skip this step.

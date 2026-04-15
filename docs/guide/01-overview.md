@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Overview","desc":"Project structure, core concept, coordinate system (960x540)"} -->
 # Project Structure
 
 A TEKKAL project is a folder with this layout:

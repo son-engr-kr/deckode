@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Guidelines","desc":"Common pitfalls (must-read) and AI best practices"} -->
 # Common Pitfalls
 
 These are critical mistakes that break rendering. **Read this section before creating or modifying any deck.**

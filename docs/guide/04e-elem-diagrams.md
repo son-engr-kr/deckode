@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Flow Diagrams","desc":"When to use native elements vs TikZ, step-by-step guide"} -->
 # Flow Diagrams with Native Elements
 
 ## TikZ vs Native Elements for Diagrams

@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Scene3D","desc":"`scene3d` element: Three.js scenes, objects, materials, keyframes"} -->
 # Scene3D Elements
 
 ## `"scene3d"`

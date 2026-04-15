@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Image, Video & Custom","desc":"`image`, `video` (local/YouTube/Vimeo), `custom` (React) elements"} -->
 # Image, Video & Custom Elements
 
 ## `"image"`

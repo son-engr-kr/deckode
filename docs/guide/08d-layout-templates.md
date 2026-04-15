@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Layout Templates","desc":"Pre-designed slide layouts, \"Analytical Insight\" palette, design principles"} -->
 # Layout Templates & Style Guide
 
 Pre-designed slide layouts the Generator can use as starting points. Each template defines element positions, sizes, and styles for a specific layout pattern. The AI may use these directly (adapting content) or create from scratch following the same design principles.

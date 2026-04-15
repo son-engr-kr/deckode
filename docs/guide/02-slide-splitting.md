@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Slide Splitting","desc":"`$ref` pointers for splitting large decks into external slide files"} -->
 # Slide File Splitting (`$ref`)
 
 When a deck grows large, individual slides can be split into separate files under `slides/`. A slide entry in the `slides` array can be either an inline slide object or a `$ref` pointer to an external file:

@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Theme","desc":"Deck-level theme defaults and page number overlay"} -->
 # Theme
 
 The optional top-level `theme` object provides default styles per element type. These act as a middle layer between hardcoded defaults and per-element `style` overrides.

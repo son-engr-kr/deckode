@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Visual Style Guide","desc":"Default color palette, typography, layout rules, diagram patterns"} -->
 # Visual Style Guide
 
 This guide defines the default visual design system for all agents. User style preferences (theme, animations, notes tone) override these defaults — see [Style Preferences](./08b-style-preferences.md). For layout templates and detailed palette, see [Layout Templates](./08d-layout-templates.md).

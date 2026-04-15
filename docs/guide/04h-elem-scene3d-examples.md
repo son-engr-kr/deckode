@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Scene3D Examples","desc":"Surface geometry, line geometry, complete interactive example"} -->
 # Scene3D Examples
 
 ### Complete scene3d example (interactive with keyframes)

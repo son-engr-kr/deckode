@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Shape","desc":"`shape` element: rectangle, ellipse, line, arrow, waypoints"} -->
 # Shape Elements
 
 ## `"shape"`

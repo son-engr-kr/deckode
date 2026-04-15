@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Table & Mermaid","desc":"`table` and `mermaid` elements"} -->
 # Table & Mermaid Elements
 
 ## `"table"`

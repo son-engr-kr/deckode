@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Schema: Deck & Slides","desc":"`deck.json` top-level structure, slide object, comments"} -->
 # deck.json Schema
 
 ## Top-Level Structure

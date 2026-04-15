@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Text & Code","desc":"`text` (Markdown) and `code` (syntax-highlighted) elements"} -->
 # Text & Code Elements
 
 ## `"text"`

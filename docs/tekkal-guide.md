@@ -10,6 +10,7 @@ You are creating slides for TEKKAL, a local-first, JSON-based slide platform. Th
 
 ## Sections
 
+<!-- guide-index:start -->
 | # | File | Description |
 |---|------|-------------|
 | 1 | [Overview](./guide/01-overview.md) | Project structure, core concept, coordinate system (960x540) |
@@ -32,6 +33,7 @@ You are creating slides for TEKKAL, a local-first, JSON-based slide platform. Th
 | 8c | [Visual Style Guide](./guide/08c-visual-style.md) | Default color palette, typography, layout rules, diagram patterns |
 | 8d | [Layout Templates](./guide/08d-layout-templates.md) | Pre-designed slide layouts, "Analytical Insight" palette, design principles |
 | 9 | [Complete Example](./guide/09-example.md) | A full 3-slide deck.json example |
+<!-- guide-index:end -->
 
 ## Quick Reference
 

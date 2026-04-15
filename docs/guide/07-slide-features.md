@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Slide Features","desc":"Bookmarks, presenter notes (step markers), layout templates, rotation"} -->
 # Bookmarks
 
 Slides can be bookmarked with a title for quick navigation in presenter mode. Set the `bookmark` field on a slide:

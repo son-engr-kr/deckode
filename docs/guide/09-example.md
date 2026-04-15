@@ -1,3 +1,4 @@
+<!-- guide-meta: {"label":"Complete Example","desc":"A full 3-slide deck.json example"} -->
 # Complete Example
 
 ```json
