@@ -169,10 +169,22 @@ Do not round-trip through `update_slide` with a full `animations` array for sing
 
 After a non-trivial edit, run at least one of these before reporting success:
 
-- **Schema check** → `validate_deck()` catches duplicate IDs, out-of-bounds, missing required fields.
+- **Schema check** → `validate_deck()` catches duplicate IDs, out-of-bounds, missing required fields, overlap false-positives (with automatic exemptions for line/arrow, container frames, and image overlays — see `03b-schema-elements.md` § Overlap check), image elements missing `alt`, step marker / onClick animation mismatches, and off-palette colors when `deck.theme.palette` is set.
 - **Layout check** → `check_overlaps(slideId)` catches accidental bounding-box intersections (grouped elements are ignored).
 - **Accessibility check** → `check_contrast(slideId)` reports text elements that fail WCAG AA (< 4.5 contrast ratio against the slide background).
 - **Combined** → `lint_slide(slideId)` runs all of the above plus empty-text and missing-title checks on one slide.
+
+### External CLI validator
+
+For **external CLI agents** (Claude Code, Gemini CLI, any tool that edits `deck.json` without running the TEKKAL web UI), a standalone Node.js validator lives at `tekkal-validate.mjs` in the project root. It is a self-contained script — no `npm install` required, only a working Node.js runtime.
+
+```bash
+node tekkal-validate.mjs deck.json
+```
+
+Exit code `0` = valid (possibly with warnings), `1` = errors found. The report lists each finding with its field path (`slides[3].elements[2].style.waypoints`) so the agent knows exactly where to fix. The validator resolves `$ref` entries to external slide files automatically, so you can point it at the main `deck.json` even when slides are split across `slides/*.json`. Single-slide files can be validated by pointing at them directly.
+
+Run this after every non-trivial edit to drive a self-healing loop: parse the report, fix the top finding, rerun, repeat until PASS. The check set matches the in-app `validate_deck` tool.
 
 ### Safety net
 

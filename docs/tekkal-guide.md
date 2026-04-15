@@ -42,3 +42,4 @@ You are creating slides for TEKKAL, a local-first, JSON-based slide platform. Th
 - **Element IDs**: `"e1"`, `"e2"`, ... (unique within slide)
 - **Resolution order**: `element.style` > `deck.theme` > hardcoded defaults
 - **Critical pitfalls**: No `**` in LaTeX math, no `rotation` on line/arrow, always provide `waypoints` for line/arrow
+- **Validation**: After every edit, run `node tekkal-validate.mjs deck.json` (CLI) or call `validate_deck()` (in-app). The report lists each issue with its exact field path. See [Guidelines § External CLI validator](./guide/08a-guidelines.md).

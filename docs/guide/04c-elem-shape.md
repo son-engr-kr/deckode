@@ -34,12 +34,14 @@ Renders a geometric shape.
 |-------|------|---------|-------------|
 | `fill` | string | `"transparent"` | Fill color |
 | `stroke` | string | `"#ffffff"` | Stroke color |
-| `strokeWidth` | number | `1` | Stroke width in px |
+| `strokeWidth` | number | `1` (rect/ellipse), `2` (line/arrow) | Stroke width in px |
+| `fillOpacity` | number | `1` | Fill-only opacity (0-1). Multiplies with `opacity`. Use this to tint a shape's interior without fading its stroke. |
+| `strokeOpacity` | number | `1` | Stroke-only opacity (0-1). Multiplies with `opacity`. Use for faint outlines while keeping fill solid. |
+| `opacity` | number | `1` | Overall element opacity (0-1). Applies to fill and stroke together. |
 | `borderRadius` | number | `0` | Corner radius (rectangle only) |
-| `opacity` | number | `1` | Opacity (0-1) |
 | `markerStart` | `"none"` \| `"arrow"` \| `"circle"` | `"none"` | Start marker (line/arrow only) |
 | `markerEnd` | `"none"` \| `"arrow"` \| `"circle"` | `"none"` (`"arrow"` for `shape: "arrow"`) | End marker (line/arrow only) |
-| `path` | string | — | SVG path `d` attribute for custom line routing (line/arrow only). Takes priority is overridden by `waypoints` when both are present. |
+| `path` | string | — | SVG path `d` attribute for custom line routing (line/arrow only). Overridden by `waypoints` when both are present. |
 | `waypoints` | `{x,y}[]` | **yes** (line/arrow) | Polyline waypoints in element-local coords (line/arrow only). **Always provide at least 2 points.** Takes priority over `path`. |
 
 **Labeled shape example** (rectangle with a centered label — animates as a single element):
@@ -57,6 +59,8 @@ Renders a geometric shape.
 ```
 
 Labels on shapes remove the need to overlay a separate text element, so both the shape and its label share the same animation target. For `"line"` and `"arrow"`, `text` is ignored — use a separate text element if you need a line caption.
+
+> **Z-order caveat.** `shape.text` draws inside the shape element's own DOM node, at the shape's own z-layer. Elements that come **after** the shape in `slide.elements` render on top and will cover the label. So if you use a rectangle as a visual frame around an image (the shape spans the image bounds), the image will hide the label unless you either (a) reorder the elements so the shape comes after the image, or (b) keep the label as a separate text element placed after the image. The validator's container-frame exemption (03b § Overlap check) doesn't interact with z-order — it only silences the overlap warning.
 
 For `"line"` and `"arrow"`: `position` is the bounding box origin. **Always specify `waypoints`** with at least 2 points — they define the actual line path in element-local coordinates (relative to `position`). `size` is the bounding box enclosing the waypoints. The `"arrow"` shape is shorthand for `"line"` with `markerEnd: "arrow"`. Use `markerStart`/`markerEnd` for fine-grained control. **Never use `rotation` on line/arrow elements** — the code asserts against this. Use `waypoints` to control line direction instead.
 

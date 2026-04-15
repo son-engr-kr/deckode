@@ -10,11 +10,15 @@
 // run on a stock Node.js install with no dependencies beyond the
 // standard library.
 //
-// The check set is the union of src/ai/validation.ts and the
-// extended checks in scripts/test-pipeline.mjs. Critical checks
-// (CRITICAL severity, exit 1) cover the failure modes that crash
-// the renderer or strip user content. WARN findings are reported
-// but do not flip the exit code.
+// SOURCE OF TRUTH: `src/schema/validate.ts` is the shared validation core
+// used by the in-app validator. Every check in THIS file must mirror a
+// check there verbatim. The drift tests in `src/ai/tekkal-validate.test.ts`
+// spawn this script in a child process and compare its output against
+// hand-built fixtures so regressions are caught at commit time.
+//
+// WARN findings are reported but do not flip the exit code. Only
+// CRITICAL findings (exit 1) cover renderer crashes or silent content
+// strips.
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve as resolvePath, dirname, join } from "node:path";
