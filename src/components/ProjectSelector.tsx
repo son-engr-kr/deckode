@@ -16,6 +16,7 @@ import {
   deleteProject,
   loadDeckFromDisk,
 } from "@/utils/api";
+import { ProjectSettingsDialog } from "./editor/ProjectSettingsDialog";
 import { NewProjectWizard } from "./NewProjectWizard";
 import { GitHubDialog } from "./GitHubDialog";
 import { DemoGallery } from "./DemoGallery";
@@ -164,6 +165,8 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
     fetchProjects();
   };
 
+  const [renameTarget, setRenameTarget] = useState<ProjectInfo | null>(null);
+
   const openWithFsHandle = async (handle: FileSystemDirectoryHandle) => {
     await saveHandle(handle);
     await addRecentProject(handle);
@@ -239,13 +242,22 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
                     <span className="text-sm font-medium text-zinc-200">{p.title}</span>
                     <span className="text-xs text-zinc-500 ml-2">{p.name}</span>
                   </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(p.name); }}
-                    className="text-xs text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity ml-3"
-                    title={`Delete ${p.name}`}
-                  >
-                    Delete
-                  </button>
+                  <div className="flex items-center gap-3 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setRenameTarget(p); }}
+                      className="text-xs text-zinc-600 hover:text-zinc-200 transition-colors"
+                      title={`Rename ${p.name}`}
+                    >
+                      Rename
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(p.name); }}
+                      className="text-xs text-zinc-600 hover:text-red-400 transition-colors"
+                      title={`Delete ${p.name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -371,6 +383,19 @@ function ViteProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter: Fil
         open={ghDialogOpen}
         onClose={() => setGhDialogOpen(false)}
       />
+
+      {renameTarget && (
+        <ProjectSettingsDialog
+          projectName={renameTarget.name}
+          projectTitle={renameTarget.title}
+          showGitPath={false}
+          onClose={() => setRenameTarget(null)}
+          onRenamed={() => {
+            setRenameTarget(null);
+            fetchProjects();
+          }}
+        />
+      )}
     </div>
   );
 }

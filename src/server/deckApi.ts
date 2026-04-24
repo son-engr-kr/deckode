@@ -236,7 +236,13 @@ export function deckApiPlugin(): Plugin {
     const onChange = () => {
       if (debounce) clearTimeout(debounce);
       debounce = setTimeout(() => {
-        // Compare file content hash against last editor save
+        // The file may have been renamed or deleted between the watcher event
+        // and this debounce firing — bail cleanly rather than crashing the
+        // dev server on ENOENT.
+        if (!fs.existsSync(dp)) {
+          unwatchProject(project);
+          return;
+        }
         const content = fs.readFileSync(dp, "utf-8");
         const hash = fnv1aHash(content);
         if (hash === lastSaveHash.get(project)) return; // our own save
@@ -559,8 +565,59 @@ export function deckApiPlugin(): Plugin {
         const dir = projectDir(name);
         assert(fs.existsSync(dir), `Project "${name}" not found`);
 
+        unwatchProject(name);
         fs.rmSync(dir, { recursive: true, force: true });
         jsonResponse(res, 200, { ok: true });
+      });
+
+      server.middlewares.use("/api/rename-project", async (req, res) => {
+        if (req.method !== "POST") { jsonResponse(res, 405, { error: "POST only" }); return; }
+        const body = JSON.parse(await readBody(req));
+        const { oldName, newName, newTitle } = body as {
+          oldName: string;
+          newName?: string;
+          newTitle?: string;
+        };
+        if (!isValidProjectName(oldName)) {
+          jsonResponse(res, 400, { error: `Invalid old name: ${oldName}` });
+          return;
+        }
+        const oldDir = projectDir(oldName);
+        if (!fs.existsSync(oldDir)) {
+          jsonResponse(res, 404, { error: `Project "${oldName}" not found` });
+          return;
+        }
+
+        let targetName = oldName;
+        if (typeof newName === "string" && newName !== oldName) {
+          if (!isValidProjectName(newName)) {
+            jsonResponse(res, 400, { error: `Invalid new name: ${newName}. Use only letters, numbers, _, and -.` });
+            return;
+          }
+          const newDir = projectDir(newName);
+          if (fs.existsSync(newDir)) {
+            jsonResponse(res, 409, { error: `Project "${newName}" already exists` });
+            return;
+          }
+          // Stop watching before we move the folder so a pending debounce
+          // does not fire an ENOENT readFileSync against the old path.
+          unwatchProject(oldName);
+          fs.renameSync(oldDir, newDir);
+          lastSaveHash.delete(oldName);
+          targetName = newName;
+        }
+
+        if (typeof newTitle === "string") {
+          const deckFile = deckPath(targetName);
+          if (fs.existsSync(deckFile)) {
+            const raw = JSON.parse(fs.readFileSync(deckFile, "utf-8"));
+            raw.meta = raw.meta ?? {};
+            raw.meta.title = newTitle;
+            fs.writeFileSync(deckFile, JSON.stringify(raw, null, 2) + "\n");
+          }
+        }
+
+        jsonResponse(res, 200, { ok: true, name: targetName });
       });
 
       // -- Editor endpoints --

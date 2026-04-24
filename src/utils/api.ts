@@ -33,6 +33,22 @@ export async function deleteProject(name: string): Promise<void> {
   assert(res.ok, `Failed to delete project: ${res.status}`);
 }
 
+export async function renameProject(
+  oldName: string,
+  opts: { newName?: string; newTitle?: string },
+): Promise<{ name: string }> {
+  const res = await fetch("/api/rename-project", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ oldName, ...opts }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.error ?? `Failed to rename project: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function loadDeckFromDisk(project: string): Promise<Deck | null> {
   const res = await fetch(`/api/load-deck?project=${encodeURIComponent(project)}`);
   if (res.status === 404) return null;

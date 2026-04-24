@@ -32,7 +32,7 @@ export function SlidePreview({ slide, theme }: SlidePreviewProps) {
   return (
     <div
       ref={ref}
-      className="w-full bg-white overflow-hidden rounded-sm"
+      className="w-full bg-white overflow-hidden"
       style={{ aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}` }}
     >
       {scale > 0 && <SlideRenderer slide={slide} scale={scale} theme={theme} thumbnail />}
