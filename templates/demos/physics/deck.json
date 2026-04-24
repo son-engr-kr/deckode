@@ -1,295 +1,3065 @@
 {
   "version": "0.1.0",
   "meta": {
-    "title": "Quantum Mechanics — An Intuition",
+    "title": "Quantum Mechanics \u2014 An Intuition",
     "author": "TEKKAL Demos",
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#0F1419" } },
-    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 14, "color": "#EAE6DF" },
-    "code": { "theme": "github-dark", "fontSize": 11 },
-    "shape": { "stroke": "#2A3541", "strokeWidth": 1 },
-    "table": { "headerBackground": "#1A2330", "borderColor": "#2A3541" }
+    "slide": {
+      "background": {
+        "color": "#13243B"
+      }
+    },
+    "text": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "fontSize": 14,
+      "color": "#E8E8E3"
+    },
+    "code": {
+      "theme": "github-dark",
+      "fontSize": 11
+    },
+    "shape": {
+      "stroke": "#2C3E52",
+      "strokeWidth": 1
+    },
+    "table": {
+      "headerBackground": "#1B3352",
+      "borderColor": "#2C3E52"
+    }
   },
-  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number", "color": "#6B7B8A", "fontSize": 10, "margin": 20 },
+  "pageNumbers": {
+    "enabled": true,
+    "position": "bottom-right",
+    "format": "number",
+    "color": "#6E7F93",
+    "fontSize": 10,
+    "margin": 20
+  },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#0F1419" },
+      "background": {
+        "color": "#13243B"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Physics 331 opening. The dark theme is intentional — it reads like an arXiv talk. Title fades in big, then subtitle in violet, then the iconic Ĥψ = Eψ in teal on the right. Take a breath before advancing.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Physics 331 opening \u2014 auto-reveal only, no clicks.\n\nOn-enter sequence (all trigger automatically):\n  1. Grid frame + course/lecture tags\n  2. Title 'Quantum Mechanics' slides up (drafting gold on ink blue \u2014 blueprint aesthetic, not synthwave)\n  3. Sky-blue subtitle lines appear\n  4. Pitch paragraph\n  5. \u0124\u03c8 = E\u03c8 scales into the drafting-gold box\n\nTake a beat (\u22482s) after step 5 before advancing to s2. Palette intent: engineer's blueprint / drafting desk.",
       "animations": [
-        { "target": "s1-bg-img", "trigger": "onEnter", "effect": "fadeIn", "duration": 800 },
-        { "target": "s1-grid-h1", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-grid-h2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-grid-v1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-grid-v2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-course", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-lecture", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 700, "delay": 400 },
-        { "target": "s1-subtitle", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 1100 },
-        { "target": "s1-subtitle2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 200 },
-        { "target": "s1-pitch", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 1800 },
-        { "target": "s1-eq", "trigger": "onEnter", "effect": "scaleIn", "duration": 700, "delay": 2100 }
+        {
+          "target": "s1-grid-h1",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-grid-h2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-grid-v1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-grid-v2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-course",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-lecture",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 700,
+          "delay": 400
+        },
+        {
+          "target": "s1-subtitle",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 1100
+        },
+        {
+          "target": "s1-subtitle2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 200
+        },
+        {
+          "target": "s1-pitch",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 1800
+        },
+        {
+          "target": "s1-eq",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 700,
+          "delay": 2100
+        },
+        {
+          "target": "s1-bg-img",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 900,
+          "delay": 0
+        }
       ],
       "elements": [
-        { "id": "s1-bg-img", "type": "image", "src": "./assets/quantum.png", "alt": "Abstract flowing wave interference pattern in cyan and magenta on black — evokes quantum superposition", "position": { "x": 0, "y": 0 }, "size": { "w": 960, "h": 540 }, "style": { "objectFit": "cover", "opacity": 0.35 } },
-        { "id": "s1-grid-h1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 60 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s1-grid-h2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 440 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s1-grid-v1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 60 }, "size": { "w": 1, "h": 380 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s1-grid-v2", "type": "shape", "shape": "rectangle", "position": { "x": 899, "y": 60 }, "size": { "w": 1, "h": 380 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s1-course", "type": "text", "content": "PHYS 331 · MODERN PHYSICS", "position": { "x": 80, "y": 80 }, "size": { "w": 820, "h": 18 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s1-lecture", "type": "text", "content": "LECTURE 01 · INTRODUCTION", "position": { "x": 80, "y": 80 }, "size": { "w": 820, "h": 18 }, "style": { "fontSize": 10, "color": "#4FC3F7", "textAlign": "right" } },
-        { "id": "s1-title", "type": "text", "content": "# Quantum Mechanics", "position": { "x": 80, "y": 135 }, "size": { "w": 820, "h": 100 }, "style": { "fontSize": 72, "color": "#EAE6DF" } },
-        { "id": "s1-subtitle", "type": "text", "content": "An intuition for wave–particle duality, the Schrödinger equation,", "position": { "x": 80, "y": 245 }, "size": { "w": 820, "h": 28 }, "style": { "fontSize": 19, "color": "#B47AEA" } },
-        { "id": "s1-subtitle2", "type": "text", "content": "and why the uncertainty principle isn't about your microscope.", "position": { "x": 80, "y": 272 }, "size": { "w": 820, "h": 28 }, "style": { "fontSize": 19, "color": "#B47AEA" } },
-        { "id": "s1-pitch", "type": "text", "content": "Physics at the atomic scale is strange. But the strangeness has structure — six slides, three equations, one revolution in how we model reality.", "position": { "x": 80, "y": 320 }, "size": { "w": 550, "h": 60 }, "style": { "fontSize": 13, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s1-eq", "type": "text", "content": "$$\\hat{H}\\psi = E\\psi$$", "position": { "x": 660, "y": 295 }, "size": { "w": 240, "h": 105 }, "style": { "fontSize": 42, "color": "#4FC3F7", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s1-foot", "type": "text", "content": "TEKKAL DEMOS · EDUCATION TRACK", "position": { "x": 80, "y": 460 }, "size": { "w": 820, "h": 20 }, "style": { "fontSize": 10, "color": "#6B7B8A" } }
+        {
+          "id": "s1-bg-img",
+          "type": "image",
+          "src": "./assets/quantum.png",
+          "alt": "Abstract quantum waveform \u2014 photonic wave patterns evoking wave-particle duality",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "w": 960,
+            "h": 540
+          },
+          "style": {
+            "opacity": 0.22
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s1-grid-h1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-grid-h2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 440
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-grid-v1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "size": {
+            "w": 1,
+            "h": 380
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-grid-v2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 899,
+            "y": 60
+          },
+          "size": {
+            "w": 1,
+            "h": 380
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-course",
+          "type": "text",
+          "content": "PHYS 331 \u00b7 MODERN PHYSICS",
+          "position": {
+            "x": 80,
+            "y": 80
+          },
+          "size": {
+            "w": 820,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s1-lecture",
+          "type": "text",
+          "content": "LECTURE 01 \u00b7 INTRODUCTION",
+          "position": {
+            "x": 80,
+            "y": 80
+          },
+          "size": {
+            "w": 820,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57",
+            "textAlign": "right"
+          }
+        },
+        {
+          "id": "s1-title",
+          "type": "text",
+          "content": "# Quantum Mechanics",
+          "position": {
+            "x": 80,
+            "y": 135
+          },
+          "size": {
+            "w": 820,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 72,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s1-subtitle",
+          "type": "text",
+          "content": "An intuition for wave\u2013particle duality, the Schr\u00f6dinger equation,",
+          "position": {
+            "x": 80,
+            "y": 245
+          },
+          "size": {
+            "w": 820,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 19,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s1-subtitle2",
+          "type": "text",
+          "content": "and why the uncertainty principle isn't about your microscope.",
+          "position": {
+            "x": 80,
+            "y": 272
+          },
+          "size": {
+            "w": 820,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 19,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s1-pitch",
+          "type": "text",
+          "content": "Physics at the atomic scale is strange. But the strangeness has structure \u2014 six slides, three equations, one revolution in how we model reality.",
+          "position": {
+            "x": 80,
+            "y": 320
+          },
+          "size": {
+            "w": 550,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s1-eq",
+          "type": "text",
+          "content": "$$\\hat{H}\\psi = E\\psi$$",
+          "position": {
+            "x": 660,
+            "y": 295
+          },
+          "size": {
+            "w": 240,
+            "h": 105
+          },
+          "style": {
+            "color": "#E8E8E3",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s1-foot",
+          "type": "text",
+          "content": "TEKKAL DEMOS \u00b7 EDUCATION TRACK",
+          "position": {
+            "x": 80,
+            "y": 460
+          },
+          "size": {
+            "w": 820,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6E7F93"
+          }
+        }
       ]
     },
     {
       "id": "s2",
-      "background": { "color": "#0F1419" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The double-slit experiment. Build the apparatus piece by piece: source → slits → screen → the interference stripes. Each click reveals one stage of the setup. Point at the bright/dim alternation on the screen — that's what no single ball trajectory can produce. Close with the Bohr quote.",
+      "background": {
+        "color": "#13243B"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Double-slit experiment. On enter: section tag, title, electron source dot (no click yet).\n\n[step:1]Two rays leave the source, heading toward the barrier.[/step]\n\n[step:2]3-segment barrier appears with \"slit 1\" / \"slit 2\" labels.[/step]\n\n[step:3]Propagation rays spread from both slits toward the screen \u2014 the which-path ambiguity moment.[/step]\n\n[step:4]Detector screen on the right.[/step]\n\n[step:5]Interference pattern \u2014 9 opacity-varied stripes fade in, bright / dim / bright / dim.[/step]\n\n[step:6]Right-side commentary panel opens \u2014 \"setup, paradox\". Read it while the audience sees the stripes.[/step]\n\n[step:7]Bottom Bohr quote: \"Anyone who is not shocked by quantum theory has not understood it.\"[/step]\n\nKey line: the screen records dots one at a time, yet the pattern is wave-like. The wave tells you where it might land; the particle is what arrives.",
       "animations": [
-        { "target": "s2-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s2-src-dot", "trigger": "onEnter", "effect": "scaleIn", "duration": 400, "delay": 500 },
-        { "target": "s2-src-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-ray1", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-ray2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-barrier-top", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-barrier-mid", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-barrier-bot", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-slit1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-slit2-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-prop1a", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-prop1b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-prop2a", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-prop2b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-screen", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-screen-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-int1", "trigger": "onClick", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int3", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int4", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int5", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int6", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int7", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int8", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int9", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s2-int-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-side-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-side-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s2-rule2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-quote", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s2-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s2-src-dot",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 400,
+          "delay": 500
+        },
+        {
+          "target": "s2-src-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-ray1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 1
+        },
+        {
+          "target": "s2-ray2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-barrier-top",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s2-barrier-mid",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-barrier-bot",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-slit1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-slit2-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-prop1a",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 3
+        },
+        {
+          "target": "s2-prop1b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-prop2a",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-prop2b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-screen",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 4
+        },
+        {
+          "target": "s2-screen-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-int1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 200,
+          "order": 5
+        },
+        {
+          "target": "s2-int2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int4",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int5",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int6",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int7",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int8",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int9",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s2-int-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-side-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 6
+        },
+        {
+          "target": "s2-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-side-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s2-rule2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 7
+        },
+        {
+          "target": "s2-quote",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s2-tag", "type": "text", "content": "§1  THE EXPERIMENT", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s2-title", "type": "text", "content": "# The double-slit experiment", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 30, "color": "#EAE6DF" } },
-        { "id": "s2-src-dot", "type": "shape", "shape": "ellipse", "position": { "x": 85, "y": 265 }, "size": { "w": 16, "h": 16 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s2-src-lbl", "type": "text", "content": "electron source", "position": { "x": 72, "y": 290 }, "size": { "w": 80, "h": 16 }, "style": { "fontSize": 9, "color": "#9DA8B3" } },
-        { "id": "s2-ray1", "type": "shape", "shape": "line", "position": { "x": 101, "y": 273 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": -48 }] } },
-        { "id": "s2-ray2", "type": "shape", "shape": "line", "position": { "x": 101, "y": 273 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": 48 }] } },
-        { "id": "s2-barrier-top", "type": "shape", "shape": "rectangle", "position": { "x": 299, "y": 155 }, "size": { "w": 4, "h": 60 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s2-barrier-mid", "type": "shape", "shape": "rectangle", "position": { "x": 299, "y": 240 }, "size": { "w": 4, "h": 55 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s2-barrier-bot", "type": "shape", "shape": "rectangle", "position": { "x": 299, "y": 320 }, "size": { "w": 4, "h": 75 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s2-slit1-lbl", "type": "text", "content": "slit 1", "position": { "x": 275, "y": 219 }, "size": { "w": 60, "h": 16 }, "style": { "fontSize": 9, "color": "#9DA8B3", "textAlign": "center" } },
-        { "id": "s2-slit2-lbl", "type": "text", "content": "slit 2", "position": { "x": 275, "y": 297 }, "size": { "w": 60, "h": 16 }, "style": { "fontSize": 9, "color": "#9DA8B3", "textAlign": "center" } },
-        { "id": "s2-prop1a", "type": "shape", "shape": "line", "position": { "x": 303, "y": 227 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.35, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": -45 }] } },
-        { "id": "s2-prop1b", "type": "shape", "shape": "line", "position": { "x": 303, "y": 227 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.35, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": 45 }] } },
-        { "id": "s2-prop2a", "type": "shape", "shape": "line", "position": { "x": 303, "y": 305 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.35, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": -45 }] } },
-        { "id": "s2-prop2b", "type": "shape", "shape": "line", "position": { "x": 303, "y": 305 }, "size": { "w": 200, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.35, "waypoints": [{ "x": 0, "y": 0 }, { "x": 200, "y": 45 }] } },
-        { "id": "s2-screen", "type": "shape", "shape": "rectangle", "position": { "x": 505, "y": 155 }, "size": { "w": 3, "h": 240 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s2-screen-lbl", "type": "text", "content": "detector screen", "position": { "x": 470, "y": 400 }, "size": { "w": 120, "h": 16 }, "style": { "fontSize": 9, "color": "#9DA8B3", "textAlign": "center" } },
-        { "id": "s2-int1", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 165 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.15 } },
-        { "id": "s2-int2", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 188 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.4 } },
-        { "id": "s2-int3", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 211 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.2 } },
-        { "id": "s2-int4", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 234 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.75 } },
-        { "id": "s2-int5", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 257 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.9 } },
-        { "id": "s2-int6", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 280 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.75 } },
-        { "id": "s2-int7", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 303 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.2 } },
-        { "id": "s2-int8", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 326 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.4 } },
-        { "id": "s2-int9", "type": "shape", "shape": "rectangle", "position": { "x": 510, "y": 349 }, "size": { "w": 14, "h": 18 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0, "opacity": 0.15 } },
-        { "id": "s2-int-lbl", "type": "text", "content": "interference pattern →", "position": { "x": 530, "y": 255 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 9, "color": "#4FC3F7" } },
-        { "id": "s2-side-h", "type": "text", "content": "**The setup, the paradox**", "position": { "x": 620, "y": 150 }, "size": { "w": 280, "h": 24 }, "style": { "fontSize": 15, "color": "#4FC3F7" } },
-        { "id": "s2-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 620, "y": 180 }, "size": { "w": 280, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s2-side-b", "type": "text", "content": "Fire electrons at two slits. On the screen beyond, they land in an *interference pattern* — the signature of two overlapping waves.\n\nYet the screen records point-like arrivals, one electron at a time.\n\nThe wave tells you *where* it might land. The particle is what arrives.", "position": { "x": 620, "y": 195 }, "size": { "w": 280, "h": 240 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.7 } }
+        {
+          "id": "s2-tag",
+          "type": "text",
+          "content": "\u00a71  THE EXPERIMENT",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-title",
+          "type": "text",
+          "content": "# The double-slit experiment",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s2-src-dot",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": {
+            "x": 85,
+            "y": 265
+          },
+          "size": {
+            "w": 16,
+            "h": 16
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-src-lbl",
+          "type": "text",
+          "content": "electron source",
+          "position": {
+            "x": 72,
+            "y": 290
+          },
+          "size": {
+            "w": 80,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#8FA1B5"
+          }
+        },
+        {
+          "id": "s2-ray1",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 101,
+            "y": 273
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": -48
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-ray2",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 101,
+            "y": 273
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": 48
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-barrier-top",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 299,
+            "y": 155
+          },
+          "size": {
+            "w": 4,
+            "h": 60
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-barrier-mid",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 299,
+            "y": 240
+          },
+          "size": {
+            "w": 4,
+            "h": 55
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-barrier-bot",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 299,
+            "y": 320
+          },
+          "size": {
+            "w": 4,
+            "h": 75
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-slit1-lbl",
+          "type": "text",
+          "content": "slit 1",
+          "position": {
+            "x": 275,
+            "y": 219
+          },
+          "size": {
+            "w": 60,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#8FA1B5",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-slit2-lbl",
+          "type": "text",
+          "content": "slit 2",
+          "position": {
+            "x": 275,
+            "y": 297
+          },
+          "size": {
+            "w": 60,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#8FA1B5",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-prop1a",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 303,
+            "y": 227
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.35,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": -45
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-prop1b",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 303,
+            "y": 227
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.35,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": 45
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-prop2a",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 303,
+            "y": 305
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.35,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": -45
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-prop2b",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 303,
+            "y": 305
+          },
+          "size": {
+            "w": 200,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.35,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 200,
+                "y": 45
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2-screen",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 505,
+            "y": 155
+          },
+          "size": {
+            "w": 3,
+            "h": 240
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-screen-lbl",
+          "type": "text",
+          "content": "detector screen",
+          "position": {
+            "x": 470,
+            "y": 400
+          },
+          "size": {
+            "w": 120,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#8FA1B5",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-int1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 165
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.15
+          }
+        },
+        {
+          "id": "s2-int2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 188
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.4
+          }
+        },
+        {
+          "id": "s2-int3",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 211
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.2
+          }
+        },
+        {
+          "id": "s2-int4",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 234
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.75
+          }
+        },
+        {
+          "id": "s2-int5",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 257
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.9
+          }
+        },
+        {
+          "id": "s2-int6",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 280
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.75
+          }
+        },
+        {
+          "id": "s2-int7",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 303
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.2
+          }
+        },
+        {
+          "id": "s2-int8",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 326
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.4
+          }
+        },
+        {
+          "id": "s2-int9",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 349
+          },
+          "size": {
+            "w": 14,
+            "h": 18
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0,
+            "opacity": 0.15
+          }
+        },
+        {
+          "id": "s2-int-lbl",
+          "type": "text",
+          "content": "interference pattern \u2192",
+          "position": {
+            "x": 530,
+            "y": 255
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s2-side-h",
+          "type": "text",
+          "content": "**The setup, the paradox**",
+          "position": {
+            "x": 620,
+            "y": 150
+          },
+          "size": {
+            "w": 280,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s2-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 620,
+            "y": 180
+          },
+          "size": {
+            "w": 280,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-side-b",
+          "type": "text",
+          "content": "Fire electrons at two slits. On the screen beyond, they land in an *interference pattern* \u2014 the signature of two overlapping waves.\n\nYet the screen records point-like arrivals, one electron at a time.\n\nThe wave tells you *where* it might land. The particle is what arrives.",
+          "position": {
+            "x": 620,
+            "y": 195
+          },
+          "size": {
+            "w": 280,
+            "h": 240
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.7
+          }
+        }
       ]
     },
     {
       "id": "s3",
-      "background": { "color": "#0F1419" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The Schrödinger equation. Formula pops into the teal-bordered box. Emphasize each symbol via the table — Ψ is not an observable, |Ψ|² is. Click to reveal the separation into stationary states — that's where energy quantization comes from.",
+      "background": {
+        "color": "#13243B"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Schr\u00f6dinger equation. On enter: title, equation i\u210f\u2202/\u2202t \u03a8 = \u0124\u03a8 fades into the gold-bordered box (auto).\n\n[step:1]Symbols table slides in on the left. Walk each row: \u03a8 (wave function, complex), |\u03a8|\u00b2 (probability density \u2014 the ONLY observable), \u0124 (Hamiltonian = KE + V), \u210f (reduced Planck constant \u2248 10\u207b\u00b3\u2074 J\u00b7s).[/step]\n\n[step:2]Right-side \"Stationary Solutions\" panel \u2014 when \u0124 is time-independent, the equation separates into \u0124\u03c8\u2099 = E\u2099\u03c8\u2099 \u2192 discrete energies \u2192 atoms, bonds, spectral lines.[/step]\n\nPunchline: the equation isn't about forces like F=ma. It's about amplitude waves.",
       "animations": [
-        { "target": "s3-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s3-eq-bg", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 500 },
-        { "target": "s3-eq", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-table-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-table", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-side-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s3-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s3-eq-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 500
+        },
+        {
+          "target": "s3-eq",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s3-table-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s3-table",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s3-side-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s3-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-side-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s3-tag", "type": "text", "content": "§2  THE EVOLUTION EQUATION", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s3-title", "type": "text", "content": "# The Schrödinger equation", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 28, "color": "#EAE6DF" } },
-        { "id": "s3-eq-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 140 }, "size": { "w": 840, "h": 90 }, "style": { "fill": "#1A2330", "stroke": "#4FC3F7", "strokeWidth": 1, "borderRadius": 6 } },
-        { "id": "s3-eq", "type": "text", "content": "$$ i\\hbar\\, \\frac{\\partial}{\\partial t} \\Psi(\\mathbf{r}, t) \\;=\\; \\hat{H}\\, \\Psi(\\mathbf{r}, t) $$", "position": { "x": 60, "y": 140 }, "size": { "w": 840, "h": 90 }, "style": { "fontSize": 28, "color": "#EAE6DF", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s3-table-h", "type": "text", "content": "SYMBOLS", "position": { "x": 60, "y": 250 }, "size": { "w": 520, "h": 14 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s3-table", "type": "table", "columns": ["Symbol", "Name", "Role"], "rows": [["$\\Psi$", "Wave function", "Complex amplitude over space & time"], ["$|\\Psi|^2$", "Probability density", "Chance of detection at position $\\mathbf{r}$"], ["$\\hat{H}$", "Hamiltonian", "Total energy: $\\frac{\\hat{p}^2}{2m} + V$"], ["$\\hbar$", "Reduced Planck const.", "$\\approx 1.055 \\times 10^{-34}$ J·s"]], "position": { "x": 60, "y": 270 }, "size": { "w": 520, "h": 165 }, "style": { "fontSize": 11, "color": "#EAE6DF", "headerBackground": "#1A2330", "headerColor": "#4FC3F7", "borderColor": "#2A3541", "striped": false } },
-        { "id": "s3-side-h", "type": "text", "content": "STATIONARY SOLUTIONS", "position": { "x": 610, "y": 250 }, "size": { "w": 290, "h": 14 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s3-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 610, "y": 268 }, "size": { "w": 290, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s3-side-b", "type": "text", "content": "When $\\hat{H}$ is time-independent, the equation separates:\n\n$$ \\hat{H}\\psi_n = E_n \\psi_n $$\n\nThe allowed energies $E_n$ are *eigenvalues*; the $\\psi_n$ are orthonormal eigenstates. This is where discreteness comes from — atoms, bonds, spectral lines.", "position": { "x": 610, "y": 280 }, "size": { "w": 290, "h": 160 }, "style": { "fontSize": 11, "color": "#9DA8B3", "lineHeight": 1.6 } }
+        {
+          "id": "s3-tag",
+          "type": "text",
+          "content": "\u00a72  THE EVOLUTION EQUATION",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-title",
+          "type": "text",
+          "content": "# The Schr\u00f6dinger equation",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s3-eq-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 840,
+            "h": 90
+          },
+          "style": {
+            "fill": "#1B3352",
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "borderRadius": 6
+          }
+        },
+        {
+          "id": "s3-eq",
+          "type": "text",
+          "content": "$$ i\\hbar\\, \\frac{\\partial}{\\partial t} \\Psi(\\mathbf{r}, t) \\;=\\; \\hat{H}\\, \\Psi(\\mathbf{r}, t) $$",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 840,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#E8E8E3",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s3-table-h",
+          "type": "text",
+          "content": "SYMBOLS",
+          "position": {
+            "x": 60,
+            "y": 250
+          },
+          "size": {
+            "w": 520,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s3-table",
+          "type": "table",
+          "columns": [
+            "Symbol",
+            "Name",
+            "Role"
+          ],
+          "rows": [
+            [
+              "$\\Psi$",
+              "Wave function",
+              "Complex amplitude over space & time"
+            ],
+            [
+              "$|\\Psi|^2$",
+              "Probability density",
+              "Chance of detection at position $\\mathbf{r}$"
+            ],
+            [
+              "$\\hat{H}$",
+              "Hamiltonian",
+              "Total energy: $\\frac{\\hat{p}^2}{2m} + V$"
+            ],
+            [
+              "$\\hbar$",
+              "Reduced Planck const.",
+              "$\\approx 1.055 \\times 10^{-34}$ J\u00b7s"
+            ]
+          ],
+          "position": {
+            "x": 60,
+            "y": 270
+          },
+          "size": {
+            "w": 520,
+            "h": 165
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#E8E8E3",
+            "headerBackground": "#1B3352",
+            "headerColor": "#C29F57",
+            "borderColor": "#2C3E52",
+            "striped": false
+          }
+        },
+        {
+          "id": "s3-side-h",
+          "type": "text",
+          "content": "STATIONARY SOLUTIONS",
+          "position": {
+            "x": 610,
+            "y": 250
+          },
+          "size": {
+            "w": 290,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s3-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 610,
+            "y": 268
+          },
+          "size": {
+            "w": 290,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-side-b",
+          "type": "text",
+          "content": "When $\\hat{H}$ is time-independent, the equation separates:\n\n$$ \\hat{H}\\psi_n = E_n \\psi_n $$\n\nThe allowed energies $E_n$ are *eigenvalues*; the $\\psi_n$ are orthonormal eigenstates. This is where discreteness comes from \u2014 atoms, bonds, spectral lines.",
+          "position": {
+            "x": 610,
+            "y": 280
+          },
+          "size": {
+            "w": 290,
+            "h": 160
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        }
       ]
     },
     {
       "id": "s4",
-      "background": { "color": "#0F1419" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Heisenberg's uncertainty principle. Δx · Δp ≥ ℏ/2. The TikZ wave packet on the right shows the Fourier relationship visually — a Gaussian envelope with an oscillation inside, narrow-x means broad-k. Click to reveal the two commentary panels: not a measurement limit, real physical consequences (tunneling, zero-point energy).",
+      "background": {
+        "color": "#13243B"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Heisenberg's uncertainty principle. On enter: title, \u0394x\u00b7\u0394p \u2265 \u210f/2 scales in (left), TikZ wave packet on the right (sky-blue envelope + gold oscillation + \u0394x bracket).\n\n[step:1]Bottom-left panel \"NOT A MEASUREMENT LIMIT\" \u2014 position and momentum are Fourier conjugates, narrowing one necessarily widens the other.[/step]\n\n[step:2]Bottom-right panel \"PRACTICAL CONSEQUENCES\" \u2014 zero-point energy, tunneling, why electrons can't sit at the nucleus.[/step]\n\nTiming: linger on the wave-packet graphic when explaining step 1. The visual IS the argument.",
       "animations": [
-        { "target": "s4-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s4-eq", "trigger": "onEnter", "effect": "scaleIn", "duration": 600, "delay": 500 },
-        { "target": "s4-tikz", "trigger": "onEnter", "effect": "fadeIn", "duration": 700, "delay": 900 },
-        { "target": "s4-rule2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-left-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-left-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s4-right-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-right-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s4-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s4-eq",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 600,
+          "delay": 500
+        },
+        {
+          "target": "s4-tikz",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700,
+          "delay": 900
+        },
+        {
+          "target": "s4-rule2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s4-left-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-left-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s4-right-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s4-right-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s4-tag", "type": "text", "content": "§3  A HARD LIMIT", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s4-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s4-title", "type": "text", "content": "# Heisenberg's uncertainty principle", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 26, "color": "#EAE6DF" } },
-        { "id": "s4-eq", "type": "text", "content": "$$ \\Delta x \\cdot \\Delta p \\;\\geq\\; \\frac{\\hbar}{2} $$", "position": { "x": 60, "y": 135 }, "size": { "w": 440, "h": 95 }, "style": { "fontSize": 36, "color": "#B47AEA", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s4-tikz", "type": "tikz", "content": "\\begin{tikzpicture}[scale=0.85]\n\\path[use as bounding box] (-0.8,-1.8) rectangle (7.2,2.2);\n\\draw[->, gray!50] (-0.5,0) -- (7,0) node[below right, text=white, font=\\scriptsize] {$x$};\n\\draw[->, gray!50] (0,-1.5) -- (0,1.9) node[left, text=white, font=\\scriptsize] {$\\psi(x)$};\n\\draw[thick, cyan!70, domain=-0.3:6.8, samples=200] plot (\\x, {1.2*exp(-(\\x-3)*(\\x-3)/1.5)*cos(deg(4*\\x))});\n\\draw[thick, violet!60, domain=0.3:5.7, dashed] plot (\\x, {1.2*exp(-(\\x-3)*(\\x-3)/1.5)});\n\\draw[thick, violet!60, domain=0.3:5.7, dashed] plot (\\x, {-1.2*exp(-(\\x-3)*(\\x-3)/1.5)});\n\\draw[violet!70, <->, thick] (1.5, -1.35) -- (4.5, -1.35) node[midway, below, text=white, font=\\scriptsize] {$\\Delta x$};\n\\node[text=cyan!70, font=\\scriptsize] at (5.9, -0.8) {wave packet};\n\\node[text=violet!60, font=\\scriptsize, anchor=west] at (5.0, 1.0) {envelope};\n\\end{tikzpicture}", "position": { "x": 530, "y": 140 }, "size": { "w": 370, "h": 200 }, "style": { "backgroundColor": "#0F1419" } },
-        { "id": "s4-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 345 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s4-left-h", "type": "text", "content": "NOT A MEASUREMENT LIMIT", "position": { "x": 60, "y": 360 }, "size": { "w": 400, "h": 14 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s4-left-b", "type": "text", "content": "Position and momentum aren't hidden properties we fail to measure. They're Fourier conjugates of the same wave — narrowing one *necessarily* widens the other.", "position": { "x": 60, "y": 380 }, "size": { "w": 400, "h": 70 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s4-right-h", "type": "text", "content": "PRACTICAL CONSEQUENCES", "position": { "x": 500, "y": 360 }, "size": { "w": 400, "h": 14 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s4-right-b", "type": "text", "content": "Zero-point energy, tunneling, the stability of atoms (electrons can't sit still at the nucleus) — all follow from this single inequality.", "position": { "x": 500, "y": 380 }, "size": { "w": 400, "h": 70 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } }
+        {
+          "id": "s4-tag",
+          "type": "text",
+          "content": "\u00a73  A HARD LIMIT",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s4-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-title",
+          "type": "text",
+          "content": "# Heisenberg's uncertainty principle",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s4-eq",
+          "type": "text",
+          "content": "$$ \\Delta x \\cdot \\Delta p \\;\\geq\\; \\frac{\\hbar}{2} $$",
+          "position": {
+            "x": 60,
+            "y": 135
+          },
+          "size": {
+            "w": 440,
+            "h": 95
+          },
+          "style": {
+            "fontSize": 36,
+            "color": "#7BA4C7",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s4-tikz",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}[scale=0.85]\n\\path[use as bounding box] (-0.8,-1.8) rectangle (7.2,2.2);\n\\draw[->, gray!50] (-0.5,0) -- (7,0) node[below right, text=white, font=\\scriptsize] {$x$};\n\\draw[->, gray!50] (0,-1.5) -- (0,1.9) node[left, text=white, font=\\scriptsize] {$\\psi(x)$};\n\\draw[thick, cyan!70, domain=-0.3:6.8, samples=200] plot (\\x, {1.2*exp(-(\\x-3)*(\\x-3)/1.5)*cos(deg(4*\\x))});\n\\draw[thick, violet!60, domain=0.3:5.7, dashed] plot (\\x, {1.2*exp(-(\\x-3)*(\\x-3)/1.5)});\n\\draw[thick, violet!60, domain=0.3:5.7, dashed] plot (\\x, {-1.2*exp(-(\\x-3)*(\\x-3)/1.5)});\n\\draw[violet!70, <->, thick] (1.5, -1.35) -- (4.5, -1.35) node[midway, below, text=white, font=\\scriptsize] {$\\Delta x$};\n\\node[text=cyan!70, font=\\scriptsize] at (5.9, -0.8) {wave packet};\n\\node[text=violet!60, font=\\scriptsize, anchor=west] at (5.0, 1.0) {envelope};\n\\end{tikzpicture}",
+          "position": {
+            "x": 530,
+            "y": 140
+          },
+          "size": {
+            "w": 370,
+            "h": 200
+          },
+          "style": {
+            "backgroundColor": "#13243B"
+          }
+        },
+        {
+          "id": "s4-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 345
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-left-h",
+          "type": "text",
+          "content": "NOT A MEASUREMENT LIMIT",
+          "position": {
+            "x": 60,
+            "y": 360
+          },
+          "size": {
+            "w": 400,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s4-left-b",
+          "type": "text",
+          "content": "Position and momentum aren't hidden properties we fail to measure. They're Fourier conjugates of the same wave \u2014 narrowing one *necessarily* widens the other.",
+          "position": {
+            "x": 60,
+            "y": 380
+          },
+          "size": {
+            "w": 400,
+            "h": 70
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s4-right-h",
+          "type": "text",
+          "content": "PRACTICAL CONSEQUENCES",
+          "position": {
+            "x": 500,
+            "y": 360
+          },
+          "size": {
+            "w": 400,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s4-right-b",
+          "type": "text",
+          "content": "Zero-point energy, tunneling, the stability of atoms (electrons can't sit still at the nucleus) \u2014 all follow from this single inequality.",
+          "position": {
+            "x": 500,
+            "y": 380
+          },
+          "size": {
+            "w": 400,
+            "h": 70
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        }
       ]
     },
     {
       "id": "s5",
-      "background": { "color": "#0F1419" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Particle in a box — the simplest solvable case. Build the box (two walls), then reveal 4 energy levels bottom-up. Each level shows its standing-wave pattern — n=1 is half a sine, n=2 a full sine, n=3 three half-waves. Energy goes as n². Side panel reveals E_n formula and the scaling intuition.",
+      "background": {
+        "color": "#13243B"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Particle in a box. On enter: title, two walls slide in at x=0 and x=L, floor line + axis label auto-reveal.\n\n[step:1]n=1 energy line + half-sine wave function \u2014 lowest energy, one antinode.[/step]\n\n[step:2]n=2 level + full sine (one node in the middle).[/step]\n\n[step:3]n=3 level + three half-waves (two nodes).[/step]\n\n[step:4]n=4 level + four half-waves. Spacing grows as n\u00b2.[/step]\n\n[step:5]Right panel header \"Energy quantisation\" + formula E\u2099 = n\u00b2\u03c0\u00b2\u210f\u00b2 / (2mL\u00b2) scales in.[/step]\n\n[step:6]Right panel body \u2014 shrink L \u2192 energies spread apart, heavier m \u2192 energies compress to classical continuum.[/step]\n\nKey insight: confinement forces discrete wavelengths, which forces discrete energies. No magic, just boundary conditions.",
       "animations": [
-        { "target": "s5-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s5-wall-l", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 500 },
-        { "target": "s5-wall-r", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s5-floor", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-xlbl-l", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-xlbl-r", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-yax-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e1-line", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e1-wave", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s5-e1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e2-line", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e2-wave", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s5-e2-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e3-line", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e3-wave", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s5-e3-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e4-line", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-e4-wave", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s5-e4-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-side-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-eq2", "trigger": "withPrevious", "effect": "scaleIn", "duration": 500 },
-        { "target": "s5-side-b", "trigger": "onClick", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s5-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s5-wall-l",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 500
+        },
+        {
+          "target": "s5-wall-r",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s5-floor",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-xlbl-l",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-xlbl-r",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-yax-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-e1-line",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s5-e1-wave",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-e1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-e2-line",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s5-e2-wave",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-e2-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-e3-line",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 3
+        },
+        {
+          "target": "s5-e3-wave",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-e3-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-e4-line",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 4
+        },
+        {
+          "target": "s5-e4-wave",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-e4-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-side-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 5
+        },
+        {
+          "target": "s5-eq2",
+          "trigger": "withPrevious",
+          "effect": "scaleIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-side-b",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 500,
+          "order": 6
+        }
       ],
       "elements": [
-        { "id": "s5-tag", "type": "text", "content": "§4  BOUND STATES", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s5-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s5-title", "type": "text", "content": "# Particle in a box — the simplest solvable case", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 24, "color": "#EAE6DF" } },
-        { "id": "s5-wall-l", "type": "shape", "shape": "rectangle", "position": { "x": 100, "y": 160 }, "size": { "w": 4, "h": 250 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s5-wall-r", "type": "shape", "shape": "rectangle", "position": { "x": 480, "y": 160 }, "size": { "w": 4, "h": 250 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s5-floor", "type": "shape", "shape": "line", "position": { "x": 104, "y": 410 }, "size": { "w": 376, "h": 2 }, "style": { "stroke": "#2A3541", "strokeWidth": 1, "waypoints": [{ "x": 0, "y": 0 }, { "x": 376, "y": 0 }] } },
-        { "id": "s5-xlbl-l", "type": "text", "content": "0", "position": { "x": 90, "y": 415 }, "size": { "w": 20, "h": 16 }, "style": { "fontSize": 10, "color": "#9DA8B3", "textAlign": "center" } },
-        { "id": "s5-xlbl-r", "type": "text", "content": "L", "position": { "x": 475, "y": 415 }, "size": { "w": 20, "h": 16 }, "style": { "fontSize": 10, "color": "#9DA8B3", "textAlign": "center" } },
-        { "id": "s5-e4-line", "type": "shape", "shape": "line", "position": { "x": 104, "y": 190 }, "size": { "w": 376, "h": 2 }, "style": { "stroke": "#B47AEA", "strokeWidth": 1, "opacity": 0.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 376, "y": 0 }] } },
-        { "id": "s5-e4-wave", "type": "shape", "shape": "line", "position": { "x": 104, "y": 170 }, "size": { "w": 376, "h": 40 }, "style": { "stroke": "#B47AEA", "strokeWidth": 2, "waypoints": [{ "x": 0, "y": 20 }, { "x": 24, "y": 0 }, { "x": 47, "y": 40 }, { "x": 71, "y": 0 }, { "x": 94, "y": 40 }, { "x": 118, "y": 0 }, { "x": 141, "y": 40 }, { "x": 165, "y": 0 }, { "x": 188, "y": 40 }, { "x": 212, "y": 0 }, { "x": 235, "y": 40 }, { "x": 259, "y": 0 }, { "x": 282, "y": 40 }, { "x": 306, "y": 0 }, { "x": 329, "y": 40 }, { "x": 352, "y": 0 }, { "x": 376, "y": 20 }] } },
-        { "id": "s5-e4-lbl", "type": "text", "content": "n = 4", "position": { "x": 490, "y": 182 }, "size": { "w": 60, "h": 18 }, "style": { "fontSize": 12, "color": "#B47AEA" } },
-        { "id": "s5-e3-line", "type": "shape", "shape": "line", "position": { "x": 104, "y": 255 }, "size": { "w": 376, "h": 2 }, "style": { "stroke": "#B47AEA", "strokeWidth": 1, "opacity": 0.4, "waypoints": [{ "x": 0, "y": 0 }, { "x": 376, "y": 0 }] } },
-        { "id": "s5-e3-wave", "type": "shape", "shape": "line", "position": { "x": 104, "y": 237 }, "size": { "w": 376, "h": 36 }, "style": { "stroke": "#B47AEA", "strokeWidth": 2, "waypoints": [{ "x": 0, "y": 18 }, { "x": 31, "y": 0 }, { "x": 63, "y": 36 }, { "x": 94, "y": 0 }, { "x": 125, "y": 36 }, { "x": 157, "y": 0 }, { "x": 188, "y": 36 }, { "x": 219, "y": 0 }, { "x": 251, "y": 36 }, { "x": 282, "y": 0 }, { "x": 313, "y": 36 }, { "x": 345, "y": 0 }, { "x": 376, "y": 18 }] } },
-        { "id": "s5-e3-lbl", "type": "text", "content": "n = 3", "position": { "x": 490, "y": 247 }, "size": { "w": 60, "h": 18 }, "style": { "fontSize": 12, "color": "#B47AEA", "opacity": 0.85 } },
-        { "id": "s5-e2-line", "type": "shape", "shape": "line", "position": { "x": 104, "y": 320 }, "size": { "w": 376, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 376, "y": 0 }] } },
-        { "id": "s5-e2-wave", "type": "shape", "shape": "line", "position": { "x": 104, "y": 305 }, "size": { "w": 376, "h": 30 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 2, "waypoints": [{ "x": 0, "y": 15 }, { "x": 47, "y": 0 }, { "x": 94, "y": 15 }, { "x": 141, "y": 30 }, { "x": 188, "y": 15 }, { "x": 235, "y": 0 }, { "x": 282, "y": 15 }, { "x": 329, "y": 30 }, { "x": 376, "y": 15 }] } },
-        { "id": "s5-e2-lbl", "type": "text", "content": "n = 2", "position": { "x": 490, "y": 312 }, "size": { "w": 60, "h": 18 }, "style": { "fontSize": 12, "color": "#4FC3F7" } },
-        { "id": "s5-e1-line", "type": "shape", "shape": "line", "position": { "x": 104, "y": 380 }, "size": { "w": 376, "h": 2 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 1, "opacity": 0.4, "waypoints": [{ "x": 0, "y": 0 }, { "x": 376, "y": 0 }] } },
-        { "id": "s5-e1-wave", "type": "shape", "shape": "line", "position": { "x": 104, "y": 368 }, "size": { "w": 376, "h": 24 }, "style": { "stroke": "#4FC3F7", "strokeWidth": 2, "waypoints": [{ "x": 0, "y": 12 }, { "x": 94, "y": 0 }, { "x": 188, "y": 0 }, { "x": 282, "y": 0 }, { "x": 376, "y": 12 }] } },
-        { "id": "s5-e1-lbl", "type": "text", "content": "n = 1", "position": { "x": 490, "y": 372 }, "size": { "w": 60, "h": 18 }, "style": { "fontSize": 12, "color": "#4FC3F7", "opacity": 0.85 } },
-        { "id": "s5-yax-lbl", "type": "text", "content": "E", "position": { "x": 80, "y": 155 }, "size": { "w": 18, "h": 20 }, "style": { "fontSize": 14, "color": "#9DA8B3", "textAlign": "right" } },
-        { "id": "s5-side-h", "type": "text", "content": "**Energy quantisation**", "position": { "x": 570, "y": 150 }, "size": { "w": 330, "h": 24 }, "style": { "fontSize": 15, "color": "#4FC3F7" } },
-        { "id": "s5-eq2", "type": "text", "content": "$$ E_n = \\frac{n^2 \\pi^2 \\hbar^2}{2 m L^2} $$", "position": { "x": 570, "y": 175 }, "size": { "w": 330, "h": 80 }, "style": { "fontSize": 22, "color": "#EAE6DF", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s5-side-b", "type": "text", "content": "Confining a particle to a region of size $L$ forces its wave to have wavelengths that fit integer half-cycles — and forces its energy to be discrete.\n\nShrink $L$ → energies spread apart.\nMake $m$ larger → energies compress toward classical continuum.", "position": { "x": 570, "y": 258 }, "size": { "w": 330, "h": 180 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } }
+        {
+          "id": "s5-tag",
+          "type": "text",
+          "content": "\u00a74  BOUND STATES",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s5-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-title",
+          "type": "text",
+          "content": "# Particle in a box \u2014 the simplest solvable case",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 24,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s5-wall-l",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 100,
+            "y": 160
+          },
+          "size": {
+            "w": 4,
+            "h": 250
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-wall-r",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 480,
+            "y": 160
+          },
+          "size": {
+            "w": 4,
+            "h": 250
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-floor",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 410
+          },
+          "size": {
+            "w": 376,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#2C3E52",
+            "strokeWidth": 1,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-xlbl-l",
+          "type": "text",
+          "content": "0",
+          "position": {
+            "x": 90,
+            "y": 415
+          },
+          "size": {
+            "w": 20,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8FA1B5",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-xlbl-r",
+          "type": "text",
+          "content": "L",
+          "position": {
+            "x": 475,
+            "y": 415
+          },
+          "size": {
+            "w": 20,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8FA1B5",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-e4-line",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 190
+          },
+          "size": {
+            "w": 376,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#7BA4C7",
+            "strokeWidth": 1,
+            "opacity": 0.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e4-wave",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 170
+          },
+          "size": {
+            "w": 376,
+            "h": 40
+          },
+          "style": {
+            "stroke": "#7BA4C7",
+            "strokeWidth": 2,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 20
+              },
+              {
+                "x": 24,
+                "y": 0
+              },
+              {
+                "x": 47,
+                "y": 40
+              },
+              {
+                "x": 71,
+                "y": 0
+              },
+              {
+                "x": 94,
+                "y": 40
+              },
+              {
+                "x": 118,
+                "y": 0
+              },
+              {
+                "x": 141,
+                "y": 40
+              },
+              {
+                "x": 165,
+                "y": 0
+              },
+              {
+                "x": 188,
+                "y": 40
+              },
+              {
+                "x": 212,
+                "y": 0
+              },
+              {
+                "x": 235,
+                "y": 40
+              },
+              {
+                "x": 259,
+                "y": 0
+              },
+              {
+                "x": 282,
+                "y": 40
+              },
+              {
+                "x": 306,
+                "y": 0
+              },
+              {
+                "x": 329,
+                "y": 40
+              },
+              {
+                "x": 352,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 20
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e4-lbl",
+          "type": "text",
+          "content": "n = 4",
+          "position": {
+            "x": 490,
+            "y": 182
+          },
+          "size": {
+            "w": 60,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s5-e3-line",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 255
+          },
+          "size": {
+            "w": 376,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#7BA4C7",
+            "strokeWidth": 1,
+            "opacity": 0.4,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e3-wave",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 237
+          },
+          "size": {
+            "w": 376,
+            "h": 36
+          },
+          "style": {
+            "stroke": "#7BA4C7",
+            "strokeWidth": 2,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 18
+              },
+              {
+                "x": 31,
+                "y": 0
+              },
+              {
+                "x": 63,
+                "y": 36
+              },
+              {
+                "x": 94,
+                "y": 0
+              },
+              {
+                "x": 125,
+                "y": 36
+              },
+              {
+                "x": 157,
+                "y": 0
+              },
+              {
+                "x": 188,
+                "y": 36
+              },
+              {
+                "x": 219,
+                "y": 0
+              },
+              {
+                "x": 251,
+                "y": 36
+              },
+              {
+                "x": 282,
+                "y": 0
+              },
+              {
+                "x": 313,
+                "y": 36
+              },
+              {
+                "x": 345,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 18
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e3-lbl",
+          "type": "text",
+          "content": "n = 3",
+          "position": {
+            "x": 490,
+            "y": 247
+          },
+          "size": {
+            "w": 60,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#7BA4C7",
+            "opacity": 0.85
+          }
+        },
+        {
+          "id": "s5-e2-line",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 320
+          },
+          "size": {
+            "w": 376,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e2-wave",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 305
+          },
+          "size": {
+            "w": 376,
+            "h": 30
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 2,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 15
+              },
+              {
+                "x": 47,
+                "y": 0
+              },
+              {
+                "x": 94,
+                "y": 15
+              },
+              {
+                "x": 141,
+                "y": 30
+              },
+              {
+                "x": 188,
+                "y": 15
+              },
+              {
+                "x": 235,
+                "y": 0
+              },
+              {
+                "x": 282,
+                "y": 15
+              },
+              {
+                "x": 329,
+                "y": 30
+              },
+              {
+                "x": 376,
+                "y": 15
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e2-lbl",
+          "type": "text",
+          "content": "n = 2",
+          "position": {
+            "x": 490,
+            "y": 312
+          },
+          "size": {
+            "w": 60,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s5-e1-line",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 380
+          },
+          "size": {
+            "w": 376,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 1,
+            "opacity": 0.4,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e1-wave",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 104,
+            "y": 368
+          },
+          "size": {
+            "w": 376,
+            "h": 24
+          },
+          "style": {
+            "stroke": "#C29F57",
+            "strokeWidth": 2,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 12
+              },
+              {
+                "x": 94,
+                "y": 0
+              },
+              {
+                "x": 188,
+                "y": 0
+              },
+              {
+                "x": 282,
+                "y": 0
+              },
+              {
+                "x": 376,
+                "y": 12
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-e1-lbl",
+          "type": "text",
+          "content": "n = 1",
+          "position": {
+            "x": 490,
+            "y": 372
+          },
+          "size": {
+            "w": 60,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#C29F57",
+            "opacity": 0.85
+          }
+        },
+        {
+          "id": "s5-yax-lbl",
+          "type": "text",
+          "content": "E",
+          "position": {
+            "x": 80,
+            "y": 155
+          },
+          "size": {
+            "w": 18,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#8FA1B5",
+            "textAlign": "right"
+          }
+        },
+        {
+          "id": "s5-side-h",
+          "type": "text",
+          "content": "**Energy quantisation**",
+          "position": {
+            "x": 570,
+            "y": 150
+          },
+          "size": {
+            "w": 330,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s5-eq2",
+          "type": "text",
+          "content": "$$ E_n = \\frac{n^2 \\pi^2 \\hbar^2}{2 m L^2} $$",
+          "position": {
+            "x": 570,
+            "y": 175
+          },
+          "size": {
+            "w": 330,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#E8E8E3",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s5-side-b",
+          "type": "text",
+          "content": "Confining a particle to a region of size $L$ forces its wave to have wavelengths that fit integer half-cycles \u2014 and forces its energy to be discrete.\n\nShrink $L$ \u2192 energies spread apart.\nMake $m$ larger \u2192 energies compress toward classical continuum.",
+          "position": {
+            "x": 570,
+            "y": 258
+          },
+          "size": {
+            "w": 330,
+            "h": 180
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        }
       ]
     },
     {
       "id": "s6",
-      "background": { "color": "#0F1419" },
+      "background": {
+        "color": "#13243B"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Closing — quantum is the OS of reality. Reveal the four application cards left to right: transistors, lasers, MRI, DNA. Every piece of modern technology AND biology runs on these equations. End with the Bohr quote and the teaser for the next lecture (hydrogen atom).",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Closing \u2014 quantum is the OS of reality. On enter: chalkboard background overlay, section tag, title, subtitle.\n\n[step:1]Card 1: Transistors. Band gaps, p-n junctions, tunneling current. A 5-nm MOSFET is a quantum device.[/step]\n\n[step:2]Card 2: Lasers. Stimulated emission + population inversion \u2192 coherent light from discrete energy levels.[/step]\n\n[step:3]Card 3: MRI. Nuclear spin precession in a magnetic field. Maps hydrogen density non-invasively.[/step]\n\n[step:4]Card 4: Your DNA. Hydrogen bonds, base pairing. Chemistry is applied quantum mechanics.[/step]\n\n[step:5]Horizontal rule + Bohr quote appears \u2014 \"Anyone who is not shocked by quantum theory has not understood it.\"[/step]\n\nLanding tone: don't oversell. The equations look intimidating but they describe reality with vanishingly small error.",
       "animations": [
-        { "target": "s6-chalk-img", "trigger": "onEnter", "effect": "fadeIn", "duration": 700 },
-        { "target": "s6-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s6-sub", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 300 },
-        { "target": "s6-c1-bg", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c1-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-c1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c2-bg", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-c2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c3-bg", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-c3-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c4-bg", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-c4-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-c4-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-rule2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-quote", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s6-chalk-img",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700
+        },
+        {
+          "target": "s6-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s6-sub",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s6-c1-bg",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 1
+        },
+        {
+          "target": "s6-c1-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-c1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-c2-bg",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 2
+        },
+        {
+          "target": "s6-c2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-c2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-c3-bg",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 3
+        },
+        {
+          "target": "s6-c3-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-c3-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-c4-bg",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 4
+        },
+        {
+          "target": "s6-c4-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-c4-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-rule2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 5
+        },
+        {
+          "target": "s6-quote",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s6-chalk-img", "type": "image", "src": "./assets/chalkboard.png", "alt": "Moody old university physics chalkboard with faint erased equations — atmospheric classroom texture", "position": { "x": 0, "y": 0 }, "size": { "w": 960, "h": 540 }, "style": { "objectFit": "cover", "opacity": 0.18 } },
-        { "id": "s6-tag", "type": "text", "content": "§5  WHY IT MATTERS", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#4FC3F7" } },
-        { "id": "s6-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#4FC3F7", "stroke": "#4FC3F7", "strokeWidth": 0 } },
-        { "id": "s6-title", "type": "text", "content": "# Quantum is the OS of reality", "position": { "x": 60, "y": 90 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 40, "color": "#EAE6DF" } },
-        { "id": "s6-sub", "type": "text", "content": "Every piece of modern technology is a quantum effect, engineered into existence.", "position": { "x": 60, "y": 155 }, "size": { "w": 840, "h": 28 }, "style": { "fontSize": 15, "color": "#B47AEA" } },
-        { "id": "s6-c1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 200 }, "size": { "w": 200, "h": 170 }, "style": { "fill": "#1A2330", "stroke": "#2A3541", "strokeWidth": 1, "borderRadius": 6 } },
-        { "id": "s6-c1-h", "type": "text", "content": "**Transistors**", "position": { "x": 76, "y": 215 }, "size": { "w": 168, "h": 24 }, "style": { "fontSize": 15, "color": "#4FC3F7" } },
-        { "id": "s6-c1-b", "type": "text", "content": "Band gaps, p-n junctions, and tunneling current — a 5-nm MOSFET is a quantum device.", "position": { "x": 76, "y": 245 }, "size": { "w": 168, "h": 110 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s6-c2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 280, "y": 200 }, "size": { "w": 200, "h": 170 }, "style": { "fill": "#1A2330", "stroke": "#2A3541", "strokeWidth": 1, "borderRadius": 6 } },
-        { "id": "s6-c2-h", "type": "text", "content": "**Lasers**", "position": { "x": 296, "y": 215 }, "size": { "w": 168, "h": 24 }, "style": { "fontSize": 15, "color": "#4FC3F7" } },
-        { "id": "s6-c2-b", "type": "text", "content": "Stimulated emission and population inversion — discrete energy levels turned into coherent light.", "position": { "x": 296, "y": 245 }, "size": { "w": 168, "h": 110 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s6-c3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 500, "y": 200 }, "size": { "w": 200, "h": 170 }, "style": { "fill": "#1A2330", "stroke": "#2A3541", "strokeWidth": 1, "borderRadius": 6 } },
-        { "id": "s6-c3-h", "type": "text", "content": "**MRI**", "position": { "x": 516, "y": 215 }, "size": { "w": 168, "h": 24 }, "style": { "fontSize": 15, "color": "#B47AEA" } },
-        { "id": "s6-c3-b", "type": "text", "content": "Nuclear spin precession in a magnetic field. Maps hydrogen density in soft tissue non-invasively.", "position": { "x": 516, "y": 245 }, "size": { "w": 168, "h": 110 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s6-c4-bg", "type": "shape", "shape": "rectangle", "position": { "x": 720, "y": 200 }, "size": { "w": 180, "h": 170 }, "style": { "fill": "#1A2330", "stroke": "#2A3541", "strokeWidth": 1, "borderRadius": 6 } },
-        { "id": "s6-c4-h", "type": "text", "content": "**Your DNA**", "position": { "x": 736, "y": 215 }, "size": { "w": 148, "h": 24 }, "style": { "fontSize": 15, "color": "#B47AEA" } },
-        { "id": "s6-c4-b", "type": "text", "content": "Hydrogen bonds and base pairing — chemistry is just applied quantum mechanics.", "position": { "x": 736, "y": 245 }, "size": { "w": 148, "h": 110 }, "style": { "fontSize": 12, "color": "#9DA8B3", "lineHeight": 1.6 } },
-        { "id": "s6-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 395 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#2A3541", "stroke": "#2A3541", "strokeWidth": 0 } },
-        { "id": "s6-quote", "type": "text", "content": "*\"Anyone who is not shocked by quantum theory has not understood it.\"*  — Niels Bohr", "position": { "x": 60, "y": 410 }, "size": { "w": 840, "h": 24 }, "style": { "fontSize": 13, "color": "#EAE6DF" } },
-        { "id": "s6-foot", "type": "text", "content": "NEXT LECTURE · THE HYDROGEN ATOM", "position": { "x": 60, "y": 450 }, "size": { "w": 840, "h": 18 }, "style": { "fontSize": 10, "color": "#6B7B8A" } }
+        {
+          "id": "s6-chalk-img",
+          "type": "image",
+          "src": "./assets/chalkboard.png",
+          "alt": "Moody old university physics chalkboard with faint erased equations \u2014 atmospheric classroom texture",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "w": 960,
+            "h": 540
+          },
+          "style": {
+            "objectFit": "cover",
+            "opacity": 0.18
+          }
+        },
+        {
+          "id": "s6-tag",
+          "type": "text",
+          "content": "\u00a75  WHY IT MATTERS",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s6-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C29F57",
+            "stroke": "#C29F57",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-title",
+          "type": "text",
+          "content": "# Quantum is the OS of reality",
+          "position": {
+            "x": 60,
+            "y": 90
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 40,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s6-sub",
+          "type": "text",
+          "content": "Every piece of modern technology is a quantum effect, engineered into existence.",
+          "position": {
+            "x": 60,
+            "y": 155
+          },
+          "size": {
+            "w": 840,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s6-c1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 200
+          },
+          "size": {
+            "w": 200,
+            "h": 170
+          },
+          "style": {
+            "fill": "#1B3352",
+            "stroke": "#2C3E52",
+            "strokeWidth": 1,
+            "borderRadius": 6
+          }
+        },
+        {
+          "id": "s6-c1-h",
+          "type": "text",
+          "content": "**Transistors**",
+          "position": {
+            "x": 76,
+            "y": 215
+          },
+          "size": {
+            "w": 168,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s6-c1-b",
+          "type": "text",
+          "content": "Band gaps, p-n junctions, and tunneling current \u2014 a 5-nm MOSFET is a quantum device.",
+          "position": {
+            "x": 76,
+            "y": 245
+          },
+          "size": {
+            "w": 168,
+            "h": 110
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s6-c2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 280,
+            "y": 200
+          },
+          "size": {
+            "w": 200,
+            "h": 170
+          },
+          "style": {
+            "fill": "#1B3352",
+            "stroke": "#2C3E52",
+            "strokeWidth": 1,
+            "borderRadius": 6
+          }
+        },
+        {
+          "id": "s6-c2-h",
+          "type": "text",
+          "content": "**Lasers**",
+          "position": {
+            "x": 296,
+            "y": 215
+          },
+          "size": {
+            "w": 168,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#C29F57"
+          }
+        },
+        {
+          "id": "s6-c2-b",
+          "type": "text",
+          "content": "Stimulated emission and population inversion \u2014 discrete energy levels turned into coherent light.",
+          "position": {
+            "x": 296,
+            "y": 245
+          },
+          "size": {
+            "w": 168,
+            "h": 110
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s6-c3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 500,
+            "y": 200
+          },
+          "size": {
+            "w": 200,
+            "h": 170
+          },
+          "style": {
+            "fill": "#1B3352",
+            "stroke": "#2C3E52",
+            "strokeWidth": 1,
+            "borderRadius": 6
+          }
+        },
+        {
+          "id": "s6-c3-h",
+          "type": "text",
+          "content": "**MRI**",
+          "position": {
+            "x": 516,
+            "y": 215
+          },
+          "size": {
+            "w": 168,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s6-c3-b",
+          "type": "text",
+          "content": "Nuclear spin precession in a magnetic field. Maps hydrogen density in soft tissue non-invasively.",
+          "position": {
+            "x": 516,
+            "y": 245
+          },
+          "size": {
+            "w": 168,
+            "h": 110
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s6-c4-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 720,
+            "y": 200
+          },
+          "size": {
+            "w": 180,
+            "h": 170
+          },
+          "style": {
+            "fill": "#1B3352",
+            "stroke": "#2C3E52",
+            "strokeWidth": 1,
+            "borderRadius": 6
+          }
+        },
+        {
+          "id": "s6-c4-h",
+          "type": "text",
+          "content": "**Your DNA**",
+          "position": {
+            "x": 736,
+            "y": 215
+          },
+          "size": {
+            "w": 148,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#7BA4C7"
+          }
+        },
+        {
+          "id": "s6-c4-b",
+          "type": "text",
+          "content": "Hydrogen bonds and base pairing \u2014 chemistry is just applied quantum mechanics.",
+          "position": {
+            "x": 736,
+            "y": 245
+          },
+          "size": {
+            "w": 148,
+            "h": 110
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8FA1B5",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s6-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 395
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#2C3E52",
+            "stroke": "#2C3E52",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-quote",
+          "type": "text",
+          "content": "*\"Anyone who is not shocked by quantum theory has not understood it.\"*  \u2014 Niels Bohr",
+          "position": {
+            "x": 60,
+            "y": 410
+          },
+          "size": {
+            "w": 840,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#E8E8E3"
+          }
+        },
+        {
+          "id": "s6-foot",
+          "type": "text",
+          "content": "NEXT LECTURE \u00b7 THE HYDROGEN ATOM",
+          "position": {
+            "x": 60,
+            "y": 450
+          },
+          "size": {
+            "w": 840,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6E7F93"
+          }
+        }
       ]
     }
   ]

@@ -6,303 +6,2837 @@
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#FDF4E3" } },
-    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 14, "color": "#0A2540" },
-    "code": { "theme": "github-light", "fontSize": 11 },
-    "shape": { "stroke": "#C8B99C", "strokeWidth": 1 },
-    "table": { "headerBackground": "#F2E4C8", "borderColor": "#C8B99C" }
+    "slide": {
+      "background": {
+        "color": "#FDF4E3"
+      }
+    },
+    "text": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "fontSize": 14,
+      "color": "#0A2540"
+    },
+    "code": {
+      "theme": "github-light",
+      "fontSize": 11
+    },
+    "shape": {
+      "stroke": "#C8B99C",
+      "strokeWidth": 1
+    },
+    "table": {
+      "headerBackground": "#F2E4C8",
+      "borderColor": "#C8B99C"
+    }
   },
-  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number", "color": "#6B7B8A", "fontSize": 10, "margin": 20 },
+  "pageNumbers": {
+    "enabled": true,
+    "position": "bottom-right",
+    "format": "number",
+    "color": "#6B7B8A",
+    "fontSize": 10,
+    "margin": 20
+  },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#FDF4E3" },
+      "background": {
+        "color": "#FDF4E3"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Welcome to Macroeconomics 101. The masthead rules set the tone — a serious financial paper. Emphasize the $105T world-GDP stat: for context, that's larger than all public equity markets combined. Six slides ahead: three indicators, one identity, one historical episode (CPI), the Phillips curve, and the policy toolkit.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Welcome to Macroeconomics 101. The masthead rules set the tone \u2014 a serious financial paper. Everything auto-reveals \u2014 no clicks. Emphasize the $105T world-GDP stat: larger than every public equity market combined. Six slides ahead: three indicators, one identity, one historical episode (CPI), the Phillips curve, and the policy toolkit.",
       "animations": [
-        { "target": "s1-mast", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-mast-date", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-rule2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 600, "delay": 300 },
-        { "target": "s1-deck", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 200 },
-        { "target": "s1-body", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 900 },
-        { "target": "s1-stat-num", "trigger": "onEnter", "effect": "scaleIn", "duration": 500, "delay": 1200 },
-        { "target": "s1-stat-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-bank-img", "trigger": "onEnter", "effect": "fadeIn", "duration": 600, "delay": 1400 },
-        { "target": "s1-toc", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 1800 }
+        {
+          "target": "s1-mast",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-mast-date",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-rule2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-bank-img",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700,
+          "delay": 300
+        },
+        {
+          "target": "s1-bank-caption",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s1-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 600,
+          "delay": 300
+        },
+        {
+          "target": "s1-deck",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 200
+        },
+        {
+          "target": "s1-body",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 900
+        },
+        {
+          "target": "s1-stat-rule",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 1200
+        },
+        {
+          "target": "s1-stat-tag",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-stat-num",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 500,
+          "delay": 1400
+        },
+        {
+          "target": "s1-stat-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-toc",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 1800
+        }
       ],
       "elements": [
-        { "id": "s1-mast", "type": "text", "content": "THE DAILY ECONOMY", "position": { "x": 60, "y": 40 }, "size": { "w": 500, "h": 20 }, "style": { "fontSize": 11, "color": "#FF6B35" } },
-        { "id": "s1-mast-date", "type": "text", "content": "Vol. I · Issue 01 · Autumn Term", "position": { "x": 560, "y": 40 }, "size": { "w": 340, "h": 20 }, "style": { "fontSize": 11, "color": "#6B7B8A", "textAlign": "right" } },
-        { "id": "s1-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 72 }, "size": { "w": 840, "h": 3 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s1-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 77 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s1-title", "type": "text", "content": "# Macroeconomics 101", "position": { "x": 60, "y": 105 }, "size": { "w": 840, "h": 90 }, "style": { "fontSize": 64, "color": "#0A2540" } },
-        { "id": "s1-deck", "type": "text", "content": "GDP · Inflation · Unemployment · Monetary Policy", "position": { "x": 60, "y": 205 }, "size": { "w": 840, "h": 28 }, "style": { "fontSize": 18, "color": "#FF6B35" } },
-        { "id": "s1-body", "type": "text", "content": "A six-slide primer on the three numbers that define the business cycle — and the tools central banks use to lean against it.", "position": { "x": 60, "y": 245 }, "size": { "w": 560, "h": 60 }, "style": { "fontSize": 14, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s1-stat-num", "type": "text", "content": "$105T", "position": { "x": 640, "y": 230 }, "size": { "w": 260, "h": 70 }, "style": { "fontSize": 54, "color": "#0A2540", "textAlign": "right" } },
-        { "id": "s1-stat-lbl", "type": "text", "content": "WORLD GDP, 2024 NOMINAL\nWorld Bank estimate", "position": { "x": 640, "y": 305 }, "size": { "w": 260, "h": 40 }, "style": { "fontSize": 10, "color": "#6B7B8A", "textAlign": "right", "lineHeight": 1.4 } },
-        { "id": "s1-bank-img", "type": "image", "src": "./assets/central-bank.png", "alt": "Neoclassical stone facade of a central bank building at golden hour — columns and carved pediment in warm amber light", "position": { "x": 60, "y": 340 }, "size": { "w": 560, "h": 50 }, "style": { "objectFit": "cover", "borderRadius": 2, "opacity": 0.9 } },
-        { "id": "s1-rule3", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 400 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s1-toc", "type": "text", "content": "INSIDE:  01 Three key indicators   ·   02 GDP identity   ·   03 Inflation & the CPI   ·   04 Phillips curve   ·   05 Policy toolkit", "position": { "x": 60, "y": 415 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 11, "color": "#6B7B8A" } },
-        { "id": "s1-foot", "type": "text", "content": "TEKKAL DEMOS · EDUCATION", "position": { "x": 60, "y": 455 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 10, "color": "#FF6B35" } }
+        {
+          "id": "s1-mast",
+          "type": "text",
+          "content": "THE DAILY ECONOMY",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 500,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s1-mast-date",
+          "type": "text",
+          "content": "Vol. I \u00b7 Issue 01 \u00b7 Autumn Term",
+          "position": {
+            "x": 560,
+            "y": 40
+          },
+          "size": {
+            "w": 340,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A",
+            "textAlign": "right"
+          }
+        },
+        {
+          "id": "s1-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 72
+          },
+          "size": {
+            "w": 840,
+            "h": 3
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 77
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-bank-img",
+          "type": "image",
+          "src": "./assets/central-bank.png",
+          "alt": "Neoclassical stone facade of a central bank building at golden hour \u2014 columns and carved pediment in warm amber light, used as the right-side hero illustration",
+          "position": {
+            "x": 560,
+            "y": 100
+          },
+          "size": {
+            "w": 340,
+            "h": 250
+          },
+          "style": {
+            "objectFit": "cover",
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s1-bank-caption",
+          "type": "text",
+          "content": "Fig. 1 \u00b7 Central bank facade \u00b7 golden hour",
+          "position": {
+            "x": 560,
+            "y": 354
+          },
+          "size": {
+            "w": 340,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#6B7B8A"
+          }
+        },
+        {
+          "id": "s1-title",
+          "type": "text",
+          "content": "# Macroeconomics 101",
+          "position": {
+            "x": 60,
+            "y": 100
+          },
+          "size": {
+            "w": 480,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 52,
+            "color": "#0A2540",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "s1-deck",
+          "type": "text",
+          "content": "GDP \u00b7 Inflation \u00b7 Unemployment \u00b7 Monetary Policy",
+          "position": {
+            "x": 60,
+            "y": 205
+          },
+          "size": {
+            "w": 480,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 16,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s1-body",
+          "type": "text",
+          "content": "A six-slide primer on the three numbers that define the business cycle \u2014 and the tools central banks use to lean against it.",
+          "position": {
+            "x": 60,
+            "y": 245
+          },
+          "size": {
+            "w": 480,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s1-stat-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 330
+          },
+          "size": {
+            "w": 480,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-stat-tag",
+          "type": "text",
+          "content": "WORLD GDP 2024",
+          "position": {
+            "x": 60,
+            "y": 338
+          },
+          "size": {
+            "w": 480,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s1-stat-num",
+          "type": "text",
+          "content": "$105T",
+          "position": {
+            "x": 60,
+            "y": 358
+          },
+          "size": {
+            "w": 160,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s1-stat-lbl",
+          "type": "text",
+          "content": "nominal, World Bank\nlarger than every public equity market combined",
+          "position": {
+            "x": 230,
+            "y": 360
+          },
+          "size": {
+            "w": 310,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-rule3",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 410
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-toc",
+          "type": "text",
+          "content": "INSIDE:  01 Three key indicators   \u00b7   02 GDP identity   \u00b7   03 Inflation & the CPI   \u00b7   04 Phillips curve   \u00b7   05 Policy toolkit",
+          "position": {
+            "x": 60,
+            "y": 420
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A"
+          }
+        },
+        {
+          "id": "s1-foot",
+          "type": "text",
+          "content": "TEKKAL DEMOS \u00b7 EDUCATION",
+          "position": {
+            "x": 60,
+            "y": 455
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        }
       ]
     },
     {
       "id": "s2",
-      "background": { "color": "#FDF4E3" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Three indicators revealed one at a time. Click to bring in GDP (size of the economy), then inflation (purchasing power), then unemployment (distribution of the pain). Each card has a current US stat. Finish with the rule of thumb — divergence is where the policy argument lives.",
+      "background": {
+        "color": "#FDF4E3"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Three indicators. On enter: section tag, rule, title \"What economists watch\", intro subtitle.\n\n[step:1]Indicator 01 \u00b7 GDP reveals \u2014 number + heading + body + stat line \"US 2024: $28.1T, +2.8% YoY\".[/step]\n\n[step:2]Indicator 02 \u00b7 Inflation reveals \u2014 US CPI 2024 +3.0%, Fed target 2.0%.[/step]\n\n[step:3]Indicator 03 \u00b7 Unemployment reveals \u2014 US U-3 4.1%, NAIRU ~4.4%.[/step]\n\n[step:4]Bottom rule + pullquote: \"When two of the three move opposite expectations, the policy argument gets loud.\"[/step]\n\nRule of thumb: two usually move together, one lags. Policy arguments live in divergence.",
       "animations": [
-        { "target": "s2-section", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s2-subtitle", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c1-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c1-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c1-stat", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-div1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c2-stat", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-div2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c3-stat", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-rule2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-pullquote", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s2-section",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s2-subtitle",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-c1-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s2-c1-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-c1-stat",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-div1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c2-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s2-c2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-c2-stat",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-div2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c3-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 3
+        },
+        {
+          "target": "s2-c3-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c3-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-c3-stat",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-rule2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 4
+        },
+        {
+          "target": "s2-pullquote",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s2-section", "type": "text", "content": "01 · INDICATORS", "position": { "x": 60, "y": 30 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 52 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s2-title", "type": "text", "content": "# What economists watch", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 30, "color": "#0A2540" } },
-        { "id": "s2-subtitle", "type": "text", "content": "Three numbers, three windows onto the same economy. Two move together, one lags — and the interesting story is always in how they diverge.", "position": { "x": 60, "y": 118 }, "size": { "w": 840, "h": 32 }, "style": { "fontSize": 13, "color": "#6B7B8A", "lineHeight": 1.5 } },
-        { "id": "s2-c1-num", "type": "text", "content": "01", "position": { "x": 60, "y": 170 }, "size": { "w": 36, "h": 40 }, "style": { "fontSize": 36, "color": "#FF6B35" } },
-        { "id": "s2-c1-h", "type": "text", "content": "**GDP**", "position": { "x": 104, "y": 178 }, "size": { "w": 216, "h": 28 }, "style": { "fontSize": 22, "color": "#0A2540" } },
-        { "id": "s2-c1-b", "type": "text", "content": "Total market value of final goods and services produced in a period. The headline number everyone quotes — and everyone argues about.", "position": { "x": 60, "y": 215 }, "size": { "w": 260, "h": 90 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s2-c1-stat", "type": "text", "content": "US, 2024:  **$28.1T**\nGrowth:  +2.8% YoY", "position": { "x": 60, "y": 315 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 11, "color": "#6B7B8A", "lineHeight": 1.6 } },
-        { "id": "s2-div1", "type": "shape", "shape": "rectangle", "position": { "x": 328, "y": 170 }, "size": { "w": 1, "h": 200 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s2-c2-num", "type": "text", "content": "02", "position": { "x": 340, "y": 170 }, "size": { "w": 36, "h": 40 }, "style": { "fontSize": 36, "color": "#FF6B35" } },
-        { "id": "s2-c2-h", "type": "text", "content": "**Inflation**", "position": { "x": 384, "y": 178 }, "size": { "w": 216, "h": 28 }, "style": { "fontSize": 22, "color": "#0A2540" } },
-        { "id": "s2-c2-b", "type": "text", "content": "Rate at which the price level rises. Measured by CPI or the GDP deflator. Moderate is healthy; runaway is corrosive to savings and contracts.", "position": { "x": 340, "y": 215 }, "size": { "w": 260, "h": 90 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s2-c2-stat", "type": "text", "content": "US CPI, 2024:  **+3.0%**\nFed target:  2.0%", "position": { "x": 340, "y": 315 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 11, "color": "#6B7B8A", "lineHeight": 1.6 } },
-        { "id": "s2-div2", "type": "shape", "shape": "rectangle", "position": { "x": 608, "y": 170 }, "size": { "w": 1, "h": 200 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s2-c3-num", "type": "text", "content": "03", "position": { "x": 620, "y": 170 }, "size": { "w": 36, "h": 40 }, "style": { "fontSize": 36, "color": "#FF6B35" } },
-        { "id": "s2-c3-h", "type": "text", "content": "**Unemployment**", "position": { "x": 664, "y": 178 }, "size": { "w": 236, "h": 28 }, "style": { "fontSize": 22, "color": "#0A2540" } },
-        { "id": "s2-c3-b", "type": "text", "content": "Share of the labor force actively seeking work. Tracks the business cycle and sets the political temperature of every news cycle.", "position": { "x": 620, "y": 215 }, "size": { "w": 260, "h": 90 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s2-c3-stat", "type": "text", "content": "US U-3, 2024:  **4.1%**\nNAIRU est.:  ~4.4%", "position": { "x": 620, "y": 315 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 11, "color": "#6B7B8A", "lineHeight": 1.6 } },
-        { "id": "s2-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 390 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s2-pullquote", "type": "text", "content": "*\"When two of the three move opposite expectations, the policy argument gets loud.\"*", "position": { "x": 60, "y": 405 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 13, "color": "#0A2540" } }
+        {
+          "id": "s2-section",
+          "type": "text",
+          "content": "01 \u00b7 INDICATORS",
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 52
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-title",
+          "type": "text",
+          "content": "# What economists watch",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s2-subtitle",
+          "type": "text",
+          "content": "Three numbers, three windows onto the same economy. Two move together, one lags \u2014 and the interesting story is always in how they diverge.",
+          "position": {
+            "x": 60,
+            "y": 118
+          },
+          "size": {
+            "w": 840,
+            "h": 32
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#6B7B8A",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s2-c1-num",
+          "type": "text",
+          "content": "01",
+          "position": {
+            "x": 60,
+            "y": 170
+          },
+          "size": {
+            "w": 36,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 36,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s2-c1-h",
+          "type": "text",
+          "content": "**GDP**",
+          "position": {
+            "x": 104,
+            "y": 178
+          },
+          "size": {
+            "w": 216,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s2-c1-b",
+          "type": "text",
+          "content": "Total market value of final goods and services produced in a period. The headline number everyone quotes \u2014 and everyone argues about.",
+          "position": {
+            "x": 60,
+            "y": 215
+          },
+          "size": {
+            "w": 260,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-c1-stat",
+          "type": "text",
+          "content": "US, 2024:  **$28.1T**\nGrowth:  +2.8% YoY",
+          "position": {
+            "x": 60,
+            "y": 315
+          },
+          "size": {
+            "w": 260,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-div1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 328,
+            "y": 170
+          },
+          "size": {
+            "w": 1,
+            "h": 200
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c2-num",
+          "type": "text",
+          "content": "02",
+          "position": {
+            "x": 340,
+            "y": 170
+          },
+          "size": {
+            "w": 36,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 36,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s2-c2-h",
+          "type": "text",
+          "content": "**Inflation**",
+          "position": {
+            "x": 384,
+            "y": 178
+          },
+          "size": {
+            "w": 216,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s2-c2-b",
+          "type": "text",
+          "content": "Rate at which the price level rises. Measured by CPI or the GDP deflator. Moderate is healthy; runaway is corrosive to savings and contracts.",
+          "position": {
+            "x": 340,
+            "y": 215
+          },
+          "size": {
+            "w": 260,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-c2-stat",
+          "type": "text",
+          "content": "US CPI, 2024:  **+3.0%**\nFed target:  2.0%",
+          "position": {
+            "x": 340,
+            "y": 315
+          },
+          "size": {
+            "w": 260,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-div2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 608,
+            "y": 170
+          },
+          "size": {
+            "w": 1,
+            "h": 200
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c3-num",
+          "type": "text",
+          "content": "03",
+          "position": {
+            "x": 620,
+            "y": 170
+          },
+          "size": {
+            "w": 36,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 36,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s2-c3-h",
+          "type": "text",
+          "content": "**Unemployment**",
+          "position": {
+            "x": 664,
+            "y": 178
+          },
+          "size": {
+            "w": 236,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s2-c3-b",
+          "type": "text",
+          "content": "Share of the labor force actively seeking work. Tracks the business cycle and sets the political temperature of every news cycle.",
+          "position": {
+            "x": 620,
+            "y": 215
+          },
+          "size": {
+            "w": 260,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-c3-stat",
+          "type": "text",
+          "content": "US U-3, 2024:  **4.1%**\nNAIRU est.:  ~4.4%",
+          "position": {
+            "x": 620,
+            "y": 315
+          },
+          "size": {
+            "w": 260,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 390
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-pullquote",
+          "type": "text",
+          "content": "*\"When two of the three move opposite expectations, the policy argument gets loud.\"*",
+          "position": {
+            "x": 60,
+            "y": 405
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#0A2540"
+          }
+        }
       ]
     },
     {
       "id": "s3",
-      "background": { "color": "#FDF4E3" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The GDP expenditure identity: Y = C + I + G + net exports. Formula first (math already centered and sized for the fraction-like structure), then reveal the bar chart showing real US shares. Consumption dominates at ~68% — in America, the consumer IS the economy. Legend table appears on the right.",
+      "background": {
+        "color": "#FDF4E3"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "GDP expenditure identity. On enter: title + formula box \"Y = C + I + G + (X \u2212 M)\" auto-reveal.\n\n[step:1]Bar chart cascades in \u2014 Consumption 68% \u2192 Investment 18% \u2192 Government 18% \u2192 Net exports \u22124% (negative bar in orange).[/step]\n\n[step:2]Right-side legend table fades in \u2014 Term / Meaning / US share rows mirroring the bars.[/step]\n\nIn America, the consumer IS the economy \u2014 consumption dominates at ~68%.",
       "animations": [
-        { "target": "s3-section", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s3-formula-bg", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 500 },
-        { "target": "s3-formula", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-chart-title", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-chart-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b1-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 500 },
-        { "target": "s3-b1-v", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b2-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-b2-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s3-b2-v", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-b3-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-b3-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s3-b3-v", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-b4-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-b4-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s3-b4-v", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s3-table", "trigger": "onClick", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s3-section",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s3-formula-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 500
+        },
+        {
+          "target": "s3-formula",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s3-chart-title",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s3-chart-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-b1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-b1-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 500
+        },
+        {
+          "target": "s3-b1-v",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-b2-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-b2-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s3-b2-v",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-b3-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-b3-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s3-b3-v",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-b4-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-b4-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s3-b4-v",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s3-table",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 500,
+          "order": 2
+        }
       ],
       "elements": [
-        { "id": "s3-section", "type": "text", "content": "02 · THE IDENTITY", "position": { "x": 60, "y": 30 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 52 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s3-title", "type": "text", "content": "# GDP from the expenditure side", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 30, "color": "#0A2540" } },
-        { "id": "s3-formula-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 130 }, "size": { "w": 840, "h": 90 }, "style": { "fill": "#F2E4C8", "stroke": "#C8B99C", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-formula", "type": "text", "content": "$$ Y \\;=\\; C \\;+\\; I \\;+\\; G \\;+\\; (X - M) $$", "position": { "x": 60, "y": 140 }, "size": { "w": 840, "h": 80 }, "style": { "fontSize": 30, "color": "#0A2540", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s3-chart-title", "type": "text", "content": "SHARE OF US GDP (%)", "position": { "x": 60, "y": 245 }, "size": { "w": 430, "h": 14 }, "style": { "fontSize": 9, "color": "#FF6B35" } },
-        { "id": "s3-chart-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 263 }, "size": { "w": 430, "h": 1 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s3-b1-lbl", "type": "text", "content": "Consumption", "position": { "x": 60, "y": 275 }, "size": { "w": 100, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b1-bar", "type": "shape", "shape": "rectangle", "position": { "x": 170, "y": 277 }, "size": { "w": 238, "h": 16 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s3-b1-v", "type": "text", "content": "68%", "position": { "x": 415, "y": 275 }, "size": { "w": 70, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b2-lbl", "type": "text", "content": "Investment", "position": { "x": 60, "y": 305 }, "size": { "w": 100, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b2-bar", "type": "shape", "shape": "rectangle", "position": { "x": 170, "y": 307 }, "size": { "w": 63, "h": 16 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s3-b2-v", "type": "text", "content": "18%", "position": { "x": 240, "y": 305 }, "size": { "w": 70, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b3-lbl", "type": "text", "content": "Government", "position": { "x": 60, "y": 335 }, "size": { "w": 100, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b3-bar", "type": "shape", "shape": "rectangle", "position": { "x": 170, "y": 337 }, "size": { "w": 63, "h": 16 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s3-b3-v", "type": "text", "content": "18%", "position": { "x": 240, "y": 335 }, "size": { "w": 70, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b4-lbl", "type": "text", "content": "Net exports", "position": { "x": 60, "y": 365 }, "size": { "w": 100, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540" } },
-        { "id": "s3-b4-bar", "type": "shape", "shape": "rectangle", "position": { "x": 156, "y": 367 }, "size": { "w": 14, "h": 16 }, "style": { "fill": "#FF6B35", "stroke": "#FF6B35", "strokeWidth": 0 } },
-        { "id": "s3-b4-v", "type": "text", "content": "−4%", "position": { "x": 110, "y": 365 }, "size": { "w": 50, "h": 20 }, "style": { "fontSize": 12, "color": "#FF6B35", "textAlign": "right" } },
-        { "id": "s3-zero", "type": "shape", "shape": "rectangle", "position": { "x": 170, "y": 268 }, "size": { "w": 1, "h": 130 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s3-chart-xlbl", "type": "text", "content": "0%                                                   30%                                        68%", "position": { "x": 60, "y": 405 }, "size": { "w": 430, "h": 16 }, "style": { "fontSize": 9, "color": "#6B7B8A" } },
-        { "id": "s3-side-tag", "type": "text", "content": "LEGEND", "position": { "x": 520, "y": 245 }, "size": { "w": 380, "h": 14 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s3-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 520, "y": 263 }, "size": { "w": 380, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s3-table", "type": "table", "columns": ["Term", "Meaning", "US share"], "rows": [["$C$", "Consumption — households", "~68%"], ["$I$", "Investment — firms, inventories", "~18%"], ["$G$", "Government final spending", "~18%"], ["$X - M$", "Net exports (trade balance)", "~−4%"]], "position": { "x": 520, "y": 275 }, "size": { "w": 380, "h": 165 }, "style": { "fontSize": 11, "headerBackground": "#F2E4C8", "headerColor": "#0A2540", "borderColor": "#C8B99C" } }
+        {
+          "id": "s3-section",
+          "type": "text",
+          "content": "02 \u00b7 THE IDENTITY",
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 52
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-title",
+          "type": "text",
+          "content": "# GDP from the expenditure side",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-formula-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 130
+          },
+          "size": {
+            "w": 840,
+            "h": 90
+          },
+          "style": {
+            "fill": "#F2E4C8",
+            "stroke": "#C8B99C",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s3-formula",
+          "type": "text",
+          "content": "$$ Y \\;=\\; C \\;+\\; I \\;+\\; G \\;+\\; (X - M) $$",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 840,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#0A2540",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s3-chart-title",
+          "type": "text",
+          "content": "SHARE OF US GDP (%)",
+          "position": {
+            "x": 60,
+            "y": 245
+          },
+          "size": {
+            "w": 430,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s3-chart-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 263
+          },
+          "size": {
+            "w": 430,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-b1-lbl",
+          "type": "text",
+          "content": "Consumption",
+          "position": {
+            "x": 60,
+            "y": 275
+          },
+          "size": {
+            "w": 100,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b1-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 170,
+            "y": 277
+          },
+          "size": {
+            "w": 238,
+            "h": 16
+          },
+          "style": {
+            "fill": "#1E4D6B",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-b1-v",
+          "type": "text",
+          "content": "68%",
+          "position": {
+            "x": 415,
+            "y": 275
+          },
+          "size": {
+            "w": 70,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b2-lbl",
+          "type": "text",
+          "content": "Investment",
+          "position": {
+            "x": 60,
+            "y": 305
+          },
+          "size": {
+            "w": 100,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b2-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 170,
+            "y": 307
+          },
+          "size": {
+            "w": 63,
+            "h": 16
+          },
+          "style": {
+            "fill": "#1E4D6B",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-b2-v",
+          "type": "text",
+          "content": "18%",
+          "position": {
+            "x": 240,
+            "y": 305
+          },
+          "size": {
+            "w": 70,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b3-lbl",
+          "type": "text",
+          "content": "Government",
+          "position": {
+            "x": 60,
+            "y": 335
+          },
+          "size": {
+            "w": 100,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b3-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 170,
+            "y": 337
+          },
+          "size": {
+            "w": 63,
+            "h": 16
+          },
+          "style": {
+            "fill": "#1E4D6B",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-b3-v",
+          "type": "text",
+          "content": "18%",
+          "position": {
+            "x": 240,
+            "y": 335
+          },
+          "size": {
+            "w": 70,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b4-lbl",
+          "type": "text",
+          "content": "Net exports",
+          "position": {
+            "x": 60,
+            "y": 365
+          },
+          "size": {
+            "w": 100,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s3-b4-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 156,
+            "y": 367
+          },
+          "size": {
+            "w": 14,
+            "h": 16
+          },
+          "style": {
+            "fill": "#FF6B35",
+            "stroke": "#FF6B35",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-b4-v",
+          "type": "text",
+          "content": "\u22124%",
+          "position": {
+            "x": 110,
+            "y": 365
+          },
+          "size": {
+            "w": 50,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#FF6B35",
+            "textAlign": "right"
+          }
+        },
+        {
+          "id": "s3-zero",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 170,
+            "y": 268
+          },
+          "size": {
+            "w": 1,
+            "h": 130
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-chart-xlbl",
+          "type": "text",
+          "content": "0%                                                   30%                                        68%",
+          "position": {
+            "x": 60,
+            "y": 405
+          },
+          "size": {
+            "w": 430,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#6B7B8A"
+          }
+        },
+        {
+          "id": "s3-side-tag",
+          "type": "text",
+          "content": "LEGEND",
+          "position": {
+            "x": 520,
+            "y": 245
+          },
+          "size": {
+            "w": 380,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s3-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 520,
+            "y": 263
+          },
+          "size": {
+            "w": 380,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-table",
+          "type": "table",
+          "columns": [
+            "Term",
+            "Meaning",
+            "US share"
+          ],
+          "rows": [
+            [
+              "$C$",
+              "Consumption \u2014 households",
+              "~68%"
+            ],
+            [
+              "$I$",
+              "Investment \u2014 firms, inventories",
+              "~18%"
+            ],
+            [
+              "$G$",
+              "Government final spending",
+              "~18%"
+            ],
+            [
+              "$X - M$",
+              "Net exports (trade balance)",
+              "~\u22124%"
+            ]
+          ],
+          "position": {
+            "x": 520,
+            "y": 275
+          },
+          "size": {
+            "w": 380,
+            "h": 165
+          },
+          "style": {
+            "fontSize": 11,
+            "headerBackground": "#F2E4C8",
+            "headerColor": "#0A2540",
+            "borderColor": "#C8B99C"
+          }
+        }
       ]
     },
     {
       "id": "s4",
-      "background": { "color": "#FDF4E3" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "CPI over recent US history. Show the TikZ PGF chart on the left — notice the 2021-22 spike well above the 2% Fed target (dashed green). On the right, the formula, the basket composition, and the core-vs-headline distinction. Ask audience: was the spike supply shock or monetary? Active research question.",
+      "background": {
+        "color": "#FDF4E3"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "CPI over years. On enter: section tag, title, the PGFPlots chart (left: CPI 2018\u20132024 with 2% Fed-target dashed line, 8% 2022 peak annotated).\n\n[step:1]Right side \"WHAT IT MEASURES\" panel \u2014 CPI formula \u03c0_t = (P_t \u2212 P_{t-1})/P_{t-1}, basket composition (~34% shelter, ~13% food, ~7% energy), core vs headline distinction.[/step]\n\n[step:2]Bottom \"SHOCKS VS TRENDS\" note \u2014 2021\u201322 blended pandemic supply shocks with loose monetary policy; disentangling the two is an active research question.[/step]\n\nChart speaks first, commentary supports.",
       "animations": [
-        { "target": "s4-section", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s4-chart", "trigger": "onEnter", "effect": "fadeIn", "duration": 700, "delay": 500 },
-        { "target": "s4-side-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-side-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s4-bottom-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-bottom-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s4-section",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s4-chart",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700,
+          "delay": 500
+        },
+        {
+          "target": "s4-side-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s4-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-side-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s4-bottom-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s4-bottom-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s4-section", "type": "text", "content": "03 · PRICE LEVEL", "position": { "x": 60, "y": 30 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s4-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 52 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s4-title", "type": "text", "content": "# Inflation — measured, not felt", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 28, "color": "#0A2540" } },
-        { "id": "s4-chart", "type": "tikz", "content": "\\begin{tikzpicture}\n\\path (0,0) rectangle (0.01,0.01);\n\\begin{axis}[\n  width=10cm, height=6cm,\n  xlabel={\\small Year}, ylabel={\\small CPI YoY (\\%)},\n  xmin=2017.5, xmax=2024.5, ymin=0, ymax=10,\n  xtick={2018,2019,2020,2021,2022,2023,2024},\n  grid=major, grid style={gray!20},\n  tick label style={font=\\scriptsize}, label style={font=\\scriptsize},\n  axis lines=left, every axis plot/.append style={thick}\n]\n\\addplot[color=teal!70!black, dashed, thick] coordinates {(2017.5,2) (2024.5,2)};\n\\node[font=\\scriptsize, text=teal!70!black, anchor=west] at (axis cs:2023.2,2.4) {2\\% Fed target};\n\\addplot[color=orange!80!black, mark=*, mark size=2pt] coordinates {(2018,2.4) (2019,1.8) (2020,1.2) (2021,4.7) (2022,8.0) (2023,4.1) (2024,3.0)};\n\\node[font=\\scriptsize, orange!80!black, anchor=south] at (axis cs:2022,8.2) {8.0\\% peak};\n\\end{axis}\n\\end{tikzpicture}", "position": { "x": 60, "y": 155 }, "size": { "w": 480, "h": 235 }, "style": { "backgroundColor": "#FDF4E3" } },
-        { "id": "s4-side-tag", "type": "text", "content": "WHAT IT MEASURES", "position": { "x": 570, "y": 135 }, "size": { "w": 330, "h": 14 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s4-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 570, "y": 153 }, "size": { "w": 330, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s4-side-b", "type": "text", "content": "$$ \\pi_t = \\frac{P_t - P_{t-1}}{P_{t-1}} $$\n\nThe CPI is a weighted basket: ~34% shelter, ~13% food, ~7% energy, rest services and durable goods.\n\n**Core CPI** strips volatile food & energy to show the persistent trend the Fed reacts to.", "position": { "x": 570, "y": 168 }, "size": { "w": 330, "h": 270 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s4-bottom-tag", "type": "text", "content": "SHOCKS VS TRENDS", "position": { "x": 60, "y": 385 }, "size": { "w": 480, "h": 14 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s4-bottom-b", "type": "text", "content": "The 2021-22 spike blended pandemic-era supply shocks with loose monetary policy — disentangling the two is the active research question.", "position": { "x": 60, "y": 402 }, "size": { "w": 480, "h": 40 }, "style": { "fontSize": 11, "color": "#0A2540", "lineHeight": 1.5 } }
+        {
+          "id": "s4-section",
+          "type": "text",
+          "content": "03 \u00b7 PRICE LEVEL",
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s4-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 52
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-title",
+          "type": "text",
+          "content": "# Inflation \u2014 measured, not felt",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s4-chart",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}\n\\path (0,0) rectangle (0.01,0.01);\n\\begin{axis}[\n  width=10cm, height=6cm,\n  xlabel={\\small Year}, ylabel={\\small CPI YoY (\\%)},\n  xmin=2017.5, xmax=2024.5, ymin=0, ymax=10,\n  xtick={2018,2019,2020,2021,2022,2023,2024},\n  grid=major, grid style={gray!20},\n  tick label style={font=\\scriptsize}, label style={font=\\scriptsize},\n  axis lines=left, every axis plot/.append style={thick}\n]\n\\addplot[color=teal!70!black, dashed, thick] coordinates {(2017.5,2) (2024.5,2)};\n\\node[font=\\scriptsize, text=teal!70!black, anchor=west] at (axis cs:2023.2,2.4) {2\\% Fed target};\n\\addplot[color=orange!80!black, mark=*, mark size=2pt] coordinates {(2018,2.4) (2019,1.8) (2020,1.2) (2021,4.7) (2022,8.0) (2023,4.1) (2024,3.0)};\n\\node[font=\\scriptsize, orange!80!black, anchor=south] at (axis cs:2022,8.2) {8.0\\% peak};\n\\end{axis}\n\\end{tikzpicture}",
+          "position": {
+            "x": 60,
+            "y": 155
+          },
+          "size": {
+            "w": 480,
+            "h": 235
+          },
+          "style": {
+            "backgroundColor": "#FDF4E3"
+          }
+        },
+        {
+          "id": "s4-side-tag",
+          "type": "text",
+          "content": "WHAT IT MEASURES",
+          "position": {
+            "x": 570,
+            "y": 135
+          },
+          "size": {
+            "w": 330,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s4-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 570,
+            "y": 153
+          },
+          "size": {
+            "w": 330,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-side-b",
+          "type": "text",
+          "content": "$$ \\pi_t = \\frac{P_t - P_{t-1}}{P_{t-1}} $$\n\nThe CPI is a weighted basket: ~34% shelter, ~13% food, ~7% energy, rest services and durable goods.\n\n**Core CPI** strips volatile food & energy to show the persistent trend the Fed reacts to.",
+          "position": {
+            "x": 570,
+            "y": 168
+          },
+          "size": {
+            "w": 330,
+            "h": 270
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s4-bottom-tag",
+          "type": "text",
+          "content": "SHOCKS VS TRENDS",
+          "position": {
+            "x": 60,
+            "y": 385
+          },
+          "size": {
+            "w": 480,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s4-bottom-b",
+          "type": "text",
+          "content": "The 2021-22 spike blended pandemic-era supply shocks with loose monetary policy \u2014 disentangling the two is the active research question.",
+          "position": {
+            "x": 60,
+            "y": 402
+          },
+          "size": {
+            "w": 480,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0A2540",
+            "lineHeight": 1.5
+          }
+        }
       ]
     },
     {
       "id": "s5",
-      "background": { "color": "#FDF4E3" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The Phillips curve — the empirical trade-off between unemployment and inflation. Sketch the axes first, then the curve, then scatter dots suggesting historical observations. Click to bring in the intuition panel. Key caveat: long-run is vertical at the NAIRU, not downward-sloping. The curve has shifted, flattened, and briefly disappeared — don't oversell it as mechanical.",
+      "background": {
+        "color": "#FDF4E3"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "The Phillips curve \u2014 sample points on a smooth curve. Auto-reveals from a single pgfplots figure so dots and curve share one coordinate space (the earlier hand-placed version had the markers drifting off the line).\n\n[step:1]Sidebar \"INTUITION\" opens \u2014 read aloud: lower unemployment pushes wages and prices up in the short run.[/step]\n\n[step:2]Bottom rule + line appears \u2014 the long-run story: Friedman/Phelps showed the curve shifts once expectations adjust.[/step]",
       "animations": [
-        { "target": "s5-section", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s5-yaxis", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 500 },
-        { "target": "s5-xaxis", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-ylabel", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-xlabel", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-chart-title", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-chart-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-curve", "trigger": "onClick", "effect": "fadeIn", "duration": 700 },
-        { "target": "s5-curve-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-d1", "trigger": "onClick", "effect": "scaleIn", "duration": 200 },
-        { "target": "s5-d2", "trigger": "withPrevious", "effect": "scaleIn", "duration": 200 },
-        { "target": "s5-d3", "trigger": "withPrevious", "effect": "scaleIn", "duration": 200 },
-        { "target": "s5-d4", "trigger": "withPrevious", "effect": "scaleIn", "duration": 200 },
-        { "target": "s5-d5", "trigger": "withPrevious", "effect": "scaleIn", "duration": 200 },
-        { "target": "s5-side-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-side-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s5-bottom-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-bottom", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s5-section",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s5-chart-title",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-chart-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-side-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s5-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-side-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s5-bottom-rule",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s5-bottom",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-chart",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 600,
+          "delay": 400
+        }
       ],
       "elements": [
-        { "id": "s5-section", "type": "text", "content": "04 · TRADE-OFF", "position": { "x": 60, "y": 30 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s5-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 52 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s5-title", "type": "text", "content": "# The Phillips curve", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 30, "color": "#0A2540" } },
-        { "id": "s5-chart-title", "type": "text", "content": "INFLATION vs UNEMPLOYMENT · SHORT RUN", "position": { "x": 60, "y": 135 }, "size": { "w": 480, "h": 14 }, "style": { "fontSize": 9, "color": "#FF6B35" } },
-        { "id": "s5-chart-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 153 }, "size": { "w": 480, "h": 1 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s5-yaxis", "type": "shape", "shape": "line", "position": { "x": 100, "y": 175 }, "size": { "w": 2, "h": 190 }, "style": { "stroke": "#0A2540", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 0, "y": 190 }] } },
-        { "id": "s5-xaxis", "type": "shape", "shape": "line", "position": { "x": 100, "y": 365 }, "size": { "w": 420, "h": 2 }, "style": { "stroke": "#0A2540", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 420, "y": 0 }] } },
-        { "id": "s5-curve", "type": "shape", "shape": "line", "position": { "x": 110, "y": 180 }, "size": { "w": 400, "h": 180 }, "style": { "stroke": "#FF6B35", "strokeWidth": 2.5, "waypoints": [{ "x": 0, "y": 10 }, { "x": 30, "y": 35 }, { "x": 70, "y": 70 }, { "x": 130, "y": 110 }, { "x": 220, "y": 145 }, { "x": 320, "y": 170 }, { "x": 400, "y": 178 }] } },
-        { "id": "s5-d1", "type": "shape", "shape": "ellipse", "position": { "x": 114, "y": 208 }, "size": { "w": 8, "h": 8 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s5-d2", "type": "shape", "shape": "ellipse", "position": { "x": 144, "y": 238 }, "size": { "w": 8, "h": 8 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s5-d3", "type": "shape", "shape": "ellipse", "position": { "x": 186, "y": 275 }, "size": { "w": 8, "h": 8 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s5-d4", "type": "shape", "shape": "ellipse", "position": { "x": 246, "y": 310 }, "size": { "w": 8, "h": 8 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s5-d5", "type": "shape", "shape": "ellipse", "position": { "x": 336, "y": 343 }, "size": { "w": 8, "h": 8 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s5-curve-lbl", "type": "text", "content": "SR Phillips curve", "position": { "x": 260, "y": 250 }, "size": { "w": 160, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s5-ylabel", "type": "text", "content": "Inflation\n    ↑", "position": { "x": 60, "y": 180 }, "size": { "w": 38, "h": 40 }, "style": { "fontSize": 10, "color": "#6B7B8A", "lineHeight": 1.3, "textAlign": "right" } },
-        { "id": "s5-xlabel", "type": "text", "content": "→ Unemployment", "position": { "x": 390, "y": 370 }, "size": { "w": 130, "h": 16 }, "style": { "fontSize": 10, "color": "#6B7B8A" } },
-        { "id": "s5-side-tag", "type": "text", "content": "INTUITION", "position": { "x": 570, "y": 135 }, "size": { "w": 330, "h": 14 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s5-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 570, "y": 153 }, "size": { "w": 330, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s5-side-b", "type": "text", "content": "In the short run, lower unemployment pushes wages — and therefore prices — up. Central banks exploit this to steer demand: tightening when inflation runs hot, easing when the cycle cools.\n\nThe long-run curve is vertical at the NAIRU: you can trade inflation for unemployment only temporarily.", "position": { "x": 570, "y": 170 }, "size": { "w": 330, "h": 230 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.6 } },
-        { "id": "s5-bottom-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 405 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s5-bottom", "type": "text", "content": "The curve has shifted, flattened, and briefly disappeared across different decades — it is **empirical**, not mechanical.", "position": { "x": 60, "y": 420 }, "size": { "w": 840, "h": 24 }, "style": { "fontSize": 12, "color": "#0A2540" } }
+        {
+          "id": "s5-section",
+          "type": "text",
+          "content": "04 \u00b7 TRADE-OFF",
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s5-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 52
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-title",
+          "type": "text",
+          "content": "# The Phillips curve",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s5-chart-title",
+          "type": "text",
+          "content": "INFLATION vs UNEMPLOYMENT \u00b7 SHORT RUN",
+          "position": {
+            "x": 60,
+            "y": 135
+          },
+          "size": {
+            "w": 480,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s5-chart-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 153
+          },
+          "size": {
+            "w": 480,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-side-tag",
+          "type": "text",
+          "content": "INTUITION",
+          "position": {
+            "x": 570,
+            "y": 135
+          },
+          "size": {
+            "w": 330,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s5-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 570,
+            "y": 153
+          },
+          "size": {
+            "w": 330,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-side-b",
+          "type": "text",
+          "content": "In the short run, lower unemployment pushes wages \u2014 and therefore prices \u2014 up. Central banks exploit this to steer demand: tightening when inflation runs hot, easing when the cycle cools.\n\nThe long-run curve is vertical at the NAIRU: you can trade inflation for unemployment only temporarily.",
+          "position": {
+            "x": 570,
+            "y": 170
+          },
+          "size": {
+            "w": 330,
+            "h": 230
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s5-bottom-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 405
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-bottom",
+          "type": "text",
+          "content": "The curve has shifted, flattened, and briefly disappeared across different decades \u2014 it is **empirical**, not mechanical.",
+          "position": {
+            "x": 60,
+            "y": 420
+          },
+          "size": {
+            "w": 840,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s5-chart",
+          "type": "tikz",
+          "content": "\\begin{tikzpicture}\n\\path[use as bounding box] (-0.8,-0.6) rectangle (11.2,6.4);\n\\begin{axis}[\n  width=11cm, height=6.2cm,\n  xlabel={$\\to$ Unemployment},\n  ylabel={Inflation $\\uparrow$},\n  xmin=0, xmax=8, ymin=0, ymax=7.5,\n  axis lines=left,\n  ticks=none,\n  xlabel style={at={(1.02,0)}, anchor=west, font=\\footnotesize\\sffamily, text=black!60},\n  ylabel style={at={(0,1.04)}, anchor=south, rotate=-90, font=\\footnotesize\\sffamily, text=black!60},\n  tick style={draw=none},\n  axis line style={black!55, line width=0.6pt},\n  clip=false,\n]\n\\addplot[line width=1.2pt, color=orange!85, smooth, domain=0.3:8, samples=120] {5/(x+0.5)};\n\\addplot[only marks, mark=*, mark size=2.5pt, color=black!80]\n  coordinates {(0.3, 6.25) (1, 3.33) (2, 2) (4, 1.11) (7, 0.625)};\n\\node[color=orange!75, font=\\footnotesize\\itshape\\sffamily, anchor=south west]\n  at (axis cs:3.6, 2.6) {SR Phillips curve};\n\\end{axis}\n\\end{tikzpicture}",
+          "position": {
+            "x": 50,
+            "y": 165
+          },
+          "size": {
+            "w": 500,
+            "h": 235
+          },
+          "style": {}
+        }
       ]
     },
     {
       "id": "s6",
-      "background": { "color": "#FDF4E3" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Policy toolkit — monetary vs fiscal. Reveal the monetary chain first (orange): central bank rate cut → cheaper credit → I + C ↑. Then reveal the fiscal chain (blue): tax cut / spend up → income ↑ → aggregate demand ↑. Both converge on GDP ↑. Note the lag asymmetry on the right — monetary is faster to reverse, fiscal is politically stickier. End lecture.",
+      "background": {
+        "color": "#FDF4E3"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Monetary vs fiscal policy. On enter: title (auto).\n\n[step:1]MONETARY chain (orange): rate cut \u2192 cheaper credit \u2192 investment & consumption \u2191.[/step]\n\n[step:2]FISCAL chain (blue): tax cut / spend up \u2192 household income \u2191 \u2192 aggregate demand \u2191.[/step]\n\n[step:3]Both chains converge into the \"GDP \u2191\" dark ellipse at the bottom \u2014 convergence lines draw in.[/step]\n\n[step:4]Right-side \"LAGS MATTER\" panel \u2014 monetary 6\u201318 mo bite, reversible; fiscal slow to pass fast to land, politically sticky.[/step]\n\nEnd of lecture \u2014 next term teases international trade + open-economy macro.",
       "animations": [
-        { "target": "s6-section", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s6-mon-lbl", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-mon-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-m1-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-m1-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-ma1", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s6-m2-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-m2-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-ma2", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s6-m3-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-m3-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-fis-lbl", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-fis-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-f1-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-f1-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-fa1", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s6-f2-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-f2-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-fa2", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s6-f3-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-f3-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-conv1", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-conv2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-y-bg", "trigger": "withPrevious", "effect": "scaleIn", "duration": 500 },
-        { "target": "s6-y-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-side-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-side-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s6-section",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s6-mon-lbl",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s6-mon-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-m1-bg",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-m1-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-ma1",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s6-m2-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-m2-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-ma2",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s6-m3-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-m3-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-fis-lbl",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s6-fis-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-f1-bg",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-f1-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-fa1",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s6-f2-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-f2-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-fa2",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s6-f3-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-f3-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-conv1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 3
+        },
+        {
+          "target": "s6-conv2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-y-bg",
+          "trigger": "withPrevious",
+          "effect": "scaleIn",
+          "duration": 500
+        },
+        {
+          "target": "s6-y-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-side-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 4
+        },
+        {
+          "target": "s6-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-side-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s6-section", "type": "text", "content": "05 · POLICY TOOLKIT", "position": { "x": 60, "y": 30 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s6-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 52 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s6-title", "type": "text", "content": "# Monetary vs fiscal policy", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 28, "color": "#0A2540" } },
-        { "id": "s6-mon-lbl", "type": "text", "content": "MONETARY · CENTRAL BANK", "position": { "x": 60, "y": 135 }, "size": { "w": 560, "h": 14 }, "style": { "fontSize": 9, "color": "#FF6B35" } },
-        { "id": "s6-mon-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 153 }, "size": { "w": 560, "h": 1 }, "style": { "fill": "#FF6B35", "stroke": "#FF6B35", "strokeWidth": 0 } },
-        { "id": "s6-m1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 170 }, "size": { "w": 140, "h": 42 }, "style": { "fill": "#FFE6D6", "stroke": "#FF6B35", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-m1-t", "type": "text", "content": "Rate cut", "position": { "x": 60, "y": 182 }, "size": { "w": 140, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-ma1", "type": "shape", "shape": "arrow", "position": { "x": 200, "y": 190 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#FF6B35", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s6-m2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 230, "y": 170 }, "size": { "w": 160, "h": 42 }, "style": { "fill": "#FFE6D6", "stroke": "#FF6B35", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-m2-t", "type": "text", "content": "Cheaper credit", "position": { "x": 230, "y": 182 }, "size": { "w": 160, "h": 20 }, "style": { "fontSize": 12, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-ma2", "type": "shape", "shape": "arrow", "position": { "x": 390, "y": 190 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#FF6B35", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s6-m3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 420, "y": 170 }, "size": { "w": 200, "h": 42 }, "style": { "fill": "#FFE6D6", "stroke": "#FF6B35", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-m3-t", "type": "text", "content": "Investment & consumption ↑", "position": { "x": 420, "y": 182 }, "size": { "w": 200, "h": 20 }, "style": { "fontSize": 11, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-fis-lbl", "type": "text", "content": "FISCAL · LEGISLATURE", "position": { "x": 60, "y": 240 }, "size": { "w": 560, "h": 14 }, "style": { "fontSize": 9, "color": "#1E4D6B" } },
-        { "id": "s6-fis-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 258 }, "size": { "w": 560, "h": 1 }, "style": { "fill": "#1E4D6B", "stroke": "#1E4D6B", "strokeWidth": 0 } },
-        { "id": "s6-f1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 275 }, "size": { "w": 140, "h": 42 }, "style": { "fill": "#D6E3EE", "stroke": "#1E4D6B", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-f1-t", "type": "text", "content": "Tax cut / spend ↑", "position": { "x": 60, "y": 287 }, "size": { "w": 140, "h": 20 }, "style": { "fontSize": 11, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-fa1", "type": "shape", "shape": "arrow", "position": { "x": 200, "y": 295 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#1E4D6B", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s6-f2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 230, "y": 275 }, "size": { "w": 160, "h": 42 }, "style": { "fill": "#D6E3EE", "stroke": "#1E4D6B", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-f2-t", "type": "text", "content": "Household income ↑", "position": { "x": 230, "y": 287 }, "size": { "w": 160, "h": 20 }, "style": { "fontSize": 11, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-fa2", "type": "shape", "shape": "arrow", "position": { "x": 390, "y": 295 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#1E4D6B", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s6-f3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 420, "y": 275 }, "size": { "w": 200, "h": 42 }, "style": { "fill": "#D6E3EE", "stroke": "#1E4D6B", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s6-f3-t", "type": "text", "content": "Aggregate demand ↑", "position": { "x": 420, "y": 287 }, "size": { "w": 200, "h": 20 }, "style": { "fontSize": 11, "color": "#0A2540", "textAlign": "center" } },
-        { "id": "s6-conv1", "type": "shape", "shape": "line", "position": { "x": 520, "y": 212 }, "size": { "w": 2, "h": 130 }, "style": { "stroke": "#0A2540", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 0, "y": 130 }] } },
-        { "id": "s6-conv2", "type": "shape", "shape": "line", "position": { "x": 520, "y": 317 }, "size": { "w": 2, "h": 25 }, "style": { "stroke": "#0A2540", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 0, "y": 25 }] } },
-        { "id": "s6-y-bg", "type": "shape", "shape": "ellipse", "position": { "x": 460, "y": 350 }, "size": { "w": 120, "h": 40 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s6-y-t", "type": "text", "content": "**GDP ↑**", "position": { "x": 460, "y": 360 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 13, "color": "#FDF4E3", "textAlign": "center" } },
-        { "id": "s6-side-tag", "type": "text", "content": "LAGS MATTER", "position": { "x": 640, "y": 135 }, "size": { "w": 260, "h": 14 }, "style": { "fontSize": 10, "color": "#FF6B35" } },
-        { "id": "s6-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 640, "y": 153 }, "size": { "w": 260, "h": 1 }, "style": { "fill": "#0A2540", "stroke": "#0A2540", "strokeWidth": 0 } },
-        { "id": "s6-side-b", "type": "text", "content": "**Monetary:**  6–18 months to bite.  Decisions every 6 weeks. Reversible.\n\n**Fiscal:**  slower to pass, faster to land. Politically sticky — easy to turn on, hard to unwind.", "position": { "x": 640, "y": 170 }, "size": { "w": 260, "h": 200 }, "style": { "fontSize": 12, "color": "#0A2540", "lineHeight": 1.7 } },
-        { "id": "s6-foot-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 420 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#C8B99C", "stroke": "#C8B99C", "strokeWidth": 0 } },
-        { "id": "s6-foot", "type": "text", "content": "**End of lecture**   ·   Next term: international trade, exchange rates, and open-economy macro.", "position": { "x": 60, "y": 435 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 11, "color": "#6B7B8A" } }
+        {
+          "id": "s6-section",
+          "type": "text",
+          "content": "05 \u00b7 POLICY TOOLKIT",
+          "position": {
+            "x": 60,
+            "y": 30
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s6-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 52
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-title",
+          "type": "text",
+          "content": "# Monetary vs fiscal policy",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0A2540"
+          }
+        },
+        {
+          "id": "s6-mon-lbl",
+          "type": "text",
+          "content": "MONETARY \u00b7 CENTRAL BANK",
+          "position": {
+            "x": 60,
+            "y": 135
+          },
+          "size": {
+            "w": 560,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s6-mon-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 153
+          },
+          "size": {
+            "w": 560,
+            "h": 1
+          },
+          "style": {
+            "fill": "#FF6B35",
+            "stroke": "#FF6B35",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-m1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 170
+          },
+          "size": {
+            "w": 140,
+            "h": 42
+          },
+          "style": {
+            "fill": "#FFE6D6",
+            "stroke": "#FF6B35",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-m1-t",
+          "type": "text",
+          "content": "Rate cut",
+          "position": {
+            "x": 60,
+            "y": 182
+          },
+          "size": {
+            "w": 140,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-ma1",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 200,
+            "y": 190
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#FF6B35",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-m2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 230,
+            "y": 170
+          },
+          "size": {
+            "w": 160,
+            "h": 42
+          },
+          "style": {
+            "fill": "#FFE6D6",
+            "stroke": "#FF6B35",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-m2-t",
+          "type": "text",
+          "content": "Cheaper credit",
+          "position": {
+            "x": 230,
+            "y": 182
+          },
+          "size": {
+            "w": 160,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-ma2",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 390,
+            "y": 190
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#FF6B35",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-m3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 420,
+            "y": 170
+          },
+          "size": {
+            "w": 200,
+            "h": 42
+          },
+          "style": {
+            "fill": "#FFE6D6",
+            "stroke": "#FF6B35",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-m3-t",
+          "type": "text",
+          "content": "Investment & consumption \u2191",
+          "position": {
+            "x": 420,
+            "y": 182
+          },
+          "size": {
+            "w": 200,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-fis-lbl",
+          "type": "text",
+          "content": "FISCAL \u00b7 LEGISLATURE",
+          "position": {
+            "x": 60,
+            "y": 240
+          },
+          "size": {
+            "w": 560,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#1E4D6B"
+          }
+        },
+        {
+          "id": "s6-fis-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 258
+          },
+          "size": {
+            "w": 560,
+            "h": 1
+          },
+          "style": {
+            "fill": "#1E4D6B",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-f1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 275
+          },
+          "size": {
+            "w": 140,
+            "h": 42
+          },
+          "style": {
+            "fill": "#D6E3EE",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-f1-t",
+          "type": "text",
+          "content": "Tax cut / spend \u2191",
+          "position": {
+            "x": 60,
+            "y": 287
+          },
+          "size": {
+            "w": 140,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-fa1",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 200,
+            "y": 295
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#1E4D6B",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-f2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 230,
+            "y": 275
+          },
+          "size": {
+            "w": 160,
+            "h": 42
+          },
+          "style": {
+            "fill": "#D6E3EE",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-f2-t",
+          "type": "text",
+          "content": "Household income \u2191",
+          "position": {
+            "x": 230,
+            "y": 287
+          },
+          "size": {
+            "w": 160,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-fa2",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 390,
+            "y": 295
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#1E4D6B",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-f3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 420,
+            "y": 275
+          },
+          "size": {
+            "w": 200,
+            "h": 42
+          },
+          "style": {
+            "fill": "#D6E3EE",
+            "stroke": "#1E4D6B",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s6-f3-t",
+          "type": "text",
+          "content": "Aggregate demand \u2191",
+          "position": {
+            "x": 420,
+            "y": 287
+          },
+          "size": {
+            "w": 200,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0A2540",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-conv1",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 520,
+            "y": 212
+          },
+          "size": {
+            "w": 2,
+            "h": 130
+          },
+          "style": {
+            "stroke": "#0A2540",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": 130
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-conv2",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 520,
+            "y": 317
+          },
+          "size": {
+            "w": 2,
+            "h": 25
+          },
+          "style": {
+            "stroke": "#0A2540",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": 25
+              }
+            ]
+          }
+        },
+        {
+          "id": "s6-y-bg",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": {
+            "x": 460,
+            "y": 350
+          },
+          "size": {
+            "w": 120,
+            "h": 40
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-y-t",
+          "type": "text",
+          "content": "**GDP \u2191**",
+          "position": {
+            "x": 460,
+            "y": 360
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#FDF4E3",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-side-tag",
+          "type": "text",
+          "content": "LAGS MATTER",
+          "position": {
+            "x": 640,
+            "y": 135
+          },
+          "size": {
+            "w": 260,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#FF6B35"
+          }
+        },
+        {
+          "id": "s6-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 640,
+            "y": 153
+          },
+          "size": {
+            "w": 260,
+            "h": 1
+          },
+          "style": {
+            "fill": "#0A2540",
+            "stroke": "#0A2540",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-side-b",
+          "type": "text",
+          "content": "**Monetary:**  6\u201318 months to bite.  Decisions every 6 weeks. Reversible.\n\n**Fiscal:**  slower to pass, faster to land. Politically sticky \u2014 easy to turn on, hard to unwind.",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "size": {
+            "w": 260,
+            "h": 200
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0A2540",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s6-foot-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 420
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B99C",
+            "stroke": "#C8B99C",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-foot",
+          "type": "text",
+          "content": "**End of lecture**   \u00b7   Next term: international trade, exchange rates, and open-economy macro.",
+          "position": {
+            "x": 60,
+            "y": 435
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B7B8A"
+          }
+        }
       ]
     }
   ]

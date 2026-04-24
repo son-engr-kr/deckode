@@ -59,7 +59,7 @@ export const DEMO_CATALOG: DemoEntry[] = [
   },
   {
     id: "cv",
-    title: "Ava Kim",
+    title: "Mina Seo",
     subtitle: "Curriculum vitae · quantitative researcher",
     category: "CV",
     loadDeck: wrap(() => import("../../templates/demos/cv/deck.json")),

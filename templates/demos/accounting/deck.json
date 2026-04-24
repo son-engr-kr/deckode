@@ -6,251 +6,2517 @@
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#FBF7EE" } },
-    "text": { "fontFamily": "Georgia, 'Times New Roman', serif", "fontSize": 14, "color": "#2D1B14" },
-    "code": { "theme": "github-light", "fontSize": 11 },
-    "shape": { "stroke": "#C8B29B", "strokeWidth": 1 },
-    "table": { "headerBackground": "#EFE3CC", "borderColor": "#C8B29B" }
+    "slide": {
+      "background": {
+        "color": "#FBF7EE"
+      }
+    },
+    "text": {
+      "fontFamily": "Georgia, 'Times New Roman', serif",
+      "fontSize": 14,
+      "color": "#2D1B14"
+    },
+    "code": {
+      "theme": "github-light",
+      "fontSize": 11
+    },
+    "shape": {
+      "stroke": "#C8B29B",
+      "strokeWidth": 1
+    },
+    "table": {
+      "headerBackground": "#EFE3CC",
+      "borderColor": "#C8B29B"
+    }
   },
-  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number", "color": "#8B7358", "fontSize": 10, "margin": 20 },
+  "pageNumbers": {
+    "enabled": true,
+    "position": "bottom-right",
+    "format": "number",
+    "color": "#8B7358",
+    "fontSize": 10,
+    "margin": 20
+  },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#FBF7EE" },
+      "background": {
+        "color": "#FBF7EE"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Title slide for double-entry accounting. Intentional old-ledger aesthetic — cream paper, serif type, centered title. Mention: invented by Venetian merchants ca. 1494, still the backbone of every ledger on Earth 500+ years later. Ask: how many modern systems survive five centuries unchanged?",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Title slide. Intentional old-ledger aesthetic \u2014 cream paper, serif type, centered title, ambient ledger photograph underneath everything at 10% opacity. No clicks. Mention: invented by Venetian merchants ca. 1494, still the backbone of every ledger on Earth 500+ years later. Ask: how many modern systems survive five centuries unchanged?",
       "animations": [
-        { "target": "s1-orn-rule1", "trigger": "onEnter", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-orn-rule2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-mast", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-orn-rule3", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-orn-rule4", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 600, "delay": 400 },
-        { "target": "s1-title2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 200 },
-        { "target": "s1-orn-small", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 1100 },
-        { "target": "s1-subtitle", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s1-provenance", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 1600 }
+        {
+          "target": "s1-ledger-img",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700
+        },
+        {
+          "target": "s1-orn-rule1",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-orn-rule2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-mast",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-orn-rule3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-orn-rule4",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 600,
+          "delay": 400
+        },
+        {
+          "target": "s1-title2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 200
+        },
+        {
+          "target": "s1-orn-small",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 1100
+        },
+        {
+          "target": "s1-subtitle",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s1-provenance",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 1600
+        }
       ],
       "elements": [
-        { "id": "s1-orn-rule1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 50 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-orn-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 58 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-mast", "type": "text", "content": "THE LEDGER", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 11, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s1-orn-rule3", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 98 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-orn-rule4", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 106 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-title", "type": "text", "content": "Double-Entry", "position": { "x": 60, "y": 145 }, "size": { "w": 840, "h": 70 }, "style": { "fontSize": 64, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s1-title2", "type": "text", "content": "A C C O U N T I N G", "position": { "x": 60, "y": 225 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s1-orn-small", "type": "shape", "shape": "rectangle", "position": { "x": 430, "y": 280 }, "size": { "w": 100, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-ledger-img", "type": "image", "src": "./assets/ledger.png", "alt": "Antique open leather-bound accounting ledger by candlelight — vintage bookkeeping still-life", "position": { "x": 780, "y": 355 }, "size": { "w": 120, "h": 72 }, "style": { "objectFit": "cover", "borderRadius": 2, "opacity": 0.9 } },
-        { "id": "s1-subtitle", "type": "text", "content": "Every transaction has two sides.\nHere's why — and how to record it.", "position": { "x": 60, "y": 298 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 18, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.6 } },
-        { "id": "s1-provenance", "type": "text", "content": "*— as set down by merchants of the Venetian Republic, ca. 1494 —*", "position": { "x": 130, "y": 380 }, "size": { "w": 640, "h": 22 }, "style": { "fontSize": 13, "color": "#8B7358", "textAlign": "center" } },
-        { "id": "s1-foot-rule1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 430 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s1-foot", "type": "text", "content": "T E K K A L   D E M O S   ·   E D U C A T I O N", "position": { "x": 60, "y": 445 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 10, "color": "#8B7358", "textAlign": "center" } }
+        {
+          "id": "s1-orn-rule1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 50
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-orn-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 58
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-mast",
+          "type": "text",
+          "content": "THE LEDGER",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-orn-rule3",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 98
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-orn-rule4",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 106
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-title",
+          "type": "text",
+          "content": "Double-Entry",
+          "position": {
+            "x": 60,
+            "y": 145
+          },
+          "size": {
+            "w": 840,
+            "h": 70
+          },
+          "style": {
+            "fontSize": 64,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-title2",
+          "type": "text",
+          "content": "A C C O U N T I N G",
+          "position": {
+            "x": 60,
+            "y": 225
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-ledger-img",
+          "type": "image",
+          "src": "./assets/ledger.png",
+          "alt": "Antique open leather-bound accounting ledger by candlelight \u2014 full-slide atmospheric background overlay",
+          "position": {
+            "x": 0,
+            "y": 120
+          },
+          "size": {
+            "w": 960,
+            "h": 320
+          },
+          "style": {
+            "objectFit": "cover",
+            "opacity": 0.1
+          }
+        },
+        {
+          "id": "s1-orn-small",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 430,
+            "y": 280
+          },
+          "size": {
+            "w": 100,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-subtitle",
+          "type": "text",
+          "content": "Every transaction has two sides.\nHere's why \u2014 and how to record it.",
+          "position": {
+            "x": 60,
+            "y": 298
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 18,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s1-provenance",
+          "type": "text",
+          "content": "*\u2014 as set down by merchants of the Venetian Republic, ca. 1494 \u2014*",
+          "position": {
+            "x": 60,
+            "y": 380
+          },
+          "size": {
+            "w": 840,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#8B7358",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-foot-rule1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 430
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-foot",
+          "type": "text",
+          "content": "T E K K A L   D E M O S   \u00b7   E D U C A T I O N",
+          "position": {
+            "x": 60,
+            "y": 445
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8B7358",
+            "textAlign": "center"
+          }
+        }
       ]
     },
     {
       "id": "s2",
-      "background": { "color": "#FBF7EE" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Chapter One — the accounting equation. Formula first (Assets = Liabilities + Equity) set in cream box. Then click to reveal the three definitions. This identity MUST balance on every transaction. Every subsequent mechanic is just a way to preserve this.",
+      "background": {
+        "color": "#FBF7EE"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Chapter One \u2014 accounting equation. On enter: CHAPTER ONE header, title, cream formula box \"Assets = Liabilities + Equity\" auto-reveal.\n\n[step:1]ASSETS column reveals \u2014 \"What the enterprise owns or controls: cash, inventory, equipment, receivables, prepaid expenses.\"[/step]\n\n[step:2]LIABILITIES column reveals \u2014 \"What the enterprise owes others: loans, accounts payable, wages, deferred revenue, bonds.\"[/step]\n\n[step:3]EQUITY column reveals \u2014 \"The owners' residual claim: capital contributed + retained earnings \u2212 distributions.\"[/step]\n\nThis identity MUST balance on every transaction. Every subsequent mechanic preserves it.",
       "animations": [
-        { "target": "s2-chapter", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-orn1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-orn2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s2-formula-bg", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 700 },
-        { "target": "s2-formula", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s2-c1-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c1-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-div1", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-div2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c3-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s2-chapter",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-orn1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-orn2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s2-formula-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 700
+        },
+        {
+          "target": "s2-formula",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s2-c1-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s2-c1-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-div1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s2-c2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-div2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 3
+        },
+        {
+          "target": "s2-c3-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-c3-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s2-chapter", "type": "text", "content": "CHAPTER ONE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s2-orn1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s2-orn2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 68 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s2-title", "type": "text", "content": "The Accounting Equation", "position": { "x": 60, "y": 95 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 32, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s2-formula-bg", "type": "shape", "shape": "rectangle", "position": { "x": 150, "y": 165 }, "size": { "w": 660, "h": 100 }, "style": { "fill": "#EFE3CC", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 0 } },
-        { "id": "s2-formula", "type": "text", "content": "$$ \\textbf{Assets} \\;=\\; \\textbf{Liabilities} \\;+\\; \\textbf{Equity} $$", "position": { "x": 150, "y": 175 }, "size": { "w": 660, "h": 80 }, "style": { "fontSize": 30, "color": "#2D1B14", "textAlign": "center", "verticalAlign": "middle" } },
-        { "id": "s2-c1-h", "type": "text", "content": "ASSETS", "position": { "x": 60, "y": 295 }, "size": { "w": 260, "h": 22 }, "style": { "fontSize": 14, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s2-c1-rule", "type": "shape", "shape": "rectangle", "position": { "x": 100, "y": 320 }, "size": { "w": 180, "h": 1 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s2-c1-b", "type": "text", "content": "*What the enterprise owns or controls.*\n\nCash, inventory, equipment, receivables, prepaid expenses.", "position": { "x": 60, "y": 332 }, "size": { "w": 260, "h": 100 }, "style": { "fontSize": 13, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.6 } },
-        { "id": "s2-div1", "type": "shape", "shape": "rectangle", "position": { "x": 330, "y": 295 }, "size": { "w": 1, "h": 120 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s2-c2-h", "type": "text", "content": "LIABILITIES", "position": { "x": 340, "y": 295 }, "size": { "w": 260, "h": 22 }, "style": { "fontSize": 14, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s2-c2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 380, "y": 320 }, "size": { "w": 180, "h": 1 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s2-c2-b", "type": "text", "content": "*What the enterprise owes others.*\n\nLoans, accounts payable, wages owed, deferred revenue, bonds.", "position": { "x": 340, "y": 332 }, "size": { "w": 260, "h": 100 }, "style": { "fontSize": 13, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.6 } },
-        { "id": "s2-div2", "type": "shape", "shape": "rectangle", "position": { "x": 610, "y": 295 }, "size": { "w": 1, "h": 120 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s2-c3-h", "type": "text", "content": "EQUITY", "position": { "x": 620, "y": 295 }, "size": { "w": 260, "h": 22 }, "style": { "fontSize": 14, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s2-c3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 660, "y": 320 }, "size": { "w": 180, "h": 1 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s2-c3-b", "type": "text", "content": "*The owners' residual claim.*\n\nCapital contributed + retained earnings − distributions.", "position": { "x": 620, "y": 332 }, "size": { "w": 260, "h": 100 }, "style": { "fontSize": 13, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.6 } },
-        { "id": "s2-abacus-img", "type": "image", "src": "./assets/abacus.png", "alt": "Traditional wooden Venetian merchant's abacus beside a parchment page and silver coins — warm candlelight still-life", "position": { "x": 810, "y": 90 }, "size": { "w": 90, "h": 54 }, "style": { "objectFit": "cover", "borderRadius": 2, "opacity": 0.85 } }
+        {
+          "id": "s2-chapter",
+          "type": "text",
+          "content": "CHAPTER ONE",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-orn1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-orn2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 68
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-title",
+          "type": "text",
+          "content": "The Accounting Equation",
+          "position": {
+            "x": 60,
+            "y": 95
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 32,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-formula-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 150,
+            "y": 165
+          },
+          "size": {
+            "w": 660,
+            "h": 100
+          },
+          "style": {
+            "fill": "#EFE3CC",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 0
+          }
+        },
+        {
+          "id": "s2-formula",
+          "type": "text",
+          "content": "$$ \\textbf{Assets} \\;=\\; \\textbf{Liabilities} \\;+\\; \\textbf{Equity} $$",
+          "position": {
+            "x": 150,
+            "y": 175
+          },
+          "size": {
+            "w": 660,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "verticalAlign": "middle"
+          }
+        },
+        {
+          "id": "s2-c1-h",
+          "type": "text",
+          "content": "ASSETS",
+          "position": {
+            "x": 60,
+            "y": 295
+          },
+          "size": {
+            "w": 260,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-c1-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 100,
+            "y": 320
+          },
+          "size": {
+            "w": 180,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c1-b",
+          "type": "text",
+          "content": "*What the enterprise owns or controls.*\n\nCash, inventory, equipment, receivables, prepaid expenses.",
+          "position": {
+            "x": 60,
+            "y": 332
+          },
+          "size": {
+            "w": 260,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-div1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 330,
+            "y": 295
+          },
+          "size": {
+            "w": 1,
+            "h": 120
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c2-h",
+          "type": "text",
+          "content": "LIABILITIES",
+          "position": {
+            "x": 340,
+            "y": 295
+          },
+          "size": {
+            "w": 260,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-c2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 380,
+            "y": 320
+          },
+          "size": {
+            "w": 180,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c2-b",
+          "type": "text",
+          "content": "*What the enterprise owes others.*\n\nLoans, accounts payable, wages owed, deferred revenue, bonds.",
+          "position": {
+            "x": 340,
+            "y": 332
+          },
+          "size": {
+            "w": 260,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-div2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 610,
+            "y": 295
+          },
+          "size": {
+            "w": 1,
+            "h": 120
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c3-h",
+          "type": "text",
+          "content": "EQUITY",
+          "position": {
+            "x": 620,
+            "y": 295
+          },
+          "size": {
+            "w": 260,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s2-c3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 660,
+            "y": 320
+          },
+          "size": {
+            "w": 180,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-c3-b",
+          "type": "text",
+          "content": "*The owners' residual claim.*\n\nCapital contributed + retained earnings \u2212 distributions.",
+          "position": {
+            "x": 620,
+            "y": 332
+          },
+          "size": {
+            "w": 260,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-abacus-img",
+          "type": "image",
+          "src": "./assets/abacus.png",
+          "alt": "Traditional wooden Venetian merchant's abacus beside a parchment page and silver coins \u2014 warm candlelight still-life",
+          "position": {
+            "x": 810,
+            "y": 90
+          },
+          "size": {
+            "w": 90,
+            "h": 54
+          },
+          "style": {
+            "objectFit": "cover",
+            "borderRadius": 2,
+            "opacity": 0.85
+          }
+        }
       ]
     },
     {
       "id": "s3",
-      "background": { "color": "#FBF7EE" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Chapter Two — the T-account. Left shows a live Cash account with three debit entries and three credit entries. Balance 2,100 DR. Right reveals the 5-rule table: which side increases which account type. The self-auditing property of double-entry follows from these rules — total debits equal total credits, always.",
+      "background": {
+        "color": "#FBF7EE"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Chapter Two \u2014 debits, credits, T-account. On enter: Cash T-account skeleton (label, H-line, V-line, DEBIT+ / CREDIT\u2212 headers).\n\n[step:1]Debit column entries appear in green \u2014 Jan 3 1,000 / Jan 7 500 / Jan 14 2,200.[/step]\n\n[step:2]Credit column entries in red \u2014 Jan 5 200 / Jan 9 300 / Jan 18 1,100.[/step]\n\n[step:3]Balance box scales in at bottom: \"Balance: 2,100 DR\".[/step]\n\n[step:4]Right-side FIVE RULES panel opens \u2014 5-row table (Assets \u2191 DR, Expenses \u2191 DR, Liabilities \u2191 CR, Equity \u2191 CR, Revenue \u2191 CR) + footer note on self-audit property.[/step]\n\nTotal debits always equal total credits \u2014 that's what makes the ledger self-audit.",
       "animations": [
-        { "target": "s3-chapter", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-orn1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-orn2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s3-tacct-label", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 600 },
-        { "target": "s3-tacct-hline", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-tacct-vline", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-tacct-dr-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-tacct-cr-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-tacct-dr1", "trigger": "onClick", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-tacct-cr1", "trigger": "onClick", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-balance-bg", "trigger": "onClick", "effect": "scaleIn", "duration": 400 },
-        { "target": "s3-balance", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s3-side-h", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-table", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s3-side-foot", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s3-chapter",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-orn1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-orn2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s3-tacct-label",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 600
+        },
+        {
+          "target": "s3-tacct-hline",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-tacct-vline",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-tacct-dr-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-tacct-cr-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-tacct-dr1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 500,
+          "order": 1
+        },
+        {
+          "target": "s3-tacct-cr1",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 500,
+          "order": 2
+        },
+        {
+          "target": "s3-balance-bg",
+          "trigger": "onClick",
+          "effect": "scaleIn",
+          "duration": 400,
+          "order": 3
+        },
+        {
+          "target": "s3-balance",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s3-side-h",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 4
+        },
+        {
+          "target": "s3-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-side-table",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s3-side-foot",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s3-chapter", "type": "text", "content": "CHAPTER TWO", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s3-orn1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s3-orn2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 68 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s3-title", "type": "text", "content": "Debits, Credits & the T-Account", "position": { "x": 60, "y": 95 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 30, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s3-tacct-label", "type": "text", "content": "Cash (Asset)", "position": { "x": 80, "y": 160 }, "size": { "w": 360, "h": 24 }, "style": { "fontSize": 15, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s3-tacct-hline", "type": "shape", "shape": "rectangle", "position": { "x": 80, "y": 195 }, "size": { "w": 360, "h": 2 }, "style": { "fill": "#2D1B14", "stroke": "#2D1B14", "strokeWidth": 0 } },
-        { "id": "s3-tacct-vline", "type": "shape", "shape": "rectangle", "position": { "x": 259, "y": 195 }, "size": { "w": 2, "h": 190 }, "style": { "fill": "#2D1B14", "stroke": "#2D1B14", "strokeWidth": 0 } },
-        { "id": "s3-tacct-dr-h", "type": "text", "content": "DEBIT ·  +", "position": { "x": 80, "y": 205 }, "size": { "w": 175, "h": 18 }, "style": { "fontSize": 11, "color": "#1E6B3D", "textAlign": "center" } },
-        { "id": "s3-tacct-cr-h", "type": "text", "content": "CREDIT ·  −", "position": { "x": 265, "y": 205 }, "size": { "w": 175, "h": 18 }, "style": { "fontSize": 11, "color": "#8B1A1A", "textAlign": "center" } },
-        { "id": "s3-tacct-dr1", "type": "text", "content": "Jan  3   1,000\nJan  7      500\nJan 14   2,200\n\n**3,700**", "position": { "x": 80, "y": 235 }, "size": { "w": 175, "h": 150 }, "style": { "fontSize": 13, "color": "#1E6B3D", "textAlign": "center", "lineHeight": 1.6, "fontFamily": "Courier, monospace" } },
-        { "id": "s3-tacct-cr1", "type": "text", "content": "Jan  5      200\nJan  9      300\nJan 18   1,100\n\n**1,600**", "position": { "x": 265, "y": 235 }, "size": { "w": 175, "h": 150 }, "style": { "fontSize": 13, "color": "#8B1A1A", "textAlign": "center", "lineHeight": 1.6, "fontFamily": "Courier, monospace" } },
-        { "id": "s3-balance-bg", "type": "shape", "shape": "rectangle", "position": { "x": 80, "y": 400 }, "size": { "w": 360, "h": 32 }, "style": { "fill": "#EFE3CC", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 0 } },
-        { "id": "s3-balance", "type": "text", "content": "Balance: **2,100** DR", "position": { "x": 80, "y": 408 }, "size": { "w": 360, "h": 22 }, "style": { "fontSize": 13, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s3-side-h", "type": "text", "content": "THE FIVE RULES", "position": { "x": 490, "y": 160 }, "size": { "w": 410, "h": 20 }, "style": { "fontSize": 12, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s3-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 490, "y": 188 }, "size": { "w": 410, "h": 1 }, "style": { "fill": "#C8B29B", "stroke": "#C8B29B", "strokeWidth": 0 } },
-        { "id": "s3-side-table", "type": "table", "columns": ["Account", "Debit", "Credit"], "rows": [["Assets", "↑ increase", "↓ decrease"], ["Expenses", "↑ increase", "↓ decrease"], ["Liabilities", "↓ decrease", "↑ increase"], ["Equity", "↓ decrease", "↑ increase"], ["Revenue", "↓ decrease", "↑ increase"]], "position": { "x": 490, "y": 200 }, "size": { "w": 410, "h": 190 }, "style": { "fontSize": 12, "headerBackground": "#EFE3CC", "headerColor": "#2D1B14", "borderColor": "#C8B29B" } },
-        { "id": "s3-side-foot", "type": "text", "content": "*Total debits always equal total credits. This is how the ledger self-audits.*", "position": { "x": 490, "y": 400 }, "size": { "w": 410, "h": 40 }, "style": { "fontSize": 11, "color": "#6B2028", "textAlign": "center", "lineHeight": 1.5 } }
+        {
+          "id": "s3-chapter",
+          "type": "text",
+          "content": "CHAPTER TWO",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-orn1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-orn2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 68
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-title",
+          "type": "text",
+          "content": "Debits, Credits & the T-Account",
+          "position": {
+            "x": 60,
+            "y": 95
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 30,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-tacct-label",
+          "type": "text",
+          "content": "Cash (Asset)",
+          "position": {
+            "x": 80,
+            "y": 160
+          },
+          "size": {
+            "w": 360,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-tacct-hline",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 80,
+            "y": 195
+          },
+          "size": {
+            "w": 360,
+            "h": 2
+          },
+          "style": {
+            "fill": "#2D1B14",
+            "stroke": "#2D1B14",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-tacct-vline",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 259,
+            "y": 195
+          },
+          "size": {
+            "w": 2,
+            "h": 190
+          },
+          "style": {
+            "fill": "#2D1B14",
+            "stroke": "#2D1B14",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-tacct-dr-h",
+          "type": "text",
+          "content": "DEBIT \u00b7  +",
+          "position": {
+            "x": 80,
+            "y": 205
+          },
+          "size": {
+            "w": 175,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1E6B3D",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-tacct-cr-h",
+          "type": "text",
+          "content": "CREDIT \u00b7  \u2212",
+          "position": {
+            "x": 265,
+            "y": 205
+          },
+          "size": {
+            "w": 175,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8B1A1A",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-tacct-dr1",
+          "type": "text",
+          "content": "Jan  3   1,000\nJan  7      500\nJan 14   2,200\n\n**3,700**",
+          "position": {
+            "x": 80,
+            "y": 235
+          },
+          "size": {
+            "w": 175,
+            "h": 150
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#1E6B3D",
+            "textAlign": "center",
+            "lineHeight": 1.6,
+            "fontFamily": "Courier, monospace"
+          }
+        },
+        {
+          "id": "s3-tacct-cr1",
+          "type": "text",
+          "content": "Jan  5      200\nJan  9      300\nJan 18   1,100\n\n**1,600**",
+          "position": {
+            "x": 265,
+            "y": 235
+          },
+          "size": {
+            "w": 175,
+            "h": 150
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#8B1A1A",
+            "textAlign": "center",
+            "lineHeight": 1.6,
+            "fontFamily": "Courier, monospace"
+          }
+        },
+        {
+          "id": "s3-balance-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 80,
+            "y": 400
+          },
+          "size": {
+            "w": 360,
+            "h": 32
+          },
+          "style": {
+            "fill": "#EFE3CC",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 0
+          }
+        },
+        {
+          "id": "s3-balance",
+          "type": "text",
+          "content": "Balance: **2,100** DR",
+          "position": {
+            "x": 80,
+            "y": 408
+          },
+          "size": {
+            "w": 360,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-side-h",
+          "type": "text",
+          "content": "THE FIVE RULES",
+          "position": {
+            "x": 490,
+            "y": 160
+          },
+          "size": {
+            "w": 410,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s3-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 490,
+            "y": 188
+          },
+          "size": {
+            "w": 410,
+            "h": 1
+          },
+          "style": {
+            "fill": "#C8B29B",
+            "stroke": "#C8B29B",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-side-table",
+          "type": "table",
+          "columns": [
+            "Account",
+            "Debit",
+            "Credit"
+          ],
+          "rows": [
+            [
+              "Assets",
+              "\u2191 increase",
+              "\u2193 decrease"
+            ],
+            [
+              "Expenses",
+              "\u2191 increase",
+              "\u2193 decrease"
+            ],
+            [
+              "Liabilities",
+              "\u2193 decrease",
+              "\u2191 increase"
+            ],
+            [
+              "Equity",
+              "\u2193 decrease",
+              "\u2191 increase"
+            ],
+            [
+              "Revenue",
+              "\u2193 decrease",
+              "\u2191 increase"
+            ]
+          ],
+          "position": {
+            "x": 490,
+            "y": 200
+          },
+          "size": {
+            "w": 410,
+            "h": 190
+          },
+          "style": {
+            "fontSize": 12,
+            "headerBackground": "#EFE3CC",
+            "headerColor": "#2D1B14",
+            "borderColor": "#C8B29B"
+          }
+        },
+        {
+          "id": "s3-side-foot",
+          "type": "text",
+          "content": "*Total debits always equal total credits. This is how the ledger self-audits.*",
+          "position": {
+            "x": 490,
+            "y": 400
+          },
+          "size": {
+            "w": 410,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B2028",
+            "textAlign": "center",
+            "lineHeight": 1.5
+          }
+        }
       ]
     },
     {
       "id": "s4",
-      "background": { "color": "#FBF7EE" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Chapter Three — a worked example. Workshop opens with three January transactions. The table shows each as a pair (debit row + credit row + italic memo). Click to reveal the post-check at bottom: equation still balances. This is the invariant preserved across every transaction.",
+      "background": {
+        "color": "#FBF7EE"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Chapter Three \u2014 worked journal entries. On enter: scenario text + 9-row journal table showing three paired debit/credit entries (Jan 1 owner contribution, Jan 15 inventory-on-account, Jan 31 rent).\n\n[step:1]Post-check line at bottom (green): \"Assets (Cash 9,200 + Inventory 2,500) = Liabilities (AP 2,500) + Equity (Capital 10,000 \u2212 Rent 800) \u2713\"[/step]\n\nThe invariant is preserved across every transaction \u2014 that's the whole point.",
       "animations": [
-        { "target": "s4-chapter", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-orn1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-orn2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s4-scenario", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 600 },
-        { "target": "s4-journal", "trigger": "onEnter", "effect": "fadeIn", "duration": 600, "delay": 1000 },
-        { "target": "s4-check", "trigger": "onClick", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s4-chapter",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-orn1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-orn2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s4-scenario",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 600
+        },
+        {
+          "target": "s4-journal",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 600,
+          "delay": 1000
+        },
+        {
+          "target": "s4-check",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 500,
+          "order": 1
+        }
       ],
       "elements": [
-        { "id": "s4-chapter", "type": "text", "content": "CHAPTER THREE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s4-orn1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s4-orn2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 68 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s4-title", "type": "text", "content": "Worked Example — Journal Entries", "position": { "x": 60, "y": 95 }, "size": { "w": 840, "h": 36 }, "style": { "fontSize": 26, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s4-scenario", "type": "text", "content": "*Scenario: In January, a small workshop opens with a $10,000 owner contribution, buys $2,500 of inventory on account, and pays $800 rent.*", "position": { "x": 60, "y": 138 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 12, "color": "#8B7358", "textAlign": "center", "lineHeight": 1.5 } },
-        { "id": "s4-journal", "type": "table", "columns": ["Date", "Account", "Debit", "Credit"], "rows": [["Jan 1", "Cash", "10,000", ""], ["", "  Owner's Equity", "", "10,000"], ["", "*Initial capital contribution*", "", ""], ["Jan 15", "Inventory", "2,500", ""], ["", "  Accounts Payable", "", "2,500"], ["", "*Purchase of inventory on 30-day terms*", "", ""], ["Jan 31", "Rent Expense", "800", ""], ["", "  Cash", "", "800"], ["", "*January rent paid*", "", ""]], "position": { "x": 60, "y": 185 }, "size": { "w": 840, "h": 240 }, "style": { "fontSize": 12, "headerBackground": "#EFE3CC", "headerColor": "#2D1B14", "borderColor": "#C8B29B" } },
-        { "id": "s4-check", "type": "text", "content": "**Post-check** — Assets (Cash 9,200 + Inventory 2,500) = Liabilities (AP 2,500) + Equity (Capital 10,000 − Rent 800) ✓", "position": { "x": 60, "y": 440 }, "size": { "w": 840, "h": 24 }, "style": { "fontSize": 11, "color": "#1E6B3D", "textAlign": "center" } }
+        {
+          "id": "s4-chapter",
+          "type": "text",
+          "content": "CHAPTER THREE",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s4-orn1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-orn2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 68
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-title",
+          "type": "text",
+          "content": "Worked Example \u2014 Journal Entries",
+          "position": {
+            "x": 60,
+            "y": 95
+          },
+          "size": {
+            "w": 840,
+            "h": 36
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s4-scenario",
+          "type": "text",
+          "content": "*Scenario: In January, a small workshop opens with a $10,000 owner contribution, buys $2,500 of inventory on account, and pays $800 rent.*",
+          "position": {
+            "x": 60,
+            "y": 138
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8B7358",
+            "textAlign": "center",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s4-journal",
+          "type": "table",
+          "columns": [
+            "Date",
+            "Account",
+            "Debit",
+            "Credit"
+          ],
+          "rows": [
+            [
+              "Jan 1",
+              "Cash",
+              "10,000",
+              ""
+            ],
+            [
+              "",
+              "  Owner's Equity",
+              "",
+              "10,000"
+            ],
+            [
+              "",
+              "*Initial capital contribution*",
+              "",
+              ""
+            ],
+            [
+              "Jan 15",
+              "Inventory",
+              "2,500",
+              ""
+            ],
+            [
+              "",
+              "  Accounts Payable",
+              "",
+              "2,500"
+            ],
+            [
+              "",
+              "*Purchase of inventory on 30-day terms*",
+              "",
+              ""
+            ],
+            [
+              "Jan 31",
+              "Rent Expense",
+              "800",
+              ""
+            ],
+            [
+              "",
+              "  Cash",
+              "",
+              "800"
+            ],
+            [
+              "",
+              "*January rent paid*",
+              "",
+              ""
+            ]
+          ],
+          "position": {
+            "x": 60,
+            "y": 185
+          },
+          "size": {
+            "w": 840,
+            "h": 240
+          },
+          "style": {
+            "fontSize": 12,
+            "headerBackground": "#EFE3CC",
+            "headerColor": "#2D1B14",
+            "borderColor": "#C8B29B"
+          }
+        },
+        {
+          "id": "s4-check",
+          "type": "text",
+          "content": "**Post-check** \u2014 Assets (Cash 9,200 + Inventory 2,500) = Liabilities (AP 2,500) + Equity (Capital 10,000 \u2212 Rent 800) \u2713",
+          "position": {
+            "x": 60,
+            "y": 440
+          },
+          "size": {
+            "w": 840,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1E6B3D",
+            "textAlign": "center"
+          }
+        }
       ]
     },
     {
       "id": "s5",
-      "background": { "color": "#FBF7EE" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Chapter Four — from journal to statements. Walk the pipeline left to right: journal → ledger → trial balance → adjusting entries → three financial statements branching out. Every modern reporting software traces these same steps. The shapes follow the flow — native rectangles and arrows.",
+      "background": {
+        "color": "#FBF7EE"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Chapter Four \u2014 journal \u2192 statements. On enter: pipeline auto-cascades left-to-right \u2014 Journal \u2192 Ledger \u2192 Trial Balance \u2192 Adjusting entries.\n\n[step:1]Branching output \u2014 vertical line + arrows draw in, connecting Adjusting to three statement boxes sequentially: Income Statement, Balance Sheet, Cash Flow.[/step]\n\nEvery modern reporting software traces these same steps. Only the software changes.",
       "animations": [
-        { "target": "s5-chapter", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-orn1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-orn2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s5-b1-bg", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 700 },
-        { "target": "s5-b1-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-a1", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s5-b2-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-b2-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-a2", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s5-b3-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-b3-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-a3", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s5-b4-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-b4-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-br-top", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-br-v", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-out1-arr", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-out1-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-out1-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-out2-arr", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-out2-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-out2-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-out3-arr", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-out3-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-out3-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s5-chapter",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-orn1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-orn2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s5-b1-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 700
+        },
+        {
+          "target": "s5-b1-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-a1",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s5-b2-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-b2-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-a2",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s5-b3-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-b3-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-a3",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s5-b4-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-b4-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-br-top",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s5-br-v",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-out1-arr",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-out1-bg",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-out1-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-out2-arr",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-out2-bg",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-out2-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-out3-arr",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-out3-bg",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-out3-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s5-chapter", "type": "text", "content": "CHAPTER FOUR", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s5-orn1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s5-orn2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 68 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s5-title", "type": "text", "content": "From Journal to Financial Statements", "position": { "x": 60, "y": 95 }, "size": { "w": 840, "h": 44 }, "style": { "fontSize": 28, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s5-b1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 190 }, "size": { "w": 130, "h": 50 }, "style": { "fill": "#FBF7EE", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-b1-t", "type": "text", "content": "**Journal**\nchronological", "position": { "x": 60, "y": 198 }, "size": { "w": 130, "h": 40 }, "style": { "fontSize": 11, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.4 } },
-        { "id": "s5-a1", "type": "shape", "shape": "arrow", "position": { "x": 190, "y": 213 }, "size": { "w": 22, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 22, "y": 0 }] } },
-        { "id": "s5-b2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 212, "y": 190 }, "size": { "w": 130, "h": 50 }, "style": { "fill": "#FBF7EE", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-b2-t", "type": "text", "content": "**Ledger**\nby account", "position": { "x": 212, "y": 198 }, "size": { "w": 130, "h": 40 }, "style": { "fontSize": 11, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.4 } },
-        { "id": "s5-a2", "type": "shape", "shape": "arrow", "position": { "x": 342, "y": 213 }, "size": { "w": 22, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 22, "y": 0 }] } },
-        { "id": "s5-b3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 364, "y": 190 }, "size": { "w": 130, "h": 50 }, "style": { "fill": "#FBF7EE", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-b3-t", "type": "text", "content": "**Trial Balance**\ndebits = credits", "position": { "x": 364, "y": 198 }, "size": { "w": 130, "h": 40 }, "style": { "fontSize": 11, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.4 } },
-        { "id": "s5-a3", "type": "shape", "shape": "arrow", "position": { "x": 494, "y": 213 }, "size": { "w": 22, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 22, "y": 0 }] } },
-        { "id": "s5-b4-bg", "type": "shape", "shape": "rectangle", "position": { "x": 516, "y": 190 }, "size": { "w": 130, "h": 50 }, "style": { "fill": "#FBF7EE", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-b4-t", "type": "text", "content": "**Adjusting**\nentries", "position": { "x": 516, "y": 198 }, "size": { "w": 130, "h": 40 }, "style": { "fontSize": 11, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.4 } },
-        { "id": "s5-br-top", "type": "shape", "shape": "line", "position": { "x": 650, "y": 215 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s5-br-v", "type": "shape", "shape": "line", "position": { "x": 680, "y": 155 }, "size": { "w": 2, "h": 160 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 0, "y": 160 }] } },
-        { "id": "s5-out1-arr", "type": "shape", "shape": "arrow", "position": { "x": 680, "y": 155 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s5-out1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 710, "y": 140 }, "size": { "w": 180, "h": 36 }, "style": { "fill": "#EFE3CC", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-out1-t", "type": "text", "content": "Income Statement", "position": { "x": 710, "y": 148 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 12, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s5-out2-arr", "type": "shape", "shape": "arrow", "position": { "x": 680, "y": 215 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s5-out2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 710, "y": 200 }, "size": { "w": 180, "h": 36 }, "style": { "fill": "#EFE3CC", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-out2-t", "type": "text", "content": "Balance Sheet", "position": { "x": 710, "y": 208 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 12, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s5-out3-arr", "type": "shape", "shape": "arrow", "position": { "x": 680, "y": 275 }, "size": { "w": 30, "h": 2 }, "style": { "stroke": "#6B2028", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 30, "y": 0 }] } },
-        { "id": "s5-out3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 710, "y": 260 }, "size": { "w": 180, "h": 36 }, "style": { "fill": "#EFE3CC", "stroke": "#6B2028", "strokeWidth": 1, "borderRadius": 2 } },
-        { "id": "s5-out3-t", "type": "text", "content": "Cash Flow", "position": { "x": 710, "y": 268 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 12, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s5-foot", "type": "text", "content": "*Every modern financial report traces back to these same steps — only the software changes.*", "position": { "x": 60, "y": 435 }, "size": { "w": 840, "h": 24 }, "style": { "fontSize": 12, "color": "#8B7358", "textAlign": "center" } }
+        {
+          "id": "s5-chapter",
+          "type": "text",
+          "content": "CHAPTER FOUR",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-orn1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-orn2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 68
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-title",
+          "type": "text",
+          "content": "From Journal to Financial Statements",
+          "position": {
+            "x": 60,
+            "y": 95
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-b1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 190
+          },
+          "size": {
+            "w": 130,
+            "h": 50
+          },
+          "style": {
+            "fill": "#FBF7EE",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-b1-t",
+          "type": "text",
+          "content": "**Journal**\nchronological",
+          "position": {
+            "x": 60,
+            "y": 198
+          },
+          "size": {
+            "w": 130,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s5-a1",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 190,
+            "y": 213
+          },
+          "size": {
+            "w": 22,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 22,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-b2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 212,
+            "y": 190
+          },
+          "size": {
+            "w": 130,
+            "h": 50
+          },
+          "style": {
+            "fill": "#FBF7EE",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-b2-t",
+          "type": "text",
+          "content": "**Ledger**\nby account",
+          "position": {
+            "x": 212,
+            "y": 198
+          },
+          "size": {
+            "w": 130,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s5-a2",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 342,
+            "y": 213
+          },
+          "size": {
+            "w": 22,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 22,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-b3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 364,
+            "y": 190
+          },
+          "size": {
+            "w": 130,
+            "h": 50
+          },
+          "style": {
+            "fill": "#FBF7EE",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-b3-t",
+          "type": "text",
+          "content": "**Trial Balance**\ndebits = credits",
+          "position": {
+            "x": 364,
+            "y": 198
+          },
+          "size": {
+            "w": 130,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s5-a3",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 494,
+            "y": 213
+          },
+          "size": {
+            "w": 22,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 22,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-b4-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 516,
+            "y": 190
+          },
+          "size": {
+            "w": 130,
+            "h": 50
+          },
+          "style": {
+            "fill": "#FBF7EE",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-b4-t",
+          "type": "text",
+          "content": "**Adjusting**\nentries",
+          "position": {
+            "x": 516,
+            "y": 198
+          },
+          "size": {
+            "w": 130,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s5-br-top",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 650,
+            "y": 215
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-br-v",
+          "type": "shape",
+          "shape": "line",
+          "position": {
+            "x": 680,
+            "y": 155
+          },
+          "size": {
+            "w": 2,
+            "h": 160
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": 160
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-out1-arr",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 680,
+            "y": 155
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-out1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 710,
+            "y": 140
+          },
+          "size": {
+            "w": 180,
+            "h": 36
+          },
+          "style": {
+            "fill": "#EFE3CC",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-out1-t",
+          "type": "text",
+          "content": "Income Statement",
+          "position": {
+            "x": 710,
+            "y": 148
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-out2-arr",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 680,
+            "y": 215
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-out2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 710,
+            "y": 200
+          },
+          "size": {
+            "w": 180,
+            "h": 36
+          },
+          "style": {
+            "fill": "#EFE3CC",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-out2-t",
+          "type": "text",
+          "content": "Balance Sheet",
+          "position": {
+            "x": 710,
+            "y": 208
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-out3-arr",
+          "type": "shape",
+          "shape": "arrow",
+          "position": {
+            "x": 680,
+            "y": 275
+          },
+          "size": {
+            "w": 30,
+            "h": 2
+          },
+          "style": {
+            "stroke": "#6B2028",
+            "strokeWidth": 1.5,
+            "waypoints": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 30,
+                "y": 0
+              }
+            ]
+          }
+        },
+        {
+          "id": "s5-out3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 710,
+            "y": 260
+          },
+          "size": {
+            "w": 180,
+            "h": 36
+          },
+          "style": {
+            "fill": "#EFE3CC",
+            "stroke": "#6B2028",
+            "strokeWidth": 1,
+            "borderRadius": 2
+          }
+        },
+        {
+          "id": "s5-out3-t",
+          "type": "text",
+          "content": "Cash Flow",
+          "position": {
+            "x": 710,
+            "y": 268
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s5-foot",
+          "type": "text",
+          "content": "*Every modern financial report traces back to these same steps \u2014 only the software changes.*",
+          "position": {
+            "x": 60,
+            "y": 435
+          },
+          "size": {
+            "w": 840,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8B7358",
+            "textAlign": "center"
+          }
+        }
       ]
     },
     {
       "id": "s6",
-      "background": { "color": "#FBF7EE" },
+      "background": {
+        "color": "#FBF7EE"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Epilogue. Punchline: if the books don't balance, you haven't discovered a new kind of money — you've made an arithmetic error. Double-entry is a checksum. Fade in the punchline slowly for dramatic effect.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Epilogue. No clicks. Punchline: if the books don't balance, you haven't discovered a new kind of money \u2014 you've made an arithmetic error. Double-entry is a checksum. Fade in the punchline slowly for dramatic effect.",
       "animations": [
-        { "target": "s6-orn1", "trigger": "onEnter", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-orn2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-mast", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-orn3", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-orn4", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-title", "trigger": "onEnter", "effect": "fadeIn", "duration": 700, "delay": 600 },
-        { "target": "s6-title2", "trigger": "onEnter", "effect": "fadeIn", "duration": 700, "delay": 1400 },
-        { "target": "s6-body", "trigger": "onEnter", "effect": "fadeIn", "duration": 600, "delay": 2200 }
+        {
+          "target": "s6-orn1",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-orn2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-mast",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-orn3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-orn4",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-title",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700,
+          "delay": 600
+        },
+        {
+          "target": "s6-title2",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 700,
+          "delay": 1400
+        },
+        {
+          "target": "s6-body",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 600,
+          "delay": 2200
+        }
       ],
       "elements": [
-        { "id": "s6-orn1", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 50 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s6-orn2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 58 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s6-mast", "type": "text", "content": "EPILOGUE", "position": { "x": 60, "y": 70 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 11, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s6-orn3", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 98 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s6-orn4", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 106 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s6-title", "type": "text", "content": "If the books don't balance,", "position": { "x": 60, "y": 170 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 38, "color": "#2D1B14", "textAlign": "center" } },
-        { "id": "s6-title2", "type": "text", "content": "*find the mistake.*", "position": { "x": 60, "y": 230 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 38, "color": "#6B2028", "textAlign": "center" } },
-        { "id": "s6-body", "type": "text", "content": "Double-entry isn't a convention — it's a checksum. When the trial balance doesn't tie out,\nyou haven't discovered a new kind of money. You've made an arithmetic error somewhere.", "position": { "x": 60, "y": 320 }, "size": { "w": 840, "h": 80 }, "style": { "fontSize": 15, "color": "#2D1B14", "textAlign": "center", "lineHeight": 1.7 } },
-        { "id": "s6-foot-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 430 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#6B2028", "stroke": "#6B2028", "strokeWidth": 0 } },
-        { "id": "s6-foot", "type": "text", "content": "N E X T   L E C T U R E   ·   P R E P A R I N G   T H E   I N C O M E   S T A T E M E N T", "position": { "x": 60, "y": 445 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 10, "color": "#8B7358", "textAlign": "center" } }
+        {
+          "id": "s6-orn1",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 50
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-orn2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 58
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-mast",
+          "type": "text",
+          "content": "EPILOGUE",
+          "position": {
+            "x": 60,
+            "y": 70
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-orn3",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 98
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-orn4",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 106
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-title",
+          "type": "text",
+          "content": "If the books don't balance,",
+          "position": {
+            "x": 60,
+            "y": 170
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#2D1B14",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-title2",
+          "type": "text",
+          "content": "*find the mistake.*",
+          "position": {
+            "x": 60,
+            "y": 230
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#6B2028",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s6-body",
+          "type": "text",
+          "content": "Double-entry isn't a convention \u2014 it's a checksum. When the trial balance doesn't tie out,\nyou haven't discovered a new kind of money. You've made an arithmetic error somewhere.",
+          "position": {
+            "x": 60,
+            "y": 320
+          },
+          "size": {
+            "w": 840,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 15,
+            "color": "#2D1B14",
+            "textAlign": "center",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s6-foot-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 430
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#6B2028",
+            "stroke": "#6B2028",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-foot",
+          "type": "text",
+          "content": "N E X T   L E C T U R E   \u00b7   P R E P A R I N G   T H E   I N C O M E   S T A T E M E N T",
+          "position": {
+            "x": 60,
+            "y": 445
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8B7358",
+            "textAlign": "center"
+          }
+        }
       ]
     }
   ]

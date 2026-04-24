@@ -1,240 +1,2651 @@
 {
   "version": "0.1.0",
   "meta": {
-    "title": "TEKKAL — Local-First AI Slide Platform",
+    "title": "TEKKAL \u2014 Local-First AI Slide Platform",
     "author": "TEKKAL",
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#ffffff" } },
-    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 14, "color": "#1A2B48" },
-    "code": { "theme": "github-light", "fontSize": 11 },
-    "shape": { "stroke": "#E7E6E6", "strokeWidth": 1 },
-    "table": { "headerBackground": "#F5F1E8", "borderColor": "#E7E6E6" }
+    "slide": {
+      "background": {
+        "color": "#ffffff"
+      }
+    },
+    "text": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "fontSize": 14,
+      "color": "#1A2B48"
+    },
+    "code": {
+      "theme": "github-light",
+      "fontSize": 11
+    },
+    "shape": {
+      "stroke": "#E7E6E6",
+      "strokeWidth": 1
+    },
+    "table": {
+      "headerBackground": "#F5F1E8",
+      "borderColor": "#E7E6E6"
+    }
   },
-  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number", "color": "#8899AA", "fontSize": 10, "margin": 20 },
+  "pageNumbers": {
+    "enabled": true,
+    "position": "bottom-right",
+    "format": "number",
+    "color": "#8899AA",
+    "fontSize": 10,
+    "margin": 20
+  },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#ffffff" },
+      "background": {
+        "color": "#ffffff"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Opening. TEKKAL is a local-first slide platform where every drag-and-drop is JSON an AI agent can call. Point at the stat card (4 agent roles) — I'll walk through each over the next slides. Pause 2 seconds before advancing so the title fade settles.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Opening. TEKKAL is a local-first slide platform. The stat card previews the whole deck: two entry points \u2014 chat in-app or code-edit on disk \u2014 over one JSON file format. Everything else is detail.",
       "animations": [
-        { "target": "s1-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-rule", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 100 },
-        { "target": "s1-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 600, "delay": 200 },
-        { "target": "s1-subtitle", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 500 },
-        { "target": "s1-pitch", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 700 },
-        { "target": "s1-stat1-num", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 900 },
-        { "target": "s1-stat1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s1-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-rule",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 100
+        },
+        {
+          "target": "s1-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 600,
+          "delay": 200
+        },
+        {
+          "target": "s1-subtitle",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 500
+        },
+        {
+          "target": "s1-pitch",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 700
+        },
+        {
+          "target": "s1-stat1-num",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 900
+        },
+        {
+          "target": "s1-stat1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s1-hit-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 1200
+        },
+        {
+          "target": "s1-hit-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-hit1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-hit2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-hit3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s1-cap",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 200
+        }
       ],
       "elements": [
-        { "id": "s1-tag", "type": "text", "content": "TEKKAL · PRODUCT DECK", "position": { "x": 60, "y": 60 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 11, "color": "#A68966" } },
-        { "id": "s1-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 92 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#A68966", "stroke": "#A68966", "strokeWidth": 0 } },
-        { "id": "s1-title", "type": "text", "content": "# TEKKAL", "position": { "x": 60, "y": 130 }, "size": { "w": 840, "h": 90 }, "style": { "fontSize": 72, "color": "#1A2B48" } },
-        { "id": "s1-subtitle", "type": "text", "content": "A Local-First, AI-Agent-Driven, Open-Source Slide Platform", "position": { "x": 60, "y": 238 }, "size": { "w": 840, "h": 32 }, "style": { "fontSize": 22, "color": "#1A2B48" } },
-        { "id": "s1-pitch", "type": "text", "content": "Every drag-and-drop maps to JSON an AI agent can call. Your slides live on disk, as code — git-native, version-safe, and editable by hand.", "position": { "x": 60, "y": 278 }, "size": { "w": 560, "h": 44 }, "style": { "fontSize": 14, "color": "#8899AA", "lineHeight": 1.5 } },
-        { "id": "s1-stat1-num", "type": "text", "content": "4", "position": { "x": 640, "y": 260 }, "size": { "w": 80, "h": 60 }, "style": { "fontSize": 52, "color": "#A68966", "textAlign": "right" } },
-        { "id": "s1-stat1-lbl", "type": "text", "content": "AGENT ROLES\nplanner · generator · reviewer · writer", "position": { "x": 730, "y": 270 }, "size": { "w": 170, "h": 50 }, "style": { "fontSize": 10, "color": "#8899AA", "lineHeight": 1.4 } },
-        { "id": "s1-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 430 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s1-foot-left", "type": "text", "content": "**tekkal.dev**   ·   MIT licensed   ·   BYOK", "position": { "x": 60, "y": 445 }, "size": { "w": 500, "h": 30 }, "style": { "fontSize": 12, "color": "#8899AA" } },
-        { "id": "s1-foot-right", "type": "text", "content": "DEMO v1.0   ·   2026", "position": { "x": 600, "y": 445 }, "size": { "w": 300, "h": 30 }, "style": { "fontSize": 12, "color": "#8899AA", "textAlign": "right" } }
+        {
+          "id": "s1-tag",
+          "type": "text",
+          "content": "TEKKAL \u00b7 PRODUCT DECK",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s1-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 92
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#A68966",
+            "stroke": "#A68966",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-title",
+          "type": "text",
+          "content": "# TEKKAL",
+          "position": {
+            "x": 60,
+            "y": 130
+          },
+          "size": {
+            "w": 840,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 72,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s1-subtitle",
+          "type": "text",
+          "content": "A Local-First, AI-Agent-Driven, Open-Source Slide Platform",
+          "position": {
+            "x": 60,
+            "y": 238
+          },
+          "size": {
+            "w": 840,
+            "h": 32
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s1-pitch",
+          "type": "text",
+          "content": "Chat a deck into existence, or hand-edit the files yourself. Your slides live on disk as plain JSON \u2014 yours to own, share, and version.",
+          "position": {
+            "x": 60,
+            "y": 278
+          },
+          "size": {
+            "w": 560,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#8899AA",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s1-stat1-num",
+          "type": "text",
+          "content": "2",
+          "position": {
+            "x": 640,
+            "y": 260
+          },
+          "size": {
+            "w": 80,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 52,
+            "color": "#A68966",
+            "textAlign": "right"
+          }
+        },
+        {
+          "id": "s1-stat1-lbl",
+          "type": "text",
+          "content": "ENTRY POINTS\nchat in the app \u00b7 code-edit on disk",
+          "position": {
+            "x": 730,
+            "y": 270
+          },
+          "size": {
+            "w": 170,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8899AA",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-hit-tag",
+          "type": "text",
+          "content": "WHAT IT IS",
+          "position": {
+            "x": 60,
+            "y": 345
+          },
+          "size": {
+            "w": 840,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s1-hit-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 361
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-hit1",
+          "type": "text",
+          "content": "**Local-first** \u2014 decks are files, not rows in a database.",
+          "position": {
+            "x": 60,
+            "y": 372
+          },
+          "size": {
+            "w": 270,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s1-hit2",
+          "type": "text",
+          "content": "**Agent-native** \u2014 the same JSON an LLM can call, a human can edit.",
+          "position": {
+            "x": 345,
+            "y": 372
+          },
+          "size": {
+            "w": 270,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s1-hit3",
+          "type": "text",
+          "content": "**Open-source** \u2014 BYOK, self-host, extend, or just read the code.",
+          "position": {
+            "x": 630,
+            "y": 372
+          },
+          "size": {
+            "w": 270,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s1-banner",
+          "type": "image",
+          "src": "./assets/tekkal-hero.png",
+          "alt": "Photorealistic city skyline at blue hour \u2014 varied skyscrapers reflected on calm water, warm amber lights against deep navy sky",
+          "position": {
+            "x": 0,
+            "y": 445
+          },
+          "size": {
+            "w": 960,
+            "h": 95
+          },
+          "style": {
+            "opacity": 1.0,
+            "objectFit": "cover"
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s1-cap",
+          "type": "text",
+          "content": "**tekkal.dev**   \u00b7   open source   \u00b7   BYOK   \u00b7   DEMO v1.0 \u00b7 2026",
+          "position": {
+            "x": 60,
+            "y": 418
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "textAlign": "center"
+          }
+        }
       ]
     },
     {
       "id": "s2",
-      "background": { "color": "#ffffff" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The premise. Slides should be code — that's the whole thesis. Click to reveal the JSON example on the right; the left paragraph is pre-revealed. Then click three more times to bring in each consequence (git-native → agent-addressable → hand-editable). Each consequence is a one-line callout.",
+      "background": {
+        "color": "#ffffff"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "The premise \u2014 a deck is a plain JSON file on your disk. Left-side subtitle + JSON excerpt auto-reveal.\n\n[step:1]Two-ways teaser opens: (01) coding agents editing deck.json on disk, (02) in-app chat at tekkal.dev. The next two slides go deep on each.[/step]",
       "animations": [
-        { "target": "s2-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-title", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-left-h", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 400 },
-        { "target": "s2-left-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-code", "trigger": "onClick", "effect": "fadeIn", "duration": 500 },
-        { "target": "s2-rule2", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-conseq-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-c1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c2", "trigger": "onClick", "effect": "fadeIn", "duration": 400 },
-        { "target": "s2-c3", "trigger": "onClick", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s2-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-title",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-sub",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 300
+        },
+        {
+          "target": "s2-code",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 500
+        },
+        {
+          "target": "s2-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s2-ways-rule",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s2-ways-tag",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way1-num",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way1-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way2-num",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s2-way2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s2-tag", "type": "text", "content": "THE PREMISE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s2-title", "type": "text", "content": "# Slides should be code", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#1A2B48" } },
-        { "id": "s2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 110 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s2-left-h", "type": "text", "content": "**The deck is JSON**", "position": { "x": 60, "y": 140 }, "size": { "w": 400, "h": 24 }, "style": { "fontSize": 15, "color": "#1A2B48" } },
-        { "id": "s2-left-b", "type": "text", "content": "Every slide, every element, every animation is a plain JSON object. No opaque binary blobs, no proprietary schemas — just structured data you or an AI can reason about.", "position": { "x": 60, "y": 168 }, "size": { "w": 400, "h": 100 }, "style": { "fontSize": 12, "color": "#8899AA", "lineHeight": 1.6 } },
-        { "id": "s2-code", "type": "code", "content": "{\n  \"id\": \"s1\",\n  \"elements\": [{\n    \"id\": \"title\",\n    \"type\": \"text\",\n    \"content\": \"# Hello\",\n    \"position\": { \"x\": 80, \"y\": 120 },\n    \"style\": { \"fontSize\": 48 }\n  }]\n}", "language": "json", "position": { "x": 500, "y": 130 }, "size": { "w": 400, "h": 180 }, "style": { "fontSize": 11 } },
-        { "id": "s2-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 330 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s2-conseq-tag", "type": "text", "content": "CONSEQUENCES", "position": { "x": 60, "y": 350 }, "size": { "w": 840, "h": 14 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s2-c1", "type": "text", "content": "**Git-native** — diffs are meaningful, merges are sane.", "position": { "x": 60, "y": 372 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 12, "color": "#1A2B48", "lineHeight": 1.5 } },
-        { "id": "s2-c2", "type": "text", "content": "**Agent-addressable** — every edit is an idempotent tool call.", "position": { "x": 350, "y": 372 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 12, "color": "#1A2B48", "lineHeight": 1.5 } },
-        { "id": "s2-c3", "type": "text", "content": "**Hand-editable** — `vim deck.json` is a valid workflow.", "position": { "x": 640, "y": 372 }, "size": { "w": 260, "h": 50 }, "style": { "fontSize": 12, "color": "#1A2B48", "lineHeight": 1.5 } }
+        {
+          "id": "s2-tag",
+          "type": "text",
+          "content": "THE IDEA",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s2-title",
+          "type": "text",
+          "content": "# Your deck is a file",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 110
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-sub",
+          "type": "text",
+          "content": "No database, no proprietary format \u2014 just **deck.json** on your disk. Yours to keep, version with git, and edit two different ways.",
+          "position": {
+            "x": 60,
+            "y": 130
+          },
+          "size": {
+            "w": 400,
+            "h": 72
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#8899AA",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s2-code",
+          "type": "code",
+          "content": "{\n  \"id\": \"s1\",\n  \"elements\": [{\n    \"id\": \"title\",\n    \"type\": \"text\",\n    \"content\": \"# Hello\",\n    \"position\": { \"x\": 80, \"y\": 120 },\n    \"style\": { \"fontSize\": 48 }\n  }]\n}",
+          "language": "json",
+          "position": {
+            "x": 500,
+            "y": 130
+          },
+          "size": {
+            "w": 400,
+            "h": 180
+          },
+          "style": {
+            "fontSize": 11
+          }
+        },
+        {
+          "id": "s2-banner",
+          "type": "image",
+          "src": "./assets/tekkal-file.png",
+          "alt": "Photorealistic overhead shot of an architect's desk at night \u2014 open notebook with floorplan sketch, brass lamp, fountain pen on deep navy wood",
+          "position": {
+            "x": 0,
+            "y": 445
+          },
+          "size": {
+            "w": 960,
+            "h": 95
+          },
+          "style": {
+            "opacity": 1.0,
+            "objectFit": "cover"
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s2-ways-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 330
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-ways-tag",
+          "type": "text",
+          "content": "TWO WAYS TO EDIT IT",
+          "position": {
+            "x": 60,
+            "y": 346
+          },
+          "size": {
+            "w": 840,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s2-way1-num",
+          "type": "text",
+          "content": "01",
+          "position": {
+            "x": 60,
+            "y": 370
+          },
+          "size": {
+            "w": 40,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s2-way1-h",
+          "type": "text",
+          "content": "**With a coding agent**",
+          "position": {
+            "x": 100,
+            "y": 372
+          },
+          "size": {
+            "w": 310,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s2-way1-b",
+          "type": "text",
+          "content": "Claude Code \u00b7 Gemini CLI \u00b7 Cursor \u00b7 Antigravity edit deck.json directly on disk.",
+          "position": {
+            "x": 100,
+            "y": 392
+          },
+          "size": {
+            "w": 330,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8899AA",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s2-way2-num",
+          "type": "text",
+          "content": "02",
+          "position": {
+            "x": 470,
+            "y": 370
+          },
+          "size": {
+            "w": 40,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s2-way2-h",
+          "type": "text",
+          "content": "**In the in-app chat**",
+          "position": {
+            "x": 510,
+            "y": 372
+          },
+          "size": {
+            "w": 310,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s2-way2-b",
+          "type": "text",
+          "content": "Open tekkal.dev, paste a Gemini key, describe what you want, iterate.",
+          "position": {
+            "x": 510,
+            "y": 392
+          },
+          "size": {
+            "w": 330,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8899AA",
+            "lineHeight": 1.5
+          }
+        }
       ]
     },
     {
       "id": "s3",
-      "background": { "color": "#ffffff" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The architecture. Four agent roles feed a shared deck.json. The central box is the source of truth — Planner reads prompts, Generator writes via tool calls, Reviewer validates, Writer patches failures. The feedback loop (issues → writer → deck) is highlighted at the bottom. Emphasize: no mutation bypasses the schema. The stack sidebar on the right lists the concrete tech.",
+      "background": {
+        "color": "#ffffff"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Path A \u2014 external coding agents. Because deck.json is a file on disk, any file-aware agent can edit it. Walk the four cards: name, role, example command.\n\n[step:1]Bottom best-for line fades in \u2014 bulk refactors, diff review, git workflows.[/step]",
       "animations": [
-        { "target": "s3-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-title", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b1-bg", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 400 },
-        { "target": "s3-b1-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b1-s", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-a1", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-b2-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b2-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b2-s", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-a2", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-store-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-store-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-store-s", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-a3", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-b4-bg", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b4-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-b4-s", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-loop-d", "trigger": "onClick", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-loop-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-loop-u", "trigger": "withPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-loop-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 250 },
-        { "target": "s3-writer-bg", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-writer-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-done-bg", "trigger": "onClick", "effect": "scaleIn", "duration": 400 },
-        { "target": "s3-done-t", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s3-side-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-side-body", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s3-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s3-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-title",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-sub",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 300
+        },
+        {
+          "target": "s3-card1-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 350,
+          "delay": 600
+        },
+        {
+          "target": "s3-card1-n",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card1-c",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card2-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card2-n",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card2-c",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card3-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card3-n",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card3-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card3-c",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card4-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card4-n",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card4-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-card4-c",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 350
+        },
+        {
+          "target": "s3-best",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 1
+        },
+        {
+          "target": "s3-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        }
       ],
       "elements": [
-        { "id": "s3-tag", "type": "text", "content": "ARCHITECTURE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s3-title", "type": "text", "content": "# The agent pipeline", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#1A2B48" } },
-        { "id": "s3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 110 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s3-b1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 160 }, "size": { "w": 120, "h": 50 }, "style": { "fill": "#FFF7E8", "stroke": "#A68966", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-b1-t", "type": "text", "content": "**Planner**", "position": { "x": 60, "y": 175 }, "size": { "w": 120, "h": 22 }, "style": { "fontSize": 13, "color": "#1A2B48", "textAlign": "center" } },
-        { "id": "s3-b1-s", "type": "text", "content": "reads prompt", "position": { "x": 60, "y": 193 }, "size": { "w": 120, "h": 16 }, "style": { "fontSize": 10, "color": "#8899AA", "textAlign": "center" } },
-        { "id": "s3-a1", "type": "shape", "shape": "arrow", "position": { "x": 180, "y": 184 }, "size": { "w": 25, "h": 2 }, "style": { "stroke": "#A68966", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 25, "y": 0 }] } },
-        { "id": "s3-b2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 205, "y": 160 }, "size": { "w": 120, "h": 50 }, "style": { "fill": "#FFF7E8", "stroke": "#A68966", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-b2-t", "type": "text", "content": "**Generator**", "position": { "x": 205, "y": 175 }, "size": { "w": 120, "h": 22 }, "style": { "fontSize": 13, "color": "#1A2B48", "textAlign": "center" } },
-        { "id": "s3-b2-s", "type": "text", "content": "calls tools", "position": { "x": 205, "y": 193 }, "size": { "w": 120, "h": 16 }, "style": { "fontSize": 10, "color": "#8899AA", "textAlign": "center" } },
-        { "id": "s3-a2", "type": "shape", "shape": "arrow", "position": { "x": 325, "y": 184 }, "size": { "w": 25, "h": 2 }, "style": { "stroke": "#A68966", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 25, "y": 0 }] } },
-        { "id": "s3-store-bg", "type": "shape", "shape": "rectangle", "position": { "x": 350, "y": 160 }, "size": { "w": 120, "h": 50 }, "style": { "fill": "#F0F4F8", "stroke": "#8899AA", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-store-t", "type": "text", "content": "**deck.json**", "position": { "x": 350, "y": 175 }, "size": { "w": 120, "h": 22 }, "style": { "fontSize": 13, "color": "#1A2B48", "textAlign": "center", "fontFamily": "monospace" } },
-        { "id": "s3-store-s", "type": "text", "content": "scene graph", "position": { "x": 350, "y": 193 }, "size": { "w": 120, "h": 16 }, "style": { "fontSize": 10, "color": "#8899AA", "textAlign": "center" } },
-        { "id": "s3-a3", "type": "shape", "shape": "arrow", "position": { "x": 470, "y": 184 }, "size": { "w": 25, "h": 2 }, "style": { "stroke": "#A68966", "strokeWidth": 1.5, "waypoints": [{ "x": 0, "y": 0 }, { "x": 25, "y": 0 }] } },
-        { "id": "s3-b4-bg", "type": "shape", "shape": "rectangle", "position": { "x": 495, "y": 160 }, "size": { "w": 120, "h": 50 }, "style": { "fill": "#FFF7E8", "stroke": "#A68966", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-b4-t", "type": "text", "content": "**Reviewer**", "position": { "x": 495, "y": 175 }, "size": { "w": 120, "h": 22 }, "style": { "fontSize": 13, "color": "#1A2B48", "textAlign": "center" } },
-        { "id": "s3-b4-s", "type": "text", "content": "validates", "position": { "x": 495, "y": 193 }, "size": { "w": 120, "h": 16 }, "style": { "fontSize": 10, "color": "#8899AA", "textAlign": "center" } },
-        { "id": "s3-loop-d", "type": "shape", "shape": "line", "position": { "x": 555, "y": 210 }, "size": { "w": 2, "h": 50 }, "style": { "stroke": "#8899AA", "strokeWidth": 1, "waypoints": [{ "x": 0, "y": 0 }, { "x": 0, "y": 50 }] } },
-        { "id": "s3-loop-h", "type": "shape", "shape": "line", "position": { "x": 265, "y": 260 }, "size": { "w": 290, "h": 2 }, "style": { "stroke": "#8899AA", "strokeWidth": 1, "waypoints": [{ "x": 290, "y": 0 }, { "x": 0, "y": 0 }] } },
-        { "id": "s3-loop-u", "type": "shape", "shape": "arrow", "position": { "x": 265, "y": 215 }, "size": { "w": 2, "h": 45 }, "style": { "stroke": "#8899AA", "strokeWidth": 1, "waypoints": [{ "x": 0, "y": 45 }, { "x": 0, "y": 0 }] } },
-        { "id": "s3-loop-lbl", "type": "text", "content": "issues → writer → fix loop", "position": { "x": 260, "y": 270 }, "size": { "w": 300, "h": 18 }, "style": { "fontSize": 10, "color": "#8899AA", "textAlign": "center" } },
-        { "id": "s3-writer-bg", "type": "shape", "shape": "rectangle", "position": { "x": 205, "y": 310 }, "size": { "w": 410, "h": 50 }, "style": { "fill": "#FFF7E8", "stroke": "#A68966", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s3-writer-t", "type": "text", "content": "**Writer** — polishes copy, patches failing elements, hands back to the deck", "position": { "x": 215, "y": 322 }, "size": { "w": 390, "h": 28 }, "style": { "fontSize": 12, "color": "#1A2B48", "textAlign": "center", "lineHeight": 1.4 } },
-        { "id": "s3-done-bg", "type": "shape", "shape": "ellipse", "position": { "x": 500, "y": 380 }, "size": { "w": 115, "h": 30 }, "style": { "fill": "#1A2B48", "stroke": "#1A2B48", "strokeWidth": 0 } },
-        { "id": "s3-done-t", "type": "text", "content": "clean ✓", "position": { "x": 500, "y": 386 }, "size": { "w": 115, "h": 20 }, "style": { "fontSize": 12, "color": "#FFF7E8", "textAlign": "center" } },
-        { "id": "s3-side-tag", "type": "text", "content": "FOUR ROLES", "position": { "x": 640, "y": 140 }, "size": { "w": 260, "h": 14 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s3-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 640, "y": 158 }, "size": { "w": 260, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s3-side-body", "type": "text", "content": "**Planner** reads your prompt and drafts a slide-by-slide outline.\n\n**Generator** turns each slide plan into concrete elements via tool calls.\n\n**Reviewer** validates the deck against schema and style rules.\n\n**Writer** polishes copy and fixes flagged issues.", "position": { "x": 640, "y": 175 }, "size": { "w": 260, "h": 260 }, "style": { "fontSize": 11, "color": "#1A2B48", "lineHeight": 1.7 } }
+        {
+          "id": "s3-banner",
+          "type": "image",
+          "src": "./assets/tekkal-terminal.png",
+          "alt": "Photorealistic aerial panorama of a modern nighttime metropolis from a rooftop",
+          "position": {
+            "x": 0,
+            "y": 445
+          },
+          "size": {
+            "w": 960,
+            "h": 95
+          },
+          "style": {
+            "opacity": 1.0,
+            "objectFit": "cover"
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s3-tag",
+          "type": "text",
+          "content": "PATH A \u00b7 CODE-EDIT",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s3-title",
+          "type": "text",
+          "content": "# Point your coding agent at the file",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 110
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-sub",
+          "type": "text",
+          "content": "Your deck is **deck.json** on disk. Any file-aware agent can read, edit, and commit it \u2014 the same way it edits source code.",
+          "position": {
+            "x": 60,
+            "y": 124
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8899AA",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s3-card1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 168
+          },
+          "size": {
+            "w": 400,
+            "h": 100
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s3-card1-n",
+          "type": "text",
+          "content": "**Claude Code**",
+          "position": {
+            "x": 76,
+            "y": 178
+          },
+          "size": {
+            "w": 370,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s3-card1-b",
+          "type": "text",
+          "content": "Terminal-native. Strong at multi-file edits and git workflows.",
+          "position": {
+            "x": 76,
+            "y": 198
+          },
+          "size": {
+            "w": 370,
+            "h": 26
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8899AA",
+            "lineHeight": 1.45
+          }
+        },
+        {
+          "id": "s3-card1-c",
+          "type": "code",
+          "content": "$ claude-code \"add a summary slide to deck.json\"",
+          "language": "bash",
+          "position": {
+            "x": 76,
+            "y": 230
+          },
+          "size": {
+            "w": 370,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 10
+          }
+        },
+        {
+          "id": "s3-card2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 500,
+            "y": 168
+          },
+          "size": {
+            "w": 400,
+            "h": 100
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s3-card2-n",
+          "type": "text",
+          "content": "**Gemini CLI**",
+          "position": {
+            "x": 516,
+            "y": 178
+          },
+          "size": {
+            "w": 370,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s3-card2-b",
+          "type": "text",
+          "content": "One-off shell edits. Quick from inside a project dir.",
+          "position": {
+            "x": 516,
+            "y": 198
+          },
+          "size": {
+            "w": 370,
+            "h": 26
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8899AA",
+            "lineHeight": 1.45
+          }
+        },
+        {
+          "id": "s3-card2-c",
+          "type": "code",
+          "content": "$ gemini \"rename every occurrence of Acme Corp\"",
+          "language": "bash",
+          "position": {
+            "x": 516,
+            "y": 230
+          },
+          "size": {
+            "w": 370,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 10
+          }
+        },
+        {
+          "id": "s3-card3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 280
+          },
+          "size": {
+            "w": 400,
+            "h": 100
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s3-card3-n",
+          "type": "text",
+          "content": "**Cursor**",
+          "position": {
+            "x": 76,
+            "y": 290
+          },
+          "size": {
+            "w": 370,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s3-card3-b",
+          "type": "text",
+          "content": "IDE-integrated. Visual diffs, Cmd-K edits, side-by-side review.",
+          "position": {
+            "x": 76,
+            "y": 310
+          },
+          "size": {
+            "w": 370,
+            "h": 26
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8899AA",
+            "lineHeight": 1.45
+          }
+        },
+        {
+          "id": "s3-card3-c",
+          "type": "code",
+          "content": "$ cursor deck.json   # then \u2318K: \"tighten rhythm\"",
+          "language": "bash",
+          "position": {
+            "x": 76,
+            "y": 342
+          },
+          "size": {
+            "w": 370,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 10
+          }
+        },
+        {
+          "id": "s3-card4-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 500,
+            "y": 280
+          },
+          "size": {
+            "w": 400,
+            "h": 100
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s3-card4-n",
+          "type": "text",
+          "content": "**Antigravity**",
+          "position": {
+            "x": 516,
+            "y": 290
+          },
+          "size": {
+            "w": 370,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s3-card4-b",
+          "type": "text",
+          "content": "Google's agentic IDE. Plans multi-step edits across files.",
+          "position": {
+            "x": 516,
+            "y": 310
+          },
+          "size": {
+            "w": 370,
+            "h": 26
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#8899AA",
+            "lineHeight": 1.45
+          }
+        },
+        {
+          "id": "s3-card4-c",
+          "type": "code",
+          "content": "$ antigravity \"apply brand palette to all decks\"",
+          "language": "bash",
+          "position": {
+            "x": 516,
+            "y": 342
+          },
+          "size": {
+            "w": 370,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 10
+          }
+        },
+        {
+          "id": "s3-best",
+          "type": "text",
+          "content": "**BEST FOR** \u2014 bulk refactors \u00b7 diff review \u00b7 git workflows \u00b7 editing many decks at once",
+          "position": {
+            "x": 60,
+            "y": 418
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48"
+          }
+        }
       ]
     },
     {
       "id": "s4",
-      "background": { "color": "#ffffff" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "The tool surface. Walk through the table — each tool is a pure function over deck.json. Emphasize the type signatures: args are typed JSON Schemas, mutations are atomic, errors return as strings the model can reason about. This is the agent-addressability claim in concrete form.",
+      "background": {
+        "color": "#ffffff"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Path B \u2014 in-app chat at tekkal.dev. Three steps: paste a Gemini API key, describe the deck you want, iterate. Walk the three numerals aloud.\n\n[step:1]Sample conversation reveals on the right \u2014 show how the prompt and the follow-ups evolve the same deck.[/step]\n\n[step:2]Best-for badge fades in at the bottom \u2014 fast first drafts, brainstorming, conversational editing.[/step]",
       "animations": [
-        { "target": "s4-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-title", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s4-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-sub", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 300 },
-        { "target": "s4-table", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 500 }
+        {
+          "target": "s4-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s4-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-title",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s4-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-sub",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 300
+        },
+        {
+          "target": "s4-n1",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 500
+        },
+        {
+          "target": "s4-h1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-b1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-n2",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-h2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-b2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-n3",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-h3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-b3",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-chat-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s4-chat-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-chat",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s4-best",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 400,
+          "order": 2
+        }
       ],
       "elements": [
-        { "id": "s4-tag", "type": "text", "content": "AGENT TOOLS", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s4-title", "type": "text", "content": "# A small, typed tool surface", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 26, "color": "#1A2B48" } },
-        { "id": "s4-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 110 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s4-sub", "type": "text", "content": "Each tool is a pure function over deck.json. The model calls them; the app applies them atomically.", "position": { "x": 60, "y": 124 }, "size": { "w": 840, "h": 22 }, "style": { "fontSize": 12, "color": "#8899AA" } },
-        { "id": "s4-table", "type": "table", "columns": ["Tool", "Arguments", "Mutation"], "rows": [["add_slide", "{slide}", "Append a new slide"], ["update_slide", "{slideId, patch}", "Merge partial slide fields"], ["add_element", "{slideId, element}", "Insert element into slide"], ["update_element", "{slideId, elementId, patch}", "Patch element fields"], ["delete_element", "{slideId, elementId}", "Remove element"], ["move_element", "{slideId, elementId, x, y}", "Reposition in canvas coords"], ["validate_deck", "{}", "Run schema + style checks"]], "position": { "x": 60, "y": 160 }, "size": { "w": 840, "h": 260 }, "style": { "fontSize": 12, "headerBackground": "#F5F1E8", "headerColor": "#1A2B48", "striped": false, "borderColor": "#E7E6E6" } }
+        {
+          "id": "s4-banner",
+          "type": "image",
+          "src": "./assets/tekkal-chat.png",
+          "alt": "Photorealistic warm cafe facade at night with pendant lights glowing behind large windows",
+          "position": {
+            "x": 0,
+            "y": 445
+          },
+          "size": {
+            "w": 960,
+            "h": 95
+          },
+          "style": {
+            "opacity": 1.0,
+            "objectFit": "cover"
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s4-tag",
+          "type": "text",
+          "content": "PATH B \u00b7 IN-APP CHAT",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s4-title",
+          "type": "text",
+          "content": "# Chat a deck into existence",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s4-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 110
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-sub",
+          "type": "text",
+          "content": "Open tekkal.dev. Paste a Gemini key. Describe what you want. Iterate in natural language.",
+          "position": {
+            "x": 60,
+            "y": 124
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8899AA"
+          }
+        },
+        {
+          "id": "s4-n1",
+          "type": "text",
+          "content": "01",
+          "position": {
+            "x": 60,
+            "y": 170
+          },
+          "size": {
+            "w": 60,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s4-h1",
+          "type": "text",
+          "content": "**Drop in your key**",
+          "position": {
+            "x": 130,
+            "y": 175
+          },
+          "size": {
+            "w": 320,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s4-b1",
+          "type": "text",
+          "content": "Open **Settings \u2192 API Keys** and paste a Gemini key from Google AI Studio. Stored locally, never sent to us.",
+          "position": {
+            "x": 130,
+            "y": 200
+          },
+          "size": {
+            "w": 320,
+            "h": 46
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8899AA",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s4-n2",
+          "type": "text",
+          "content": "02",
+          "position": {
+            "x": 60,
+            "y": 252
+          },
+          "size": {
+            "w": 60,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s4-h2",
+          "type": "text",
+          "content": "**Describe the deck**",
+          "position": {
+            "x": 130,
+            "y": 257
+          },
+          "size": {
+            "w": 320,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s4-b2",
+          "type": "text",
+          "content": "Natural language. The planner asks clarifying questions; the generator builds slides, one at a time.",
+          "position": {
+            "x": 130,
+            "y": 282
+          },
+          "size": {
+            "w": 320,
+            "h": 46
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8899AA",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s4-n3",
+          "type": "text",
+          "content": "03",
+          "position": {
+            "x": 60,
+            "y": 334
+          },
+          "size": {
+            "w": 60,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s4-h3",
+          "type": "text",
+          "content": "**Iterate by chat**",
+          "position": {
+            "x": 130,
+            "y": 339
+          },
+          "size": {
+            "w": 320,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s4-b3",
+          "type": "text",
+          "content": "Refine one slide, restyle the whole deck, or ask for presenter notes. Undo with git, redo with another prompt.",
+          "position": {
+            "x": 130,
+            "y": 364
+          },
+          "size": {
+            "w": 320,
+            "h": 46
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#8899AA",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s4-chat-tag",
+          "type": "text",
+          "content": "A REAL CONVERSATION",
+          "position": {
+            "x": 510,
+            "y": 170
+          },
+          "size": {
+            "w": 390,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s4-chat-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 510,
+            "y": 186
+          },
+          "size": {
+            "w": 390,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-chat",
+          "type": "text",
+          "content": "**You** \u2014 Make me a 6-slide intro to climate adaptation for a policy audience.\n\n**TEKKAL** \u2014 *Drafted 6 slides. Want me to lean more quantitative or narrative?*\n\n**You** \u2014 More quantitative. Add a Phillips-curve-style chart on slide 4.\n\n**TEKKAL** \u2014 *Swapped slide 4 for a pgfplots figure. Notes updated.*\n\n**You** \u2014 Now restyle in Swiss poster colors and tighten the rhythm.",
+          "position": {
+            "x": 510,
+            "y": 196
+          },
+          "size": {
+            "w": 390,
+            "h": 195
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s4-best",
+          "type": "text",
+          "content": "**BEST FOR** \u2014 fast first drafts \u00b7 brainstorming \u00b7 conversational editing",
+          "position": {
+            "x": 60,
+            "y": 418
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48"
+          }
+        }
       ]
     },
     {
       "id": "s5",
-      "background": { "color": "#ffffff" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Three backends, one pipeline. Reveal each provider card on click: Gemini (default, multimodal, free tier) → Claude (premium, best agentic tool-use) → K2 Think V2 (experimental, open-weight reasoning, routed through a JSON-ops adapter since it has no native function calling). Each card gets its own beat.",
+      "background": {
+        "color": "#ffffff"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Recipes \u2014 six concrete prompts audience members can copy into the chat or hand to a coding agent. On enter: tag + title + rule. Each card fades in on a stagger.\n\n[step:1]Unifier line at the bottom \u2014 \"same prompts work in either path.\"[/step]",
       "animations": [
-        { "target": "s5-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-title", "trigger": "withPrevious", "effect": "slideInUp", "duration": 400 },
-        { "target": "s5-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col1-bg", "trigger": "onClick", "effect": "slideInUp", "duration": 400 },
-        { "target": "s5-col1-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col1-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-col1-badge", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col2-bg", "trigger": "onClick", "effect": "slideInUp", "duration": 400 },
-        { "target": "s5-col2-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-col2-badge", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col3-bg", "trigger": "onClick", "effect": "slideInUp", "duration": 400 },
-        { "target": "s5-col3-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-col3-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-col3-badge", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 }
+        {
+          "target": "s5-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-title",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 400
+        },
+        {
+          "target": "s5-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-sub",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 300
+        },
+        {
+          "target": "s5-r1-bg",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 500
+        },
+        {
+          "target": "s5-r1-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r1-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r2-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 0
+        },
+        {
+          "target": "s5-r2-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r2-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r3-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 0
+        },
+        {
+          "target": "s5-r3-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r3-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r4-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 0
+        },
+        {
+          "target": "s5-r4-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r4-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r5-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 0
+        },
+        {
+          "target": "s5-r5-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r5-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r6-bg",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 0
+        },
+        {
+          "target": "s5-r6-t",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-r6-p",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-rule2",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s5-foot",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s5-tag", "type": "text", "content": "PROVIDERS", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s5-title", "type": "text", "content": "# Three backends, one pipeline", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 26, "color": "#1A2B48" } },
-        { "id": "s5-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 110 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s5-col1-bg", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 140 }, "size": { "w": 265, "h": 280 }, "style": { "fill": "#FFFFFF", "stroke": "#E7E6E6", "strokeWidth": 1 } },
-        { "id": "s5-col1-tag", "type": "text", "content": "GOOGLE", "position": { "x": 80, "y": 155 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } },
-        { "id": "s5-col1-h", "type": "text", "content": "**Gemini 2.5 Pro**", "position": { "x": 80, "y": 175 }, "size": { "w": 225, "h": 24 }, "style": { "fontSize": 18, "color": "#1A2B48" } },
-        { "id": "s5-col1-b", "type": "text", "content": "Native function-calling.\nLong 1M context.\nMultimodal (images, PDF).\nFree tier for BYOK users.", "position": { "x": 80, "y": 210 }, "size": { "w": 225, "h": 120 }, "style": { "fontSize": 12, "color": "#8899AA", "lineHeight": 1.7 } },
-        { "id": "s5-col1-badge", "type": "text", "content": "DEFAULT", "position": { "x": 80, "y": 390 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } },
-        { "id": "s5-col2-bg", "type": "shape", "shape": "rectangle", "position": { "x": 347, "y": 140 }, "size": { "w": 265, "h": 280 }, "style": { "fill": "#FFFFFF", "stroke": "#E7E6E6", "strokeWidth": 1 } },
-        { "id": "s5-col2-tag", "type": "text", "content": "ANTHROPIC", "position": { "x": 367, "y": 155 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } },
-        { "id": "s5-col2-h", "type": "text", "content": "**Claude Sonnet 4.6**", "position": { "x": 367, "y": 175 }, "size": { "w": 225, "h": 24 }, "style": { "fontSize": 18, "color": "#1A2B48" } },
-        { "id": "s5-col2-b", "type": "text", "content": "Best-in-class agentic tool-use.\n200K context.\nReliable iterative edits.\nStrong instruction following.", "position": { "x": 367, "y": 210 }, "size": { "w": 225, "h": 120 }, "style": { "fontSize": 12, "color": "#8899AA", "lineHeight": 1.7 } },
-        { "id": "s5-col2-badge", "type": "text", "content": "PREMIUM", "position": { "x": 367, "y": 390 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } },
-        { "id": "s5-col3-bg", "type": "shape", "shape": "rectangle", "position": { "x": 634, "y": 140 }, "size": { "w": 265, "h": 280 }, "style": { "fill": "#FFFFFF", "stroke": "#E7E6E6", "strokeWidth": 1 } },
-        { "id": "s5-col3-tag", "type": "text", "content": "MBZUAI", "position": { "x": 654, "y": 155 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } },
-        { "id": "s5-col3-h", "type": "text", "content": "**K2 Think V2**", "position": { "x": 654, "y": 175 }, "size": { "w": 225, "h": 24 }, "style": { "fontSize": 18, "color": "#1A2B48" } },
-        { "id": "s5-col3-b", "type": "text", "content": "Open-weight reasoning model.\n70B parameters.\nJSON-ops envelope (no native tools).\nRuns via ops loop adapter.", "position": { "x": 654, "y": 210 }, "size": { "w": 225, "h": 120 }, "style": { "fontSize": 12, "color": "#8899AA", "lineHeight": 1.7 } },
-        { "id": "s5-col3-badge", "type": "text", "content": "EXPERIMENTAL", "position": { "x": 654, "y": 390 }, "size": { "w": 225, "h": 14 }, "style": { "fontSize": 9, "color": "#A68966" } }
+        {
+          "id": "s5-tag",
+          "type": "text",
+          "content": "RECIPES",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-title",
+          "type": "text",
+          "content": "# What you can ask for",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s5-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 110
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-sub",
+          "type": "text",
+          "content": "Same prompts work in either path. Paste them into the in-app chat, or hand them to your coding agent.",
+          "position": {
+            "x": 60,
+            "y": 124
+          },
+          "size": {
+            "w": 840,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#8899AA"
+          }
+        },
+        {
+          "id": "s5-r1-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 155
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r1-t",
+          "type": "text",
+          "content": "CREATE",
+          "position": {
+            "x": 74,
+            "y": 167
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r1-p",
+          "type": "text",
+          "content": "\"Generate a 6-slide pitch for a BYOK research notebook, quantitative tone.\"",
+          "position": {
+            "x": 74,
+            "y": 185
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-r2-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 345,
+            "y": 155
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r2-t",
+          "type": "text",
+          "content": "RESTYLE",
+          "position": {
+            "x": 359,
+            "y": 167
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r2-p",
+          "type": "text",
+          "content": "\"Apply a Swiss-poster palette across every slide. Drop the gradient backgrounds.\"",
+          "position": {
+            "x": 359,
+            "y": 185
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-r3-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 630,
+            "y": 155
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r3-t",
+          "type": "text",
+          "content": "EXTEND",
+          "position": {
+            "x": 644,
+            "y": 167
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r3-p",
+          "type": "text",
+          "content": "\"Add a QR-code slide linking to github.com/me, then another with speaker bio.\"",
+          "position": {
+            "x": 644,
+            "y": 185
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-r4-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 260
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r4-t",
+          "type": "text",
+          "content": "FIX",
+          "position": {
+            "x": 74,
+            "y": 272
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r4-p",
+          "type": "text",
+          "content": "\"Tighten vertical rhythm, fix widows, and normalize heading sizes across the deck.\"",
+          "position": {
+            "x": 74,
+            "y": 290
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-r5-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 345,
+            "y": 260
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r5-t",
+          "type": "text",
+          "content": "CONVERT",
+          "position": {
+            "x": 359,
+            "y": 272
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r5-p",
+          "type": "text",
+          "content": "\"Turn the bullets on slide 3 into a TikZ flowchart. Keep the colors.\"",
+          "position": {
+            "x": 359,
+            "y": 290
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-r6-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 630,
+            "y": 260
+          },
+          "size": {
+            "w": 270,
+            "h": 90
+          },
+          "style": {
+            "fill": "#FFFFFF",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "s5-r6-t",
+          "type": "text",
+          "content": "REVIEW",
+          "position": {
+            "x": 644,
+            "y": 272
+          },
+          "size": {
+            "w": 240,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s5-r6-p",
+          "type": "text",
+          "content": "\"Flag any slide where the visual hierarchy is unclear or the notes are too long.\"",
+          "position": {
+            "x": 644,
+            "y": 290
+          },
+          "size": {
+            "w": 240,
+            "h": 52
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "lineHeight": 1.5
+          }
+        },
+        {
+          "id": "s5-rule2",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 375
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-foot",
+          "type": "text",
+          "content": "**One schema. Two entrances.** Anything that writes valid JSON is a valid authoring surface.",
+          "position": {
+            "x": 60,
+            "y": 387
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#1A2B48",
+            "textAlign": "center"
+          }
+        }
       ]
     },
     {
       "id": "s6",
-      "background": { "color": "#ffffff" },
+      "background": {
+        "color": "#ffffff"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Call-to-action. 60-second install. Point at the code block (clone → install → dev), then at the BYOK card — emphasize your prompts never leave your machine. End warm: open-source, MIT, PRs welcome. Total runtime for this deck at a moderate pace: ~5 min.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Call-to-action \u2014 60-second install. On enter: GET STARTED tag + rule + title + subtitle + bash code auto-reveal.\n\n[step:1]Right panel \"WHY BYOK\" opens \u2014 prompts never touch our servers, decks never leave your disk.[/step]\n\n[step:2]\"WHAT YOU GET\" \u2014 one-line element palette summary. End warm: open source, PRs welcome.",
       "animations": [
-        { "target": "s6-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s6-sub", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400, "delay": 200 },
-        { "target": "s6-code", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 900 },
-        { "target": "s6-right-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-right-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s6-right-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s6-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s6-sub",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s6-code",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 900
+        },
+        {
+          "target": "s6-right-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s6-right-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-right-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-right2-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s6-right2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s6-right2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-banner",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 400
+        },
+        {
+          "target": "s6-cap",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 200
+        }
       ],
       "elements": [
-        { "id": "s6-tag", "type": "text", "content": "GET STARTED", "position": { "x": 60, "y": 60 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 11, "color": "#A68966" } },
-        { "id": "s6-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 92 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#A68966", "stroke": "#A68966", "strokeWidth": 0 } },
-        { "id": "s6-title", "type": "text", "content": "# Try TEKKAL in 60 seconds", "position": { "x": 60, "y": 130 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 40, "color": "#1A2B48" } },
-        { "id": "s6-sub", "type": "text", "content": "Clone the repo, drop in a Gemini key, and chat a deck into existence.", "position": { "x": 60, "y": 200 }, "size": { "w": 840, "h": 28 }, "style": { "fontSize": 16, "color": "#8899AA" } },
-        { "id": "s6-code", "type": "code", "content": "# clone and run\ngit clone https://github.com/tekkal/tekkal.git\ncd tekkal && npm install && npm run dev\n\n# in the browser:\n# 1. open http://localhost:5173\n# 2. paste your Gemini API key into Settings\n# 3. type: \"make me a 5-slide intro to climate adaptation\"", "language": "bash", "position": { "x": 60, "y": 250 }, "size": { "w": 500, "h": 160 }, "style": { "fontSize": 12 } },
-        { "id": "s6-right-tag", "type": "text", "content": "WHY BYOK", "position": { "x": 600, "y": 250 }, "size": { "w": 300, "h": 14 }, "style": { "fontSize": 10, "color": "#A68966" } },
-        { "id": "s6-right-rule", "type": "shape", "shape": "rectangle", "position": { "x": 600, "y": 268 }, "size": { "w": 300, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s6-right-b", "type": "text", "content": "You bring your own API key. Your prompts never touch our servers. Your decks never leave your disk. Your usage costs exactly what your provider charges — nothing more.", "position": { "x": 600, "y": 282 }, "size": { "w": 300, "h": 130 }, "style": { "fontSize": 12, "color": "#1A2B48", "lineHeight": 1.6 } },
-        { "id": "s6-rule2", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 430 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#E7E6E6", "stroke": "#E7E6E6", "strokeWidth": 0 } },
-        { "id": "s6-foot", "type": "text", "content": "**tekkal.dev**   ·   MIT licensed   ·   PRs welcome", "position": { "x": 60, "y": 445 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 12, "color": "#8899AA" } }
+        {
+          "id": "s6-tag",
+          "type": "text",
+          "content": "GET STARTED",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s6-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 92
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#A68966",
+            "stroke": "#A68966",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-title",
+          "type": "text",
+          "content": "# Start at tekkal.dev",
+          "position": {
+            "x": 60,
+            "y": 130
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 40,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s6-sub",
+          "type": "text",
+          "content": "Open the hosted app, paste a Gemini key, and chat your first deck into existence. Prefer local? The source is a `git clone` away.",
+          "position": {
+            "x": 60,
+            "y": 200
+          },
+          "size": {
+            "w": 840,
+            "h": 44
+          },
+          "style": {
+            "fontSize": 16,
+            "color": "#8899AA"
+          }
+        },
+        {
+          "id": "s6-code",
+          "type": "code",
+          "content": "# primary \u2014 hosted web app\nopen https://tekkal.dev\n# 1. paste your Gemini API key into Settings\n# 2. type: \"make me a 6-slide climate pitch\"\n\n# optional \u2014 run it locally\ngit clone https://github.com/tekkal/tekkal.git\ncd tekkal && npm install && npm run dev",
+          "language": "bash",
+          "position": {
+            "x": 60,
+            "y": 262
+          },
+          "size": {
+            "w": 500,
+            "h": 150
+          },
+          "style": {
+            "fontSize": 12
+          }
+        },
+        {
+          "id": "s6-right-tag",
+          "type": "text",
+          "content": "WHY BYOK",
+          "position": {
+            "x": 600,
+            "y": 250
+          },
+          "size": {
+            "w": 300,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s6-right-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 600,
+            "y": 268
+          },
+          "size": {
+            "w": 300,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-right-b",
+          "type": "text",
+          "content": "You bring your own API key. Your prompts never touch our servers. Your decks never leave your disk. Your usage costs exactly what your provider charges \u2014 nothing more.",
+          "position": {
+            "x": 600,
+            "y": 282
+          },
+          "size": {
+            "w": 300,
+            "h": 95
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#1A2B48",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s6-right2-tag",
+          "type": "text",
+          "content": "WHAT YOU GET",
+          "position": {
+            "x": 600,
+            "y": 390
+          },
+          "size": {
+            "w": 300,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#A68966"
+          }
+        },
+        {
+          "id": "s6-right2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 600,
+            "y": 406
+          },
+          "size": {
+            "w": 300,
+            "h": 1
+          },
+          "style": {
+            "fill": "#E7E6E6",
+            "stroke": "#E7E6E6",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-right2-b",
+          "type": "text",
+          "content": "Markdown + KaTeX \u00b7 TikZ \u00b7 tables \u00b7 code \u00b7 shapes \u00b7 live 3D \u00b7 images",
+          "position": {
+            "x": 600,
+            "y": 414
+          },
+          "size": {
+            "w": 300,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#1A2B48"
+          }
+        },
+        {
+          "id": "s6-banner",
+          "type": "image",
+          "src": "./assets/tekkal-toolkit.png",
+          "alt": "Photorealistic modern loft studio interior at dusk, floor-to-ceiling windows overlooking a glowing city skyline",
+          "position": {
+            "x": 0,
+            "y": 445
+          },
+          "size": {
+            "w": 960,
+            "h": 95
+          },
+          "style": {
+            "opacity": 1.0,
+            "objectFit": "cover"
+          },
+          "allowOverlap": true
+        },
+        {
+          "id": "s6-cap",
+          "type": "text",
+          "content": "**tekkal.dev**   \u00b7   open source   \u00b7   PRs welcome",
+          "position": {
+            "x": 60,
+            "y": 418
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#1A2B48",
+            "textAlign": "center"
+          }
+        }
       ]
     }
   ]

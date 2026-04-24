@@ -1,310 +1,2898 @@
 {
   "version": "0.1.0",
   "meta": {
-    "title": "Ava Kim — Curriculum Vitae",
-    "author": "Ava Kim",
+    "title": "Mina Seo \u2014 Curriculum Vitae",
+    "author": "Mina Seo",
     "aspectRatio": "16:9"
   },
   "theme": {
-    "slide": { "background": { "color": "#FAFAF7" } },
-    "text": { "fontFamily": "Inter, system-ui, sans-serif", "fontSize": 14, "color": "#0C0A09" },
-    "code": { "theme": "github-light", "fontSize": 11 },
-    "shape": { "stroke": "#D4D4D0", "strokeWidth": 1 },
-    "table": { "headerBackground": "#EDEDE8", "borderColor": "#D4D4D0" }
+    "slide": {
+      "background": {
+        "color": "#FAFAF7"
+      }
+    },
+    "text": {
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "fontSize": 14,
+      "color": "#0C0A09"
+    },
+    "code": {
+      "theme": "github-light",
+      "fontSize": 11
+    },
+    "shape": {
+      "stroke": "#D4D4D0",
+      "strokeWidth": 1
+    },
+    "table": {
+      "headerBackground": "#EDEDE8",
+      "borderColor": "#D4D4D0"
+    }
   },
-  "pageNumbers": { "enabled": true, "position": "bottom-right", "format": "number", "color": "#737370", "fontSize": 10, "margin": 20 },
+  "pageNumbers": {
+    "enabled": true,
+    "position": "bottom-right",
+    "format": "number",
+    "color": "#737370",
+    "fontSize": 10,
+    "margin": 20
+  },
   "slides": [
     {
       "id": "s1",
-      "background": { "color": "#FAFAF7" },
+      "background": {
+        "color": "#FAFAF7"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "CV cover. Magazine-editorial layout — dark sidebar with avatar, main area with tagline and four stat blocks. Ava Kim, staff researcher at a compute-intensive AI lab, five years in ML infrastructure. Pause on the stats: 7+ years shipping, 3 papers, 40% perf gain, 12x iteration speedup.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "CV cover. Magazine-editorial layout \u2014 dark sidebar with avatar, main area with tagline and four stat blocks. Mina Seo, staff researcher at a compute-intensive AI lab, five years in ML infrastructure. No clicks. Pause on the stats: 7+ years shipping, 3 papers, 40% perf gain, 12x iteration speedup.",
       "animations": [
-        { "target": "s1-sidebar-bg", "trigger": "onEnter", "effect": "slideInUp", "duration": 600 },
-        { "target": "s1-avatar-frame", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 400 },
-        { "target": "s1-avatar-img", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s1-side-name", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s1-side-role", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s1-side-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-side-city", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-main-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 800 },
-        { "target": "s1-main-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-main-tagline", "trigger": "onEnter", "effect": "fadeIn", "duration": 600, "delay": 1000 },
-        { "target": "s1-stats-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 1400 },
-        { "target": "s1-stats-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-stat1-num", "trigger": "onEnter", "effect": "scaleIn", "duration": 400, "delay": 1600 },
-        { "target": "s1-stat1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-stat2-num", "trigger": "afterPrevious", "effect": "scaleIn", "duration": 400 },
-        { "target": "s1-stat2-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-stat3-num", "trigger": "afterPrevious", "effect": "scaleIn", "duration": 400 },
-        { "target": "s1-stat3-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-stat4-num", "trigger": "afterPrevious", "effect": "scaleIn", "duration": 400 },
-        { "target": "s1-stat4-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s1-side-status", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 2400 },
-        { "target": "s1-contact-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s1-contact", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s1-sidebar-bg",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s1-avatar-frame",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 400
+        },
+        {
+          "target": "s1-avatar-img",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s1-side-name",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s1-side-role",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s1-side-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-side-city",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-main-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 800
+        },
+        {
+          "target": "s1-main-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-main-tagline",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 600,
+          "delay": 1000
+        },
+        {
+          "target": "s1-stats-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 1400
+        },
+        {
+          "target": "s1-stats-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-stat1-num",
+          "trigger": "onEnter",
+          "effect": "scaleIn",
+          "duration": 400,
+          "delay": 1600
+        },
+        {
+          "target": "s1-stat1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-stat2-num",
+          "trigger": "afterPrevious",
+          "effect": "scaleIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-stat2-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-stat3-num",
+          "trigger": "afterPrevious",
+          "effect": "scaleIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-stat3-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-stat4-num",
+          "trigger": "afterPrevious",
+          "effect": "scaleIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-stat4-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s1-side-status",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 2400
+        },
+        {
+          "target": "s1-contact-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s1-contact",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s1-sidebar-bg", "type": "shape", "shape": "rectangle", "position": { "x": 0, "y": 0 }, "size": { "w": 320, "h": 540 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s1-avatar-frame", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 50 }, "size": { "w": 200, "h": 200 }, "style": { "fill": "#FAFAF7", "stroke": "#2D5F3F", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s1-avatar-img", "type": "image", "src": "./assets/ava-kim.png", "alt": "Illustrated portrait of Ava Kim — long wavy black hair, warm smile, charcoal blazer over cream blouse, editorial magazine style", "position": { "x": 60, "y": 50 }, "size": { "w": 200, "h": 200 }, "style": { "objectFit": "cover", "borderRadius": 4 } },
-        { "id": "s1-side-name", "type": "text", "content": "# Ava Kim", "position": { "x": 40, "y": 260 }, "size": { "w": 240, "h": 60 }, "style": { "fontSize": 32, "color": "#FAFAF7", "textAlign": "center" } },
-        { "id": "s1-side-role", "type": "text", "content": "Quantitative Researcher", "position": { "x": 40, "y": 320 }, "size": { "w": 240, "h": 22 }, "style": { "fontSize": 14, "color": "#2D5F3F", "textAlign": "center" } },
-        { "id": "s1-side-rule", "type": "shape", "shape": "rectangle", "position": { "x": 110, "y": 360 }, "size": { "w": 100, "h": 1 }, "style": { "fill": "#737370", "stroke": "#737370", "strokeWidth": 0 } },
-        { "id": "s1-side-city", "type": "text", "content": "San Francisco · CA", "position": { "x": 40, "y": 375 }, "size": { "w": 240, "h": 22 }, "style": { "fontSize": 11, "color": "#A8A8A3", "textAlign": "center" } },
-        { "id": "s1-side-status", "type": "text", "content": "AVAILABLE   ·   STAFF+", "position": { "x": 40, "y": 480 }, "size": { "w": 240, "h": 20 }, "style": { "fontSize": 10, "color": "#2D5F3F", "textAlign": "center" } },
-        { "id": "s1-main-tag", "type": "text", "content": "CURRICULUM VITAE", "position": { "x": 360, "y": 80 }, "size": { "w": 540, "h": 16 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s1-main-rule", "type": "shape", "shape": "rectangle", "position": { "x": 360, "y": 102 }, "size": { "w": 540, "h": 2 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s1-main-tagline", "type": "text", "content": "Five years building inference infrastructure at the intersection of physics simulation and large-scale ML training.", "position": { "x": 360, "y": 125 }, "size": { "w": 540, "h": 100 }, "style": { "fontSize": 24, "color": "#0C0A09", "lineHeight": 1.35 } },
-        { "id": "s1-stats-tag", "type": "text", "content": "AT A GLANCE", "position": { "x": 360, "y": 250 }, "size": { "w": 540, "h": 14 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s1-stats-rule", "type": "shape", "shape": "rectangle", "position": { "x": 360, "y": 268 }, "size": { "w": 540, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s1-stat1-num", "type": "text", "content": "7+", "position": { "x": 360, "y": 285 }, "size": { "w": 120, "h": 50 }, "style": { "fontSize": 44, "color": "#2D5F3F" } },
-        { "id": "s1-stat1-lbl", "type": "text", "content": "YEARS SHIPPING\nPRODUCTION ML", "position": { "x": 360, "y": 340 }, "size": { "w": 120, "h": 30 }, "style": { "fontSize": 9, "color": "#737370", "lineHeight": 1.4 } },
-        { "id": "s1-stat2-num", "type": "text", "content": "3", "position": { "x": 495, "y": 285 }, "size": { "w": 120, "h": 50 }, "style": { "fontSize": 44, "color": "#2D5F3F" } },
-        { "id": "s1-stat2-lbl", "type": "text", "content": "FIRST-AUTHOR\nPAPERS", "position": { "x": 495, "y": 340 }, "size": { "w": 120, "h": 30 }, "style": { "fontSize": 9, "color": "#737370", "lineHeight": 1.4 } },
-        { "id": "s1-stat3-num", "type": "text", "content": "40%", "position": { "x": 630, "y": 285 }, "size": { "w": 140, "h": 50 }, "style": { "fontSize": 44, "color": "#2D5F3F" } },
-        { "id": "s1-stat3-lbl", "type": "text", "content": "WALL-CLOCK CUT\nON RUST REWRITE", "position": { "x": 630, "y": 340 }, "size": { "w": 140, "h": 30 }, "style": { "fontSize": 9, "color": "#737370", "lineHeight": 1.4 } },
-        { "id": "s1-stat4-num", "type": "text", "content": "12x", "position": { "x": 780, "y": 285 }, "size": { "w": 120, "h": 50 }, "style": { "fontSize": 44, "color": "#2D5F3F" } },
-        { "id": "s1-stat4-lbl", "type": "text", "content": "ITERATION-TIME\nSPEEDUP", "position": { "x": 780, "y": 340 }, "size": { "w": 120, "h": 30 }, "style": { "fontSize": 9, "color": "#737370", "lineHeight": 1.4 } },
-        { "id": "s1-contact-rule", "type": "shape", "shape": "rectangle", "position": { "x": 360, "y": 430 }, "size": { "w": 540, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s1-contact", "type": "text", "content": "ava.kim@example.org     ·     avakim.dev     ·     @avakim", "position": { "x": 360, "y": 445 }, "size": { "w": 540, "h": 22 }, "style": { "fontSize": 11, "color": "#0C0A09" } }
+        {
+          "id": "s1-sidebar-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "size": {
+            "w": 320,
+            "h": 540
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-avatar-frame",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 50
+          },
+          "size": {
+            "w": 200,
+            "h": 200
+          },
+          "style": {
+            "fill": "#FAFAF7",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s1-avatar-img",
+          "type": "image",
+          "src": "./assets/mina-seo.png",
+          "alt": "Illustrated portrait of Mina Seo \u2014 long wavy black hair, warm smile, charcoal blazer over cream blouse, editorial magazine style",
+          "position": {
+            "x": 60,
+            "y": 50
+          },
+          "size": {
+            "w": 200,
+            "h": 200
+          },
+          "style": {
+            "objectFit": "cover",
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s1-side-name",
+          "type": "text",
+          "content": "# Mina Seo",
+          "position": {
+            "x": 40,
+            "y": 260
+          },
+          "size": {
+            "w": 240,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 32,
+            "color": "#FAFAF7",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-side-role",
+          "type": "text",
+          "content": "Quantitative Researcher",
+          "position": {
+            "x": 40,
+            "y": 320
+          },
+          "size": {
+            "w": 240,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#2D5F3F",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-side-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 110,
+            "y": 360
+          },
+          "size": {
+            "w": 100,
+            "h": 1
+          },
+          "style": {
+            "fill": "#737370",
+            "stroke": "#737370",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-side-city",
+          "type": "text",
+          "content": "San Francisco \u00b7 CA",
+          "position": {
+            "x": 40,
+            "y": 375
+          },
+          "size": {
+            "w": 240,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#A8A8A3",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-side-status",
+          "type": "text",
+          "content": "AVAILABLE   \u00b7   STAFF+",
+          "position": {
+            "x": 40,
+            "y": 480
+          },
+          "size": {
+            "w": 240,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F",
+            "textAlign": "center"
+          }
+        },
+        {
+          "id": "s1-main-tag",
+          "type": "text",
+          "content": "CURRICULUM VITAE",
+          "position": {
+            "x": 360,
+            "y": 80
+          },
+          "size": {
+            "w": 540,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-main-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 360,
+            "y": 102
+          },
+          "size": {
+            "w": 540,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-main-tagline",
+          "type": "text",
+          "content": "Five years building inference infrastructure at the intersection of physics simulation and large-scale ML training.",
+          "position": {
+            "x": 360,
+            "y": 125
+          },
+          "size": {
+            "w": 540,
+            "h": 100
+          },
+          "style": {
+            "fontSize": 24,
+            "color": "#0C0A09",
+            "lineHeight": 1.35
+          }
+        },
+        {
+          "id": "s1-stats-tag",
+          "type": "text",
+          "content": "AT A GLANCE",
+          "position": {
+            "x": 360,
+            "y": 250
+          },
+          "size": {
+            "w": 540,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-stats-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 360,
+            "y": 268
+          },
+          "size": {
+            "w": 540,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-stat1-num",
+          "type": "text",
+          "content": "7+",
+          "position": {
+            "x": 360,
+            "y": 285
+          },
+          "size": {
+            "w": 120,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 44,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-stat1-lbl",
+          "type": "text",
+          "content": "YEARS SHIPPING\nPRODUCTION ML",
+          "position": {
+            "x": 360,
+            "y": 340
+          },
+          "size": {
+            "w": 120,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#737370",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-stat2-num",
+          "type": "text",
+          "content": "3",
+          "position": {
+            "x": 495,
+            "y": 285
+          },
+          "size": {
+            "w": 120,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 44,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-stat2-lbl",
+          "type": "text",
+          "content": "FIRST-AUTHOR\nPAPERS",
+          "position": {
+            "x": 495,
+            "y": 340
+          },
+          "size": {
+            "w": 120,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#737370",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-stat3-num",
+          "type": "text",
+          "content": "40%",
+          "position": {
+            "x": 630,
+            "y": 285
+          },
+          "size": {
+            "w": 140,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 44,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-stat3-lbl",
+          "type": "text",
+          "content": "WALL-CLOCK CUT\nON RUST REWRITE",
+          "position": {
+            "x": 630,
+            "y": 340
+          },
+          "size": {
+            "w": 140,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#737370",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-stat4-num",
+          "type": "text",
+          "content": "12x",
+          "position": {
+            "x": 780,
+            "y": 285
+          },
+          "size": {
+            "w": 120,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 44,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s1-stat4-lbl",
+          "type": "text",
+          "content": "ITERATION-TIME\nSPEEDUP",
+          "position": {
+            "x": 780,
+            "y": 340
+          },
+          "size": {
+            "w": 120,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 9,
+            "color": "#737370",
+            "lineHeight": 1.4
+          }
+        },
+        {
+          "id": "s1-contact-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 360,
+            "y": 430
+          },
+          "size": {
+            "w": 540,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s1-contact",
+          "type": "text",
+          "content": "mina.seo@example.org     \u00b7     minaseo.dev     \u00b7     @minaseo",
+          "position": {
+            "x": 360,
+            "y": 445
+          },
+          "size": {
+            "w": 540,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0C0A09"
+          }
+        }
       ]
     },
     {
       "id": "s2",
-      "background": { "color": "#FAFAF7" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "About section. Pull-quote in sage green sets the frame — 'math meets systems'. Two-column body below: current role and historical work. End with 'currently interested in' — a hook for conversations about specific problems.",
+      "background": {
+        "color": "#FAFAF7"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "About section. On enter: PROFILE tag, title, pull-quote in sage green (\"Happiest at the boundary where math meets systems\"), two body paragraphs auto-reveal.\n\n[step:1]\"CURRENTLY INTERESTED IN\" tag + interests line \u2014 mixed-precision scheduling \u00b7 sparse attention kernels \u00b7 reproducibility in stochastic training \u00b7 Rust for scientific pipelines.[/step]\n\nThis is the conversation-hook slide \u2014 audience picks an interest and asks about it.",
       "animations": [
-        { "target": "s2-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s2-pullquote", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 500 },
-        { "target": "s2-pullquote2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 200 },
-        { "target": "s2-body-rule", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 1200 },
-        { "target": "s2-body1", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s2-body2", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 1600 },
-        { "target": "s2-interest-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s2-interest", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 }
+        {
+          "target": "s2-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s2-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s2-pullquote",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 500
+        },
+        {
+          "target": "s2-pullquote2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 200
+        },
+        {
+          "target": "s2-body-rule",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 1200
+        },
+        {
+          "target": "s2-body1",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s2-body2",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 1600
+        },
+        {
+          "target": "s2-interest-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s2-interest",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        }
       ],
       "elements": [
-        { "id": "s2-tag", "type": "text", "content": "01 · PROFILE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s2-title", "type": "text", "content": "# About", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 32, "color": "#0C0A09" } },
-        { "id": "s2-pullquote", "type": "text", "content": "Happiest at the boundary where math meets systems:", "position": { "x": 60, "y": 140 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 26, "color": "#2D5F3F", "lineHeight": 1.3 } },
-        { "id": "s2-pullquote2", "type": "text", "content": "CUDA kernels, distributed schedulers, reproducibility tooling.", "position": { "x": 60, "y": 174 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 26, "color": "#0C0A09", "lineHeight": 1.3 } },
-        { "id": "s2-body-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 235 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s2-body1", "type": "text", "content": "Engineer with a background in computational physics and a track record of shipping low-level ML infrastructure. Currently staff researcher at Compute Forge AI, where I lead the numerical-stability workstream for large-scale pretraining.", "position": { "x": 60, "y": 255 }, "size": { "w": 400, "h": 140 }, "style": { "fontSize": 13, "color": "#0C0A09", "lineHeight": 1.7 } },
-        { "id": "s2-body2", "type": "text", "content": "Prior work spans molecular dynamics of battery electrolytes, atmospheric ensemble pipelines at a climate lab, and distributed fine-tuning platforms. I'm especially drawn to problems where throwing more GPUs at the issue won't work — you have to do the math.", "position": { "x": 490, "y": 255 }, "size": { "w": 410, "h": 140 }, "style": { "fontSize": 13, "color": "#0C0A09", "lineHeight": 1.7 } },
-        { "id": "s2-interest-tag", "type": "text", "content": "CURRENTLY INTERESTED IN", "position": { "x": 60, "y": 410 }, "size": { "w": 840, "h": 14 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s2-interest", "type": "text", "content": "Mixed-precision scheduling · sparse attention kernels · reproducibility in stochastic training · Rust for scientific pipelines", "position": { "x": 60, "y": 428 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 12, "color": "#0C0A09" } }
+        {
+          "id": "s2-tag",
+          "type": "text",
+          "content": "01 \u00b7 PROFILE",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-title",
+          "type": "text",
+          "content": "# About",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 32,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s2-pullquote",
+          "type": "text",
+          "content": "Happiest at the boundary where math meets systems:",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#2D5F3F",
+            "lineHeight": 1.3
+          }
+        },
+        {
+          "id": "s2-pullquote2",
+          "type": "text",
+          "content": "CUDA kernels, distributed schedulers, reproducibility tooling.",
+          "position": {
+            "x": 60,
+            "y": 174
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 26,
+            "color": "#0C0A09",
+            "lineHeight": 1.3
+          }
+        },
+        {
+          "id": "s2-body-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 235
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s2-body1",
+          "type": "text",
+          "content": "Engineer with a background in computational physics and a track record of shipping low-level ML infrastructure. Currently staff researcher at Compute Forge AI, where I lead the numerical-stability workstream for large-scale pretraining.",
+          "position": {
+            "x": 60,
+            "y": 255
+          },
+          "size": {
+            "w": 400,
+            "h": 140
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#0C0A09",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s2-body2",
+          "type": "text",
+          "content": "Prior work spans molecular dynamics of battery electrolytes, atmospheric ensemble pipelines at a climate lab, and distributed fine-tuning platforms. I'm especially drawn to problems where throwing more GPUs at the issue won't work \u2014 you have to do the math.",
+          "position": {
+            "x": 490,
+            "y": 255
+          },
+          "size": {
+            "w": 410,
+            "h": 140
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#0C0A09",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s2-interest-tag",
+          "type": "text",
+          "content": "CURRENTLY INTERESTED IN",
+          "position": {
+            "x": 60,
+            "y": 410
+          },
+          "size": {
+            "w": 840,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s2-interest",
+          "type": "text",
+          "content": "Mixed-precision scheduling \u00b7 sparse attention kernels \u00b7 reproducibility in stochastic training \u00b7 Rust for scientific pipelines",
+          "position": {
+            "x": 60,
+            "y": 428
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        }
       ]
     },
     {
       "id": "s3",
-      "background": { "color": "#FAFAF7" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Experience timeline. Three dated entries — each reveals its dot, date, heading, org, and blurb in sequence. The vertical sage axis visually unifies the chronology. End with the academic prelude (UCSC, Grinnell).",
+      "background": {
+        "color": "#FAFAF7"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Experience timeline. On enter: EXPERIENCE tag, title \"Selected roles\", vertical sage-green axis (dots hidden until clicks).\n\n[step:1]2024\u2013present \u00b7 Staff Researcher at Compute Forge AI \u2014 leads numerical-stability workstream for large-scale pretraining, shipped mixed-precision loss-scaling scheduler to three production frontier models.[/step]\n\n[step:2]2021\u20132024 \u00b7 ML Platform Engineer at NorthBay Systems \u2014 built Kubernetes+Ray distributed training platform, cut fine-tuning iteration from 2 days to 4 hours.[/step]\n\n[step:3]2019\u20132021 \u00b7 Research Engineer at Meridian Climate Labs \u2014 prior: UCSC CMP physics grad 2017\u201319.[/step]\n\nRead each role's one-line achievement aloud \u2014 those are the talking points.",
       "animations": [
-        { "target": "s3-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s3-axis", "trigger": "onEnter", "effect": "fadeIn", "duration": 400, "delay": 500 },
-        { "target": "s3-dot1", "trigger": "onClick", "effect": "scaleIn", "duration": 300 },
-        { "target": "s3-r1-date", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r1-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r1-org", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s3-dot2", "trigger": "onClick", "effect": "scaleIn", "duration": 300 },
-        { "target": "s3-r2-date", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r2-org", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s3-dot3", "trigger": "onClick", "effect": "scaleIn", "duration": 300 },
-        { "target": "s3-r3-date", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s3-r3-meta", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 }
+        {
+          "target": "s3-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s3-axis",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400,
+          "delay": 500
+        },
+        {
+          "target": "s3-dot1",
+          "trigger": "onClick",
+          "effect": "scaleIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s3-r1-date",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r1-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r1-org",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s3-dot2",
+          "trigger": "onClick",
+          "effect": "scaleIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s3-r2-date",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r2-org",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s3-dot3",
+          "trigger": "onClick",
+          "effect": "scaleIn",
+          "duration": 300,
+          "order": 3
+        },
+        {
+          "target": "s3-r3-date",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r3-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s3-r3-meta",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        }
       ],
       "elements": [
-        { "id": "s3-tag", "type": "text", "content": "02 · EXPERIENCE", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s3-title", "type": "text", "content": "# Selected roles", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#0C0A09" } },
-        { "id": "s3-axis", "type": "shape", "shape": "rectangle", "position": { "x": 110, "y": 140 }, "size": { "w": 2, "h": 300 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0 } },
-        { "id": "s3-dot1", "type": "shape", "shape": "ellipse", "position": { "x": 102, "y": 148 }, "size": { "w": 18, "h": 18 }, "style": { "fill": "#2D5F3F", "stroke": "#FAFAF7", "strokeWidth": 3 } },
-        { "id": "s3-r1-date", "type": "text", "content": "2024 — present", "position": { "x": 140, "y": 148 }, "size": { "w": 160, "h": 20 }, "style": { "fontSize": 11, "color": "#2D5F3F" } },
-        { "id": "s3-r1-h", "type": "text", "content": "**Staff Researcher**", "position": { "x": 140, "y": 168 }, "size": { "w": 760, "h": 24 }, "style": { "fontSize": 17, "color": "#0C0A09" } },
-        { "id": "s3-r1-org", "type": "text", "content": "Compute Forge AI  ·  San Francisco", "position": { "x": 140, "y": 192 }, "size": { "w": 760, "h": 20 }, "style": { "fontSize": 12, "color": "#737370" } },
-        { "id": "s3-r1-b", "type": "text", "content": "Leads the numerical-stability workstream for large-scale pretraining. Shipped a mixed-precision loss-scaling scheduler now used across three production frontier models. Authored the post-mortem discipline for silent NaN regressions.", "position": { "x": 140, "y": 215 }, "size": { "w": 760, "h": 50 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.55 } },
-        { "id": "s3-dot2", "type": "shape", "shape": "ellipse", "position": { "x": 102, "y": 272 }, "size": { "w": 18, "h": 18 }, "style": { "fill": "#2D5F3F", "stroke": "#FAFAF7", "strokeWidth": 3 } },
-        { "id": "s3-r2-date", "type": "text", "content": "2021 — 2024", "position": { "x": 140, "y": 272 }, "size": { "w": 160, "h": 20 }, "style": { "fontSize": 11, "color": "#2D5F3F" } },
-        { "id": "s3-r2-h", "type": "text", "content": "**ML Platform Engineer**", "position": { "x": 140, "y": 292 }, "size": { "w": 760, "h": 24 }, "style": { "fontSize": 17, "color": "#0C0A09" } },
-        { "id": "s3-r2-org", "type": "text", "content": "NorthBay Systems  ·  Oakland", "position": { "x": 140, "y": 316 }, "size": { "w": 760, "h": 20 }, "style": { "fontSize": 12, "color": "#737370" } },
-        { "id": "s3-r2-b", "type": "text", "content": "Built a distributed training platform on Kubernetes + Ray that cut fine-tuning iteration time for the ranking team from two days to four hours. Shipped the checkpointing layer used by every production pipeline.", "position": { "x": 140, "y": 339 }, "size": { "w": 760, "h": 50 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.55 } },
-        { "id": "s3-dot3", "type": "shape", "shape": "ellipse", "position": { "x": 102, "y": 396 }, "size": { "w": 18, "h": 18 }, "style": { "fill": "#2D5F3F", "stroke": "#FAFAF7", "strokeWidth": 3 } },
-        { "id": "s3-r3-date", "type": "text", "content": "2019 — 2021", "position": { "x": 140, "y": 396 }, "size": { "w": 160, "h": 20 }, "style": { "fontSize": 11, "color": "#2D5F3F" } },
-        { "id": "s3-r3-h", "type": "text", "content": "**Research Engineer**", "position": { "x": 140, "y": 416 }, "size": { "w": 760, "h": 24 }, "style": { "fontSize": 17, "color": "#0C0A09" } },
-        { "id": "s3-r3-meta", "type": "text", "content": "Meridian Climate Labs  ·  prior: UC Santa Cruz graduate researcher (CMP physics, 2017–19)", "position": { "x": 140, "y": 440 }, "size": { "w": 760, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } }
+        {
+          "id": "s3-tag",
+          "type": "text",
+          "content": "02 \u00b7 EXPERIENCE",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-title",
+          "type": "text",
+          "content": "# Selected roles",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s3-axis",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 110,
+            "y": 140
+          },
+          "size": {
+            "w": 2,
+            "h": 300
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s3-dot1",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": {
+            "x": 102,
+            "y": 148
+          },
+          "size": {
+            "w": 18,
+            "h": 18
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#FAFAF7",
+            "strokeWidth": 3
+          }
+        },
+        {
+          "id": "s3-r1-date",
+          "type": "text",
+          "content": "2024 \u2014 present",
+          "position": {
+            "x": 140,
+            "y": 148
+          },
+          "size": {
+            "w": 160,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s3-r1-h",
+          "type": "text",
+          "content": "**Staff Researcher**",
+          "position": {
+            "x": 140,
+            "y": 168
+          },
+          "size": {
+            "w": 760,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 17,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s3-r1-org",
+          "type": "text",
+          "content": "Compute Forge AI  \u00b7  San Francisco",
+          "position": {
+            "x": 140,
+            "y": 192
+          },
+          "size": {
+            "w": 760,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s3-r1-b",
+          "type": "text",
+          "content": "Leads the numerical-stability workstream for large-scale pretraining. Shipped a mixed-precision loss-scaling scheduler now used across three production frontier models. Authored the post-mortem discipline for silent NaN regressions.",
+          "position": {
+            "x": 140,
+            "y": 215
+          },
+          "size": {
+            "w": 760,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s3-dot2",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": {
+            "x": 102,
+            "y": 272
+          },
+          "size": {
+            "w": 18,
+            "h": 18
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#FAFAF7",
+            "strokeWidth": 3
+          }
+        },
+        {
+          "id": "s3-r2-date",
+          "type": "text",
+          "content": "2021 \u2014 2024",
+          "position": {
+            "x": 140,
+            "y": 272
+          },
+          "size": {
+            "w": 160,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s3-r2-h",
+          "type": "text",
+          "content": "**ML Platform Engineer**",
+          "position": {
+            "x": 140,
+            "y": 292
+          },
+          "size": {
+            "w": 760,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 17,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s3-r2-org",
+          "type": "text",
+          "content": "NorthBay Systems  \u00b7  Oakland",
+          "position": {
+            "x": 140,
+            "y": 316
+          },
+          "size": {
+            "w": 760,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s3-r2-b",
+          "type": "text",
+          "content": "Built a distributed training platform on Kubernetes + Ray that cut fine-tuning iteration time for the ranking team from two days to four hours. Shipped the checkpointing layer used by every production pipeline.",
+          "position": {
+            "x": 140,
+            "y": 339
+          },
+          "size": {
+            "w": 760,
+            "h": 50
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.55
+          }
+        },
+        {
+          "id": "s3-dot3",
+          "type": "shape",
+          "shape": "ellipse",
+          "position": {
+            "x": 102,
+            "y": 396
+          },
+          "size": {
+            "w": 18,
+            "h": 18
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#FAFAF7",
+            "strokeWidth": 3
+          }
+        },
+        {
+          "id": "s3-r3-date",
+          "type": "text",
+          "content": "2019 \u2014 2021",
+          "position": {
+            "x": 140,
+            "y": 396
+          },
+          "size": {
+            "w": 160,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s3-r3-h",
+          "type": "text",
+          "content": "**Research Engineer**",
+          "position": {
+            "x": 140,
+            "y": 416
+          },
+          "size": {
+            "w": 760,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 17,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s3-r3-meta",
+          "type": "text",
+          "content": "Meridian Climate Labs  \u00b7  prior: UC Santa Cruz graduate researcher (CMP physics, 2017\u201319)",
+          "position": {
+            "x": 140,
+            "y": 440
+          },
+          "size": {
+            "w": 760,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        }
       ]
     },
     {
       "id": "s4",
-      "background": { "color": "#FAFAF7" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Skills as proficiency bars — Python/PyTorch expert, Rust/CUDA strong, K8s/MPI proficient. Bars slide in left-to-right as if they were filling from zero. Right column has education and writing credits.",
+      "background": {
+        "color": "#FAFAF7"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Skills + education. On enter: TOOLBOX tag, title, then 6 proficiency bars slide in left-to-right (Python expert, PyTorch/JAX expert, Rust strong, CUDA/C++ strong, K8s/Ray strong, MPI/BLAS proficient).\n\n[step:1]Right-side EDUCATION panel \u2014 M.S. Physics UCSC 2019 + B.S. Physics + Math minor Grinnell 2017 (Phi Beta Kappa).[/step]\n\n[step:2]SELECTED WRITING panel below \u2014 3 first-author J. Chem. Phys. papers + arXiv preprint on loss-scaling drift.[/step]\n\nBars fill from zero \u2014 hierarchy feels earned, not proclaimed.",
       "animations": [
-        { "target": "s4-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s4-skills-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300, "delay": 500 },
-        { "target": "s4-skill1-lbl", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill1-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill1-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 700 },
-        { "target": "s4-skill1-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s4-skill2-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill2-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill2-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 600 },
-        { "target": "s4-skill2-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill3-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill3-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill3-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 600 },
-        { "target": "s4-skill3-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill4-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill4-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill4-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 600 },
-        { "target": "s4-skill4-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill5-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill5-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill5-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 600 },
-        { "target": "s4-skill5-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-skill6-lbl", "trigger": "afterPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill6-track", "trigger": "withPrevious", "effect": "fadeIn", "duration": 200 },
-        { "target": "s4-skill6-bar", "trigger": "withPrevious", "effect": "slideInUp", "duration": 600 },
-        { "target": "s4-skill6-val", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-edu-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-edu-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-edu-body", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500 },
-        { "target": "s4-pub-tag", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-pub-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s4-pub-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s4-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s4-skills-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300,
+          "delay": 500
+        },
+        {
+          "target": "s4-skill1-lbl",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill1-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill1-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 700
+        },
+        {
+          "target": "s4-skill1-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s4-skill2-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill2-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill2-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s4-skill2-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill3-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill3-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill3-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s4-skill3-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill4-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill4-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill4-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s4-skill4-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill5-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill5-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill5-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s4-skill5-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-skill6-lbl",
+          "trigger": "afterPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill6-track",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 200
+        },
+        {
+          "target": "s4-skill6-bar",
+          "trigger": "withPrevious",
+          "effect": "slideInUp",
+          "duration": 600
+        },
+        {
+          "target": "s4-skill6-val",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-edu-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s4-edu-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-edu-body",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500
+        },
+        {
+          "target": "s4-pub-tag",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s4-pub-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s4-pub-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s4-tag", "type": "text", "content": "03 · TOOLBOX", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s4-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s4-title", "type": "text", "content": "# Skills & proficiency", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#0C0A09" } },
-        { "id": "s4-skill1-lbl", "type": "text", "content": "Python", "position": { "x": 60, "y": 140 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill1-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 144 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill1-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 144 }, "size": { "w": 285, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill1-val", "type": "text", "content": "Expert", "position": { "x": 510, "y": 140 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-skill2-lbl", "type": "text", "content": "Rust", "position": { "x": 60, "y": 175 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill2-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 179 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill2-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 179 }, "size": { "w": 252, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill2-val", "type": "text", "content": "Strong", "position": { "x": 510, "y": 175 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-skill3-lbl", "type": "text", "content": "CUDA / C++", "position": { "x": 60, "y": 210 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill3-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 214 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill3-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 214 }, "size": { "w": 243, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill3-val", "type": "text", "content": "Strong", "position": { "x": 510, "y": 210 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-skill4-lbl", "type": "text", "content": "PyTorch / JAX", "position": { "x": 60, "y": 245 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill4-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 249 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill4-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 249 }, "size": { "w": 276, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill4-val", "type": "text", "content": "Expert", "position": { "x": 510, "y": 245 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-skill5-lbl", "type": "text", "content": "Kubernetes / Ray", "position": { "x": 60, "y": 280 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill5-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 284 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill5-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 284 }, "size": { "w": 234, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill5-val", "type": "text", "content": "Strong", "position": { "x": 510, "y": 280 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-skill6-lbl", "type": "text", "content": "MPI / BLAS / cuDNN", "position": { "x": 60, "y": 315 }, "size": { "w": 120, "h": 20 }, "style": { "fontSize": 12, "color": "#0C0A09" } },
-        { "id": "s4-skill6-track", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 319 }, "size": { "w": 300, "h": 10 }, "style": { "fill": "#EDEDE8", "stroke": "#D4D4D0", "strokeWidth": 1, "borderRadius": 4 } },
-        { "id": "s4-skill6-bar", "type": "shape", "shape": "rectangle", "position": { "x": 200, "y": 319 }, "size": { "w": 210, "h": 10 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0, "borderRadius": 4 } },
-        { "id": "s4-skill6-val", "type": "text", "content": "Proficient", "position": { "x": 510, "y": 315 }, "size": { "w": 80, "h": 20 }, "style": { "fontSize": 11, "color": "#737370" } },
-        { "id": "s4-edu-tag", "type": "text", "content": "EDUCATION", "position": { "x": 620, "y": 140 }, "size": { "w": 280, "h": 14 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s4-edu-rule", "type": "shape", "shape": "rectangle", "position": { "x": 620, "y": 158 }, "size": { "w": 280, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s4-edu-body", "type": "text", "content": "**M.S. Physics** — 2019\nUC Santa Cruz · Condensed Matter\n\n**B.S. Physics, Math minor** — 2017\nGrinnell College · Phi Beta Kappa", "position": { "x": 620, "y": 175 }, "size": { "w": 280, "h": 130 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.7 } },
-        { "id": "s4-pub-tag", "type": "text", "content": "SELECTED WRITING", "position": { "x": 620, "y": 315 }, "size": { "w": 280, "h": 14 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s4-pub-rule", "type": "shape", "shape": "rectangle", "position": { "x": 620, "y": 333 }, "size": { "w": 280, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s4-pub-b", "type": "text", "content": "3 first-author papers in *J. Chem. Phys.*, 1 preprint on arXiv about loss-scaling drift during long pretraining runs.", "position": { "x": 620, "y": 350 }, "size": { "w": 280, "h": 80 }, "style": { "fontSize": 11, "color": "#0C0A09", "lineHeight": 1.6 } }
+        {
+          "id": "s4-tag",
+          "type": "text",
+          "content": "03 \u00b7 TOOLBOX",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s4-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-title",
+          "type": "text",
+          "content": "# Skills & proficiency",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill1-lbl",
+          "type": "text",
+          "content": "Python",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill1-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 144
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill1-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 144
+          },
+          "size": {
+            "w": 285,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill1-val",
+          "type": "text",
+          "content": "Expert",
+          "position": {
+            "x": 510,
+            "y": 140
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-skill2-lbl",
+          "type": "text",
+          "content": "Rust",
+          "position": {
+            "x": 60,
+            "y": 175
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill2-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 179
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill2-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 179
+          },
+          "size": {
+            "w": 252,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill2-val",
+          "type": "text",
+          "content": "Strong",
+          "position": {
+            "x": 510,
+            "y": 175
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-skill3-lbl",
+          "type": "text",
+          "content": "CUDA / C++",
+          "position": {
+            "x": 60,
+            "y": 210
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill3-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 214
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill3-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 214
+          },
+          "size": {
+            "w": 243,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill3-val",
+          "type": "text",
+          "content": "Strong",
+          "position": {
+            "x": 510,
+            "y": 210
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-skill4-lbl",
+          "type": "text",
+          "content": "PyTorch / JAX",
+          "position": {
+            "x": 60,
+            "y": 245
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill4-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 249
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill4-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 249
+          },
+          "size": {
+            "w": 276,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill4-val",
+          "type": "text",
+          "content": "Expert",
+          "position": {
+            "x": 510,
+            "y": 245
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-skill5-lbl",
+          "type": "text",
+          "content": "Kubernetes / Ray",
+          "position": {
+            "x": 60,
+            "y": 280
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill5-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 284
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill5-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 284
+          },
+          "size": {
+            "w": 234,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill5-val",
+          "type": "text",
+          "content": "Strong",
+          "position": {
+            "x": 510,
+            "y": 280
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-skill6-lbl",
+          "type": "text",
+          "content": "MPI / BLAS / cuDNN",
+          "position": {
+            "x": 60,
+            "y": 315
+          },
+          "size": {
+            "w": 120,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s4-skill6-track",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 319
+          },
+          "size": {
+            "w": 300,
+            "h": 10
+          },
+          "style": {
+            "fill": "#EDEDE8",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 1,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill6-bar",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 200,
+            "y": 319
+          },
+          "size": {
+            "w": 210,
+            "h": 10
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0,
+            "borderRadius": 4
+          }
+        },
+        {
+          "id": "s4-skill6-val",
+          "type": "text",
+          "content": "Proficient",
+          "position": {
+            "x": 510,
+            "y": 315
+          },
+          "size": {
+            "w": 80,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#737370"
+          }
+        },
+        {
+          "id": "s4-edu-tag",
+          "type": "text",
+          "content": "EDUCATION",
+          "position": {
+            "x": 620,
+            "y": 140
+          },
+          "size": {
+            "w": 280,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s4-edu-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 620,
+            "y": 158
+          },
+          "size": {
+            "w": 280,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-edu-body",
+          "type": "text",
+          "content": "**M.S. Physics** \u2014 2019\nUC Santa Cruz \u00b7 Condensed Matter\n\n**B.S. Physics, Math minor** \u2014 2017\nGrinnell College \u00b7 Phi Beta Kappa",
+          "position": {
+            "x": 620,
+            "y": 175
+          },
+          "size": {
+            "w": 280,
+            "h": 130
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s4-pub-tag",
+          "type": "text",
+          "content": "SELECTED WRITING",
+          "position": {
+            "x": 620,
+            "y": 315
+          },
+          "size": {
+            "w": 280,
+            "h": 14
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s4-pub-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 620,
+            "y": 333
+          },
+          "size": {
+            "w": 280,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s4-pub-b",
+          "type": "text",
+          "content": "3 first-author papers in *J. Chem. Phys.*, 1 preprint on arXiv about loss-scaling drift during long pretraining runs.",
+          "position": {
+            "x": 620,
+            "y": 350
+          },
+          "size": {
+            "w": 280,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#0C0A09",
+            "lineHeight": 1.6
+          }
+        }
       ]
     },
     {
       "id": "s5",
-      "background": { "color": "#FAFAF7" },
-      "transition": { "type": "slide", "duration": 300 },
-      "notes": "Project spotlight. Three cards side-by-side: Gradient Atlas (open-source viz, 2.3k stars), StormCast-Lite (distilled forecasting model), Lattice.nix (reproducible env specs). Each reveals on click with header + description + tag line. Portfolio link at bottom.",
+      "background": {
+        "color": "#FAFAF7"
+      },
+      "transition": {
+        "type": "slide",
+        "duration": 300
+      },
+      "notes": "Project spotlight. On enter: SELECTED PROJECTS tag, title \"Things I've built\".\n\n[step:1]01 Gradient Atlas \u2014 diagnostic viz for mixed-precision training, open-source 2.3k stars (Rust \u00b7 CUDA \u00b7 WGPU).[/step]\n\n[step:2]02 StormCast-Lite \u2014 distilled forecasting model on single GPU (PyTorch \u00b7 Triton \u00b7 MPI).[/step]\n\n[step:3]03 Lattice.nix \u2014 reproducible env specs for scientific ML, pins CUDA/BLAS/Python stack to one Nix flake.[/step]\n\n[step:4]Bottom rule + portfolio link.[/step]\n\nEach project is the kind of thing a hiring conversation gravitates toward.",
       "animations": [
-        { "target": "s5-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 400, "delay": 200 },
-        { "target": "s5-p1-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p1-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p1-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p1-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-p1-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p2-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p2-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p2-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p2-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-p2-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p3-num", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p3-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p3-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-p3-b", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s5-p3-tag", "trigger": "withPrevious", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-foot-rule", "trigger": "onClick", "effect": "fadeIn", "duration": 300 },
-        { "target": "s5-foot", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s5-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 400,
+          "delay": 200
+        },
+        {
+          "target": "s5-p1-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 1
+        },
+        {
+          "target": "s5-p1-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p1-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p1-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-p1-tag",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p2-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 2
+        },
+        {
+          "target": "s5-p2-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p2-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p2-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-p2-tag",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p3-num",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 3
+        },
+        {
+          "target": "s5-p3-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p3-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-p3-b",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s5-p3-tag",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 300
+        },
+        {
+          "target": "s5-foot-rule",
+          "trigger": "onClick",
+          "effect": "fadeIn",
+          "duration": 300,
+          "order": 4
+        },
+        {
+          "target": "s5-foot",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s5-tag", "type": "text", "content": "04 · SELECTED PROJECTS", "position": { "x": 60, "y": 40 }, "size": { "w": 840, "h": 16 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s5-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 62 }, "size": { "w": 840, "h": 2 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s5-title", "type": "text", "content": "# Things I've built", "position": { "x": 60, "y": 80 }, "size": { "w": 840, "h": 40 }, "style": { "fontSize": 28, "color": "#0C0A09" } },
-        { "id": "s5-p1-num", "type": "text", "content": "01", "position": { "x": 60, "y": 150 }, "size": { "w": 50, "h": 28 }, "style": { "fontSize": 20, "color": "#2D5F3F" } },
-        { "id": "s5-p1-h", "type": "text", "content": "**Gradient Atlas**", "position": { "x": 60, "y": 180 }, "size": { "w": 260, "h": 24 }, "style": { "fontSize": 18, "color": "#0C0A09" } },
-        { "id": "s5-p1-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 210 }, "size": { "w": 60, "h": 2 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0 } },
-        { "id": "s5-p1-b", "type": "text", "content": "Diagnostic visualization for mixed-precision training dynamics. Open-source; 2.3k stars.", "position": { "x": 60, "y": 222 }, "size": { "w": 260, "h": 80 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.6 } },
-        { "id": "s5-p1-tag", "type": "text", "content": "RUST · CUDA · WGPU", "position": { "x": 60, "y": 320 }, "size": { "w": 260, "h": 20 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s5-p2-num", "type": "text", "content": "02", "position": { "x": 350, "y": 150 }, "size": { "w": 50, "h": 28 }, "style": { "fontSize": 20, "color": "#2D5F3F" } },
-        { "id": "s5-p2-h", "type": "text", "content": "**StormCast-Lite**", "position": { "x": 350, "y": 180 }, "size": { "w": 260, "h": 24 }, "style": { "fontSize": 18, "color": "#0C0A09" } },
-        { "id": "s5-p2-rule", "type": "shape", "shape": "rectangle", "position": { "x": 350, "y": 210 }, "size": { "w": 60, "h": 2 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0 } },
-        { "id": "s5-p2-b", "type": "text", "content": "Distilled forecasting model running on a single GPU. Used by two research groups for rapid ensemble prototyping.", "position": { "x": 350, "y": 222 }, "size": { "w": 260, "h": 80 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.6 } },
-        { "id": "s5-p2-tag", "type": "text", "content": "PYTORCH · TRITON · MPI", "position": { "x": 350, "y": 320 }, "size": { "w": 260, "h": 20 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s5-p3-num", "type": "text", "content": "03", "position": { "x": 640, "y": 150 }, "size": { "w": 50, "h": 28 }, "style": { "fontSize": 20, "color": "#2D5F3F" } },
-        { "id": "s5-p3-h", "type": "text", "content": "**Lattice.nix**", "position": { "x": 640, "y": 180 }, "size": { "w": 260, "h": 24 }, "style": { "fontSize": 18, "color": "#0C0A09" } },
-        { "id": "s5-p3-rule", "type": "shape", "shape": "rectangle", "position": { "x": 640, "y": 210 }, "size": { "w": 60, "h": 2 }, "style": { "fill": "#2D5F3F", "stroke": "#2D5F3F", "strokeWidth": 0 } },
-        { "id": "s5-p3-b", "type": "text", "content": "Reproducible environment specs for scientific ML — pins the entire CUDA/BLAS/Python stack against a single Nix flake.", "position": { "x": 640, "y": 222 }, "size": { "w": 260, "h": 80 }, "style": { "fontSize": 12, "color": "#0C0A09", "lineHeight": 1.6 } },
-        { "id": "s5-p3-tag", "type": "text", "content": "NIX · BASH · DOCS", "position": { "x": 640, "y": 320 }, "size": { "w": 260, "h": 20 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s5-foot-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 395 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s5-foot", "type": "text", "content": "Full portfolio and write-ups at **avakim.dev/projects**", "position": { "x": 60, "y": 410 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 12, "color": "#737370" } }
+        {
+          "id": "s5-tag",
+          "type": "text",
+          "content": "04 \u00b7 SELECTED PROJECTS",
+          "position": {
+            "x": 60,
+            "y": 40
+          },
+          "size": {
+            "w": 840,
+            "h": 16
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 62
+          },
+          "size": {
+            "w": 840,
+            "h": 2
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-title",
+          "type": "text",
+          "content": "# Things I've built",
+          "position": {
+            "x": 60,
+            "y": 80
+          },
+          "size": {
+            "w": 840,
+            "h": 40
+          },
+          "style": {
+            "fontSize": 28,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s5-p1-num",
+          "type": "text",
+          "content": "01",
+          "position": {
+            "x": 60,
+            "y": 150
+          },
+          "size": {
+            "w": 50,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 20,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-p1-h",
+          "type": "text",
+          "content": "**Gradient Atlas**",
+          "position": {
+            "x": 60,
+            "y": 180
+          },
+          "size": {
+            "w": 260,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 18,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s5-p1-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 210
+          },
+          "size": {
+            "w": 60,
+            "h": 2
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-p1-b",
+          "type": "text",
+          "content": "Diagnostic visualization for mixed-precision training dynamics. Open-source; 2.3k stars.",
+          "position": {
+            "x": 60,
+            "y": 222
+          },
+          "size": {
+            "w": 260,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s5-p1-tag",
+          "type": "text",
+          "content": "RUST \u00b7 CUDA \u00b7 WGPU",
+          "position": {
+            "x": 60,
+            "y": 320
+          },
+          "size": {
+            "w": 260,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-p2-num",
+          "type": "text",
+          "content": "02",
+          "position": {
+            "x": 350,
+            "y": 150
+          },
+          "size": {
+            "w": 50,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 20,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-p2-h",
+          "type": "text",
+          "content": "**StormCast-Lite**",
+          "position": {
+            "x": 350,
+            "y": 180
+          },
+          "size": {
+            "w": 260,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 18,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s5-p2-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 350,
+            "y": 210
+          },
+          "size": {
+            "w": 60,
+            "h": 2
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-p2-b",
+          "type": "text",
+          "content": "Distilled forecasting model running on a single GPU. Used by two research groups for rapid ensemble prototyping.",
+          "position": {
+            "x": 350,
+            "y": 222
+          },
+          "size": {
+            "w": 260,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s5-p2-tag",
+          "type": "text",
+          "content": "PYTORCH \u00b7 TRITON \u00b7 MPI",
+          "position": {
+            "x": 350,
+            "y": 320
+          },
+          "size": {
+            "w": 260,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-p3-num",
+          "type": "text",
+          "content": "03",
+          "position": {
+            "x": 640,
+            "y": 150
+          },
+          "size": {
+            "w": 50,
+            "h": 28
+          },
+          "style": {
+            "fontSize": 20,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-p3-h",
+          "type": "text",
+          "content": "**Lattice.nix**",
+          "position": {
+            "x": 640,
+            "y": 180
+          },
+          "size": {
+            "w": 260,
+            "h": 24
+          },
+          "style": {
+            "fontSize": 18,
+            "color": "#0C0A09"
+          }
+        },
+        {
+          "id": "s5-p3-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 640,
+            "y": 210
+          },
+          "size": {
+            "w": 60,
+            "h": 2
+          },
+          "style": {
+            "fill": "#2D5F3F",
+            "stroke": "#2D5F3F",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-p3-b",
+          "type": "text",
+          "content": "Reproducible environment specs for scientific ML \u2014 pins the entire CUDA/BLAS/Python stack against a single Nix flake.",
+          "position": {
+            "x": 640,
+            "y": 222
+          },
+          "size": {
+            "w": 260,
+            "h": 80
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#0C0A09",
+            "lineHeight": 1.6
+          }
+        },
+        {
+          "id": "s5-p3-tag",
+          "type": "text",
+          "content": "NIX \u00b7 BASH \u00b7 DOCS",
+          "position": {
+            "x": 640,
+            "y": 320
+          },
+          "size": {
+            "w": 260,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s5-foot-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 395
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s5-foot",
+          "type": "text",
+          "content": "Full portfolio and write-ups at **minaseo.dev/projects**",
+          "position": {
+            "x": 60,
+            "y": 410
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 12,
+            "color": "#737370"
+          }
+        }
       ]
     },
     {
       "id": "s6",
-      "background": { "color": "#FAFAF7" },
+      "background": {
+        "color": "#FAFAF7"
+      },
       "hidePageNumber": true,
-      "transition": { "type": "fade", "duration": 500 },
-      "notes": "Closing — availability + contact. The dark contact card on the right is the anchor; reveal it last. Main message: staff/principal roles in systems-ML, infrastructure research, scientific computing. Bias toward small technical teams, happy to relocate.",
+      "transition": {
+        "type": "fade",
+        "duration": 500
+      },
+      "notes": "Closing \u2014 availability + contact. On enter: LET'S TALK tag + gold rule + title + italic subtitle + body paragraph (team prefs, no on-call love, yes code-lives-for-years love).\n\n[step:1]Dark contact card on the right slides in: REACH OUT header in sage + email + website + GitHub in cream.[/step]\n\nClose warm: \"happy to relocate for the right problem.\"",
       "animations": [
-        { "target": "s6-tag", "trigger": "onEnter", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-rule", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-title", "trigger": "onEnter", "effect": "slideInUp", "duration": 500, "delay": 300 },
-        { "target": "s6-title2", "trigger": "withPrevious", "effect": "fadeIn", "duration": 500, "delay": 300 },
-        { "target": "s6-body", "trigger": "onEnter", "effect": "fadeIn", "duration": 500, "delay": 1100 },
-        { "target": "s6-contact-bg", "trigger": "onClick", "effect": "slideInUp", "duration": 500 },
-        { "target": "s6-contact-h", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-contact-email", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-contact-site", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 },
-        { "target": "s6-contact-social", "trigger": "withPrevious", "effect": "fadeIn", "duration": 400 }
+        {
+          "target": "s6-tag",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-rule",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-title",
+          "trigger": "onEnter",
+          "effect": "slideInUp",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s6-title2",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 300
+        },
+        {
+          "target": "s6-body",
+          "trigger": "onEnter",
+          "effect": "fadeIn",
+          "duration": 500,
+          "delay": 1100
+        },
+        {
+          "target": "s6-contact-bg",
+          "trigger": "onClick",
+          "effect": "slideInUp",
+          "duration": 500,
+          "order": 1
+        },
+        {
+          "target": "s6-contact-h",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-contact-email",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-contact-site",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        },
+        {
+          "target": "s6-contact-social",
+          "trigger": "withPrevious",
+          "effect": "fadeIn",
+          "duration": 400
+        }
       ],
       "elements": [
-        { "id": "s6-tag", "type": "text", "content": "LET'S TALK", "position": { "x": 60, "y": 60 }, "size": { "w": 840, "h": 20 }, "style": { "fontSize": 11, "color": "#2D5F3F" } },
-        { "id": "s6-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 92 }, "size": { "w": 840, "h": 3 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s6-title", "type": "text", "content": "Open to staff and principal-level roles", "position": { "x": 60, "y": 140 }, "size": { "w": 840, "h": 60 }, "style": { "fontSize": 38, "color": "#0C0A09", "lineHeight": 1.2 } },
-        { "id": "s6-title2", "type": "text", "content": "*in systems-ML, infrastructure research, or scientific computing.*", "position": { "x": 60, "y": 205 }, "size": { "w": 840, "h": 32 }, "style": { "fontSize": 22, "color": "#2D5F3F" } },
-        { "id": "s6-body", "type": "text", "content": "Bias toward small, highly-technical teams. Comfortable remote; happy to relocate for the right problem. I don't love on-call rotations, I do love writing code that runs in production for years.", "position": { "x": 60, "y": 265 }, "size": { "w": 600, "h": 90 }, "style": { "fontSize": 14, "color": "#0C0A09", "lineHeight": 1.7 } },
-        { "id": "s6-contact-bg", "type": "shape", "shape": "rectangle", "position": { "x": 680, "y": 260 }, "size": { "w": 220, "h": 130 }, "style": { "fill": "#0C0A09", "stroke": "#0C0A09", "strokeWidth": 0 } },
-        { "id": "s6-contact-h", "type": "text", "content": "REACH OUT", "position": { "x": 700, "y": 280 }, "size": { "w": 180, "h": 18 }, "style": { "fontSize": 10, "color": "#2D5F3F" } },
-        { "id": "s6-contact-email", "type": "text", "content": "ava.kim@example.org", "position": { "x": 700, "y": 310 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 13, "color": "#FAFAF7" } },
-        { "id": "s6-contact-site", "type": "text", "content": "avakim.dev", "position": { "x": 700, "y": 335 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 13, "color": "#FAFAF7" } },
-        { "id": "s6-contact-social", "type": "text", "content": "github.com/avakim", "position": { "x": 700, "y": 360 }, "size": { "w": 180, "h": 22 }, "style": { "fontSize": 13, "color": "#FAFAF7" } },
-        { "id": "s6-foot-rule", "type": "shape", "shape": "rectangle", "position": { "x": 60, "y": 430 }, "size": { "w": 840, "h": 1 }, "style": { "fill": "#D4D4D0", "stroke": "#D4D4D0", "strokeWidth": 0 } },
-        { "id": "s6-foot", "type": "text", "content": "A V A   K I M   ·   C V   2 0 2 6   ·   E N D", "position": { "x": 60, "y": 445 }, "size": { "w": 840, "h": 30 }, "style": { "fontSize": 10, "color": "#737370", "textAlign": "center" } }
+        {
+          "id": "s6-tag",
+          "type": "text",
+          "content": "LET'S TALK",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "size": {
+            "w": 840,
+            "h": 20
+          },
+          "style": {
+            "fontSize": 11,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s6-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 92
+          },
+          "size": {
+            "w": 840,
+            "h": 3
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-title",
+          "type": "text",
+          "content": "Open to staff and principal-level roles",
+          "position": {
+            "x": 60,
+            "y": 140
+          },
+          "size": {
+            "w": 840,
+            "h": 60
+          },
+          "style": {
+            "fontSize": 38,
+            "color": "#0C0A09",
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "s6-title2",
+          "type": "text",
+          "content": "*in systems-ML, infrastructure research, or scientific computing.*",
+          "position": {
+            "x": 60,
+            "y": 205
+          },
+          "size": {
+            "w": 840,
+            "h": 32
+          },
+          "style": {
+            "fontSize": 22,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s6-body",
+          "type": "text",
+          "content": "Bias toward small, highly-technical teams. Comfortable remote; happy to relocate for the right problem. I don't love on-call rotations, I do love writing code that runs in production for years.",
+          "position": {
+            "x": 60,
+            "y": 265
+          },
+          "size": {
+            "w": 600,
+            "h": 90
+          },
+          "style": {
+            "fontSize": 14,
+            "color": "#0C0A09",
+            "lineHeight": 1.7
+          }
+        },
+        {
+          "id": "s6-contact-bg",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 680,
+            "y": 260
+          },
+          "size": {
+            "w": 220,
+            "h": 130
+          },
+          "style": {
+            "fill": "#0C0A09",
+            "stroke": "#0C0A09",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-contact-h",
+          "type": "text",
+          "content": "REACH OUT",
+          "position": {
+            "x": 700,
+            "y": 280
+          },
+          "size": {
+            "w": 180,
+            "h": 18
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#2D5F3F"
+          }
+        },
+        {
+          "id": "s6-contact-email",
+          "type": "text",
+          "content": "mina.seo@example.org",
+          "position": {
+            "x": 700,
+            "y": 310
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#FAFAF7"
+          }
+        },
+        {
+          "id": "s6-contact-site",
+          "type": "text",
+          "content": "minaseo.dev",
+          "position": {
+            "x": 700,
+            "y": 335
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#FAFAF7"
+          }
+        },
+        {
+          "id": "s6-contact-social",
+          "type": "text",
+          "content": "github.com/minaseo",
+          "position": {
+            "x": 700,
+            "y": 360
+          },
+          "size": {
+            "w": 180,
+            "h": 22
+          },
+          "style": {
+            "fontSize": 13,
+            "color": "#FAFAF7"
+          }
+        },
+        {
+          "id": "s6-foot-rule",
+          "type": "shape",
+          "shape": "rectangle",
+          "position": {
+            "x": 60,
+            "y": 430
+          },
+          "size": {
+            "w": 840,
+            "h": 1
+          },
+          "style": {
+            "fill": "#D4D4D0",
+            "stroke": "#D4D4D0",
+            "strokeWidth": 0
+          }
+        },
+        {
+          "id": "s6-foot",
+          "type": "text",
+          "content": "M I N A   S E O   \u00b7   C V   2 0 2 6   \u00b7   E N D",
+          "position": {
+            "x": 60,
+            "y": 445
+          },
+          "size": {
+            "w": 840,
+            "h": 30
+          },
+          "style": {
+            "fontSize": 10,
+            "color": "#737370",
+            "textAlign": "center"
+          }
+        }
       ]
     }
   ]
