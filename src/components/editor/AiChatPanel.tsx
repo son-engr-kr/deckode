@@ -7,6 +7,8 @@ import { runPipeline, type PipelineCallbacks, type PlanResult, type StylePrefere
 import { getApiKey, setApiKey, clearApiKey, getAgentModels, setAgentModel, AVAILABLE_MODELS, getAutoCaptionOnUpload, setAutoCaptionOnUpload, getAutoApprove, setAutoApprove, getAutoNavigate, setAutoNavigate, type AgentRole } from "@/ai/geminiClient";
 import { ContextBar } from "./ContextBar";
 import { AtMentionDropdown } from "./AtMentionDropdown";
+import { useAdapter } from "@/contexts/AdapterContext";
+import { fetchProjectPath } from "@/utils/api";
 
 interface LastSendParams {
   text: string;
@@ -30,6 +32,7 @@ export function AiChatPanel() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const lastSendRef = useRef<LastSendParams | null>(null);
   const currentProject = useDeckStore((s) => s.currentProject);
+  const adapter = useAdapter();
 
   // Load chat sessions for current project
   useEffect(() => {
@@ -201,32 +204,15 @@ export function AiChatPanel() {
     }
   };
 
-  // API key setup screen
+  // API key setup screen — also pitches the alternative "use a code agent" path.
   if (!hasKey) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center gap-3 p-4 text-zinc-400">
-        <div className="text-sm font-medium text-zinc-300">Gemini API Key</div>
-        <p className="text-xs text-center">
-          Enter your Gemini API key to enable AI features.
-          <br />
-          Stored in browser localStorage only.
-        </p>
-        <input
-          type="password"
-          value={keyInput}
-          onChange={(e) => setKeyInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSaveKey()}
-          placeholder="AIza..."
-          className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
-        />
-        <button
-          onClick={handleSaveKey}
-          className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-500 transition-colors"
-        >
-          Save Key
-        </button>
-      </div>
-    );
+    return <NoKeyPanel
+      adapter={adapter}
+      currentProject={currentProject}
+      keyInput={keyInput}
+      setKeyInput={setKeyInput}
+      onSaveKey={handleSaveKey}
+    />;
   }
 
   return (
@@ -532,6 +518,151 @@ export function AiChatPanel() {
             Send
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function NoKeyPanel({
+  adapter,
+  currentProject,
+  keyInput,
+  setKeyInput,
+  onSaveKey,
+}: {
+  adapter: ReturnType<typeof useAdapter>;
+  currentProject: string | null;
+  keyInput: string;
+  setKeyInput: (v: string) => void;
+  onSaveKey: () => void;
+}) {
+  const [projectPath, setProjectPath] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  // Vite dev mode is the only place we can resolve an absolute path. tekkal.dev
+  // (FsAccess) cannot — the File System Access API hides paths from JS.
+  useEffect(() => {
+    if (adapter.mode !== "vite" || !currentProject) {
+      setProjectPath(null);
+      return;
+    }
+    fetchProjectPath(currentProject).then(setProjectPath);
+  }, [adapter.mode, currentProject]);
+
+  const handleCopy = () => {
+    if (!projectPath) return;
+    navigator.clipboard.writeText(projectPath);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <div className="h-full flex flex-col gap-3 p-3 overflow-y-auto text-zinc-300">
+      <div>
+        <div className="text-xs font-medium text-zinc-200">Two ways to use AI here</div>
+        <p className="text-[11px] text-zinc-500 leading-relaxed mt-0.5">
+          Pick whichever fits how you already work. Both produce the same deck.json.
+        </p>
+      </div>
+
+      {/* Path A — in-app chat with a Gemini key */}
+      <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/60">
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className="text-[10px] text-amber-400">01</span>
+          <span className="text-xs font-medium text-zinc-200">In-app chat</span>
+        </div>
+        <p className="text-[11px] text-zinc-400 leading-relaxed mb-2">
+          Drop in a Gemini key from{" "}
+          <a
+            href="https://aistudio.google.com/app/apikey"
+            target="_blank"
+            rel="noreferrer"
+            className="underline text-zinc-300 hover:text-zinc-100"
+          >
+            Google AI Studio
+          </a>
+          . Stored in this browser only.
+        </p>
+        <input
+          type="password"
+          value={keyInput}
+          onChange={(e) => setKeyInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && onSaveKey()}
+          placeholder="AIza..."
+          className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-blue-500"
+        />
+        <button
+          onClick={onSaveKey}
+          disabled={!keyInput.trim()}
+          className="w-full mt-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Save Key
+        </button>
+      </div>
+
+      {/* Path B — external code agent on the file */}
+      <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/60">
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className="text-[10px] text-amber-400">02</span>
+          <span className="text-xs font-medium text-zinc-200">A code agent on the file</span>
+        </div>
+        <p className="text-[11px] text-zinc-400 leading-relaxed mb-2">
+          Your deck is plain JSON on disk. Point Claude Code, Gemini CLI, Cursor, or
+          Antigravity at the project folder — they can read{" "}
+          <code className="bg-zinc-800 px-1 rounded text-[10px]">docs/tekkal-guide.md</code>{" "}
+          and edit{" "}
+          <code className="bg-zinc-800 px-1 rounded text-[10px]">deck.json</code>{" "}
+          directly. You can also open other local repos alongside it for the agent to
+          reference.
+        </p>
+
+        {projectPath ? (
+          <>
+            <div className="text-[10px] text-zinc-500 mb-1">Project folder</div>
+            <div className="flex items-center gap-1 mb-2">
+              <code className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-[10px] text-zinc-300 font-mono break-all">
+                {projectPath}
+              </code>
+              <button
+                onClick={handleCopy}
+                className="text-[10px] px-2 py-1 text-zinc-400 hover:text-zinc-200 transition-colors"
+                title="Copy path"
+              >
+                {copied ? "✓" : "Copy"}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+              <a
+                href={`cursor://file${projectPath}`}
+                className="text-[10px] text-center px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded transition-colors"
+              >
+                Open in Cursor
+              </a>
+              <a
+                href={`vscode://file${projectPath}`}
+                className="text-[10px] text-center px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded transition-colors"
+              >
+                Open in VS Code
+              </a>
+            </div>
+            <p className="text-[10px] text-zinc-500 leading-relaxed">
+              Terminal agent? Run{" "}
+              <code className="bg-zinc-800 px-1 rounded">
+                cd "{projectPath}" && claude-code
+              </code>{" "}
+              (or <code className="bg-zinc-800 px-1 rounded">gemini</code>) inside the folder.
+            </p>
+          </>
+        ) : (
+          <p className="text-[10px] text-zinc-500 leading-relaxed">
+            Open the folder you chose when creating this project in your code agent.
+            Read{" "}
+            <code className="bg-zinc-800 px-1 rounded">docs/tekkal-guide.md</code>{" "}
+            first; edit{" "}
+            <code className="bg-zinc-800 px-1 rounded">deck.json</code> with your
+            agent. Auto-launch links require the local dev server.
+          </p>
+        )}
       </div>
     </div>
   );

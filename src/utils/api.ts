@@ -49,6 +49,13 @@ export async function renameProject(
   return res.json();
 }
 
+export async function fetchProjectPath(project: string): Promise<string | null> {
+  const res = await fetch(`/api/project-path?project=${encodeURIComponent(project)}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.absPath ?? null;
+}
+
 export async function loadDeckFromDisk(project: string): Promise<Deck | null> {
   const res = await fetch(`/api/load-deck?project=${encodeURIComponent(project)}`);
   if (res.status === 404) return null;

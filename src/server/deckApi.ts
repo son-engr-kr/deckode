@@ -455,6 +455,23 @@ export function deckApiPlugin(): Plugin {
 
       // -- Project management endpoints --
 
+      server.middlewares.use("/api/project-path", (req, res) => {
+        // Returns the absolute path of a project folder so the AI panel can
+        // surface it for "open in Cursor / VS Code" deep links and for
+        // command-line tools like Claude Code or Gemini CLI.
+        try {
+          const project = getProjectParam(req);
+          const dir = projectDir(project);
+          if (!fs.existsSync(dir)) {
+            jsonResponse(res, 404, { error: `Project "${project}" not found` });
+            return;
+          }
+          jsonResponse(res, 200, { absPath: dir });
+        } catch (err) {
+          jsonResponse(res, 400, { error: err instanceof Error ? err.message : String(err) });
+        }
+      });
+
       server.middlewares.use("/api/projects", (_req, res) => {
         const root = projectsRoot();
         if (!fs.existsSync(root)) {
