@@ -118,6 +118,14 @@ export function GitDiffProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Read-only adapters (bundled demos, GitHub-hosted decks) have no git
+    // backend. Skip the fetch so we don't 404 against a non-existent API.
+    if (adapter.mode === "readonly") {
+      setUnavailableReason("no-git");
+      setBaseDeck(null);
+      return;
+    }
+
     fetchGitHeadHash(project, absPath).then((hash) => {
       if (!hash) {
         setUnavailableReason("no-git");
