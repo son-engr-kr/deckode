@@ -520,12 +520,11 @@ function FsAccessProjectSelector({ onAdapterReady }: { onAdapterReady: (adapter:
       const projectDir = await FsAccessAdapter.writeNewProject(baseDir, config);
       await openWithHandle(projectDir);
     } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") {
-        setCreating(false);
-        return;
-      }
       setCreating(false);
-      throw err;
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+      alert(message);
     }
   };
 

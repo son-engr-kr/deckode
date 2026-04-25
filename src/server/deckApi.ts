@@ -7,6 +7,7 @@ import { execFile, execFileSync } from "child_process";
 import Ajv2020 from "ajv/dist/2020";
 import { generateWizardDeck } from "../utils/projectTemplates";
 import { mergeSlideFields } from "../utils/slideMerge";
+import { collectAssetRefs } from "../utils/deckAssets";
 
 const DECK_FILENAME = "deck.json";
 const PROJECT_DIR = "projects";
@@ -125,26 +126,6 @@ function syncGuideDocs(projectRoot: string): void {
 
 function isValidProjectName(name: string): boolean {
   return /^[a-zA-Z0-9_-]+$/.test(name);
-}
-
-/**
- * Walk a deck and collect every relative path it references via `./assets/...`.
- * Used when forking a demo so we can copy the referenced files into the new
- * project's own assets/ directory.
- */
-function collectAssetRefs(node: unknown, out: Set<string> = new Set()): Set<string> {
-  if (typeof node === "string") {
-    if (node.startsWith("./assets/")) out.add(node.slice("./assets/".length));
-    return out;
-  }
-  if (Array.isArray(node)) {
-    for (const x of node) collectAssetRefs(x, out);
-    return out;
-  }
-  if (node && typeof node === "object") {
-    for (const v of Object.values(node)) collectAssetRefs(v, out);
-  }
-  return out;
 }
 
 function getProjectParam(req: IncomingMessage): string {

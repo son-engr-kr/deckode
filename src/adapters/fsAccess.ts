@@ -173,7 +173,10 @@ export class FsAccessAdapter implements FileSystemAdapter {
     // Check for existing deck.json to prevent overwrite
     let exists = true;
     try { await projectDir.getFileHandle("deck.json"); } catch { exists = false; }
-    assert(!exists, "This folder already contains a deck.json. Pick an empty folder or remove the existing file.");
+    if (exists) {
+      const where = config.name ? `"${config.name}" already exists in the chosen folder` : "this folder already contains a deck.json";
+      throw new Error(`A project at ${where}. Pick a different name or open the existing project from the recent list.`);
+    }
 
     // Generate deck based on template kind
     let deck: Deck;
@@ -200,6 +203,34 @@ export class FsAccessAdapter implements FileSystemAdapter {
 
     // Write deck.json
     await writeTextFile(projectDir, "deck.json", JSON.stringify(deck, null, 2));
+
+    // Copy referenced demo assets — the deck points at ./assets/<file>, which
+    // resolves to the project's own assets/ folder. Without this step every
+    // image renders as a broken link in a freshly forked demo.
+    if (config.demoId) {
+      const { collectAssetRefs } = await import("@/utils/deckAssets");
+      const refs = collectAssetRefs(deck);
+      if (refs.size > 0) {
+        const assetsDir = await projectDir.getDirectoryHandle("assets", { create: true });
+        for (const rel of refs) {
+          // We only support flat asset names today (matches all bundled demos).
+          // If a demo ever nests assets, drop the slashes here.
+          const flat = rel.replace(/\\/g, "/").split("/").pop()!;
+          try {
+            const resp = await fetch(`${import.meta.env.BASE_URL}demo-assets/${flat}`.replace(/\/{2,}/g, "/"));
+            if (!resp.ok) continue;
+            const blob = await resp.blob();
+            const fh = await assetsDir.getFileHandle(flat, { create: true });
+            const w = await fh.createWritable();
+            await w.write(blob);
+            await w.close();
+          } catch {
+            // Best-effort. A missing asset just renders as a broken image
+            // rather than failing the entire create flow.
+          }
+        }
+      }
+    }
 
     // Write layouts/
     const layoutsDir = await projectDir.getDirectoryHandle("layouts", { create: true });
